@@ -1,21 +1,28 @@
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.models import User  # 🆕 ユーザー作成用に追記
-from django.http import HttpResponse         # 🆕 完了メッセージ表示用に追記
+from django.contrib.auth.models import User
+from django.http import HttpResponse
 from . import views
 
-# 🆕 緊急用：アクセスすると管理者ユーザーを作る関数
+# 🆕 緊急用：既存ユーザーであってもパスワードを強制的に上書きする関数
 def make_user(request):
     username = 'okamuranana'
-    password = 'admin2026'  # 👈 ログインに使いたいパスワードに書き換えてください
-    if not User.objects.filter(username=username).exists():
-        User.objects.create_superuser(username, '', password)
-        return HttpResponse(f"ユーザー '{username}' を作成しました！ログイン画面から試してください。")
+    password = 'admin2026'  # 👈 これが確定パスワードになります
+    
+    user = User.objects.filter(username=username).first()
+    
+    if user:
+        # すでにユーザーがいる場合は、パスワードを上書き保存する
+        user.set_password(password)
+        user.save()
+        return HttpResponse(f"ユーザー '{username}' のパスワードを '{password}' に更新しました！ログインを試してください。")
     else:
-        return HttpResponse(f"ユーザー '{username}' は既に存在します。")
+        # ユーザーがいない場合は、新規作成する
+        User.objects.create_superuser(username, '', password)
+        return HttpResponse(f"ユーザー '{username}' を新規作成しました！")
 
 urlpatterns = [
-    # 🆕 緊急用URL（作業が終わったら後で消します）
+    # 🆕 緊急用URL
     path('make-user-emergency/', make_user),
     
     # --- 1. メニュー画面（TOP） ---
