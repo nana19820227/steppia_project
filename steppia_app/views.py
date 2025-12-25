@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import JsonResponse
+from django.contrib.auth import login # 🆕 追加
+from django.contrib.auth.forms import UserCreationForm # 🆕 追加
 import pytz
 
 # すべてのモデルをインポート
@@ -12,10 +14,27 @@ def top(request):
     """メインメニュー画面を表示する"""
     return render(request, 'steppia_app/top.html')
 
-# --- 2. 会員登録 ---
+# --- 2. 会員登録（ログイン用アカウント作成） ---
 def signup(request):
-    """会員登録入力画面"""
-    return render(request, 'steppia_app/signup.html')
+    """
+    ステップ1: ログイン用のユーザーアカウントを作成する
+    """
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # アカウント作成後、自動でログイン状態にする
+            return redirect('signup_profile') # 詳細情報入力へ
+    else:
+        form = UserCreationForm()
+    return render(request, 'steppia_app/signup.html', {'form': form})
+
+@login_required
+def signup_profile(request):
+    """
+    ステップ2: 会員詳細情報（名前・住所など）の入力画面
+    """
+    return render(request, 'steppia_app/signup_profile.html')
 
 def signup_confirm(request):
     """会員登録確認画面"""
@@ -30,12 +49,13 @@ def signup_confirm(request):
     }
     return render(request, 'steppia_app/signup_confirm.html', context)
 
+@login_required
 def signup_done(request):
     """会員登録完了：新しいMemberを作成しログインユーザーと紐付け"""
     if request.method == 'POST':
         Member.objects.create(
-            # ログインしているユーザーを会員情報に紐付ける
-            user=request.user if request.user.is_authenticated else None,
+            # 現在ログインしているユーザーを会員情報に紐付ける
+            user=request.user,
             last_name=request.POST.get('last_name'),
             first_name=request.POST.get('first_name'),
             last_name_kana=request.POST.get('last_name_kana'),
@@ -149,7 +169,7 @@ def ai_consult(request):
         "退職理由": "不満ではなく「新しい環境で〇〇に挑戦したい」という前向きな言葉に変えましょう。",
         "年収交渉": "自分の実績を根拠に希望額を伝えましょう。相談のタイミングも重要です。",
         "自己紹介": "1分程度で、経歴と応募への意気込みを簡潔にまとめて話せるようにしましょう。",
-        "長所": "仕事にどう活かせるかをセットで。短所は改善への努力を添えて話しましょう。",
+        "長所": "仕事にどう活かせるかをセットで. 短所は改善への努力を添えて話しましょう。",
         "選考状況": "隠す必要はありません。「第一志望ですが、並行して進めています」と誠実に。",
         "介護": "両立支援制度がある会社も増えています。最初から無理のない働き方を相談しましょう。",
         "子育て": "お子さんの成長に合わせた、柔軟な働き方の「短時間正社員」なども検討しましょう。",
