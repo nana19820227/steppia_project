@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>抽選結果！ - ステッピア</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bg: #DCECCF; 
+            --star-yellow: #FFF2AF; 
+            --text-brown: #5D4037;
+            --win-color: #E91E63; 
+            --lose-color: #5D4037;
+        }
+        body { 
+            background-color: var(--bg); margin: 0; font-family: 'Zen Maru Gothic', sans-serif; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            height: 100vh; overflow: hidden; text-align: center; 
+        }
+        .result-card { 
+            background: rgba(255, 255, 255, 0.95); padding: 50px 40px; border-radius: 40px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1); transform: scale(0.8); opacity: 0; 
+            animation: popUp 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards; 
+            width: 90%; max-width: 360px;
+        }
+        @keyframes popUp { to { transform: scale(1); opacity: 1; } }
+
+        /* クラッカーアニメーション */
+        @keyframes cracker-pop {
+            0% { transform: scale(0.8) rotate(-15deg); }
+            50% { transform: scale(1.2) rotate(15deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        .cracker-anim {
+            display: inline-block;
+            animation: cracker-pop 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+        }
+        
+        .result-icon { font-size: 80px; margin-bottom: {% if is_win %}15px{% else %}0{% endif %}; line-height: 1; }
+        .result-message { font-size: 22px; font-weight: 900; color: var(--text-brown); }
+        .result-item { font-size: 32px; font-weight: 900; color: {% if is_win %}var(--win-color){% else %}var(--lose-color){% endif %}; margin: 25px 0 35px; }
+        
+        .btn-group { width: 100%; display: flex; justify-content: center; }
+        .back-btn {
+            display: flex; justify-content: center; align-items: center; width: 100%; max-width: 220px; padding: 16px 0;
+            text-decoration: none; border-radius: 30px; font-weight: 900; font-size: 18px;
+            background: var(--star-yellow); color: var(--text-brown); 
+            box-shadow: 0 5px 0 #E6D58E; transition: 0.1s; border: none; cursor: pointer;
+        }
+        .back-btn:active { transform: translateY(4px); box-shadow: none; }
+    </style>
+</head>
+<body>
+    <div class="result-card">
+        <div class="result-icon">
+            {% if is_win %}<span class="cracker-anim">🎉</span>{% endif %}
+        </div>
+        
+        <div class="result-message">
+            {% if is_win %}✨ おめでとうございます！ ✨{% else %}残念...次はきっと！{% endif %}
+        </div>
+        
+        <div class="result-item">【 {{ item }} 】</div>
+        
+        <div class="btn-group">
+            <a href="{% url 'menu' %}" class="back-btn">TOPに戻る</a>
+        </div>
+    </div>
+</body>
+</html>

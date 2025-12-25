@@ -1,0 +1,175 @@
+/* --- 全体の設定 --- */
+body {
+    background-color: #D8EAD3; /* 薄いグリーン */
+    font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    color: #4A4A4A;
+}
+
+/* スマホ画面のような縦長の中央配置 */
+.container {
+    max-width: 450px; /* 少しだけ幅を広げました */
+    margin: 0 auto;   /* 画面中央に寄せる */
+    padding: 60px 20px;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* --- トップページ用 --- */
+.main-image {
+    width: 240px;  /* イラストを大きく */
+    height: auto;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 24px; /* アプリ名を大きく */
+    margin-bottom: 10px;
+    font-weight: normal;
+    letter-spacing: 1px;
+}
+
+.sub-title {
+    font-size: 16px;
+    margin-bottom: 60px; /* 余白を広めに */
+    color: #555;
+    font-weight: bold;
+}
+
+/* ボタンエリア */
+.button-container {
+    width: 100%;
+}
+
+.btn-beige {
+    display: block;
+    width: 100%;
+    background-color: #F2EFE5;
+    padding: 22px 0;      /* ボタンの厚みを増す */
+    margin-bottom: 25px;
+    border-radius: 20px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: opacity 0.3s;
+}
+
+.btn-beige:hover {
+    opacity: 0.8;
+}
+
+/* --- 会員登録・確認画面用 --- */
+
+/* 小さなロゴ */
+
+.mini-logo {
+    width: 280px;        /* <--- 280px に変更 */
+    margin-bottom: 30px; /* <--- 下の余白も少し広げる */
+}
+
+.page-title {
+    font-size: 20px;      /* <-- 16px から 20px に変更して大きく */
+    margin-bottom: 10px;
+    color: #555;          /* <-- 文字色を少し濃くしてクッキリさせる */
+    font-weight: bold;    /* <-- 太字にする設定を追加 */
+}
+
+/* 画面タイトル（「会員登録の確認」など） */
+h2 {
+    font-size: 28px;      /* ★大きくしました */
+    margin-bottom: 50px;  /* 余白をたっぷりと */
+}
+
+/* フォームのレイアウト */
+.signup-form {
+    text-align: left;
+    padding: 0 5px;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px; /* 余白を広げる */
+}
+
+.form-group label {
+    width: 100px; /* ラベル幅を広げて安定させる */
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.form-group input {
+    flex: 1;
+    background-color: #F2EFE5;
+    border: none;
+    border-radius: 25px; /* さらに丸く */
+    padding: 14px 18px;  /* 入力欄を大きく */
+    font-size: 18px;     /* 入力文字を大きく */
+    outline: none;
+}
+
+/* --- 確認画面のリスト表示 --- */
+.confirm-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;  /* ★行間をかなり広げました */
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.confirm-row label {
+    width: 110px;         /* ラベル幅を確保 */
+    font-weight: bold;
+    font-size: 16px;
+    color: #666;
+}
+
+.confirm-row p {
+    flex: 1;
+    margin: 0;
+    font-size: 22px;      /* ★入力内容をかなり大きく太く */
+    font-weight: 500;
+    line-height: 1.4;
+    word-break: break-all; /* 長いメアドなどが改行されるように */
+}
+
+/* --- 星形ボタンまわり --- */
+
+/* 右寄せエリア（登録画面用） */
+.star-button-area {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 40px;
+    padding-right: 10px;
+}
+
+/* 左右配置エリア（確認画面用） */
+.double-button-area {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 50px;
+    padding: 0 10px;
+}
+
+/* 星形ボタン（サイズ拡大版） */
+.star-btn {
+    background-color: #F9E79F;
+    width: 120px;         /* ★80px → 120px に拡大 */
+    height: 120px;        /* ★80px → 120px に拡大 */
+    border: none;
+    /* 星の形 */
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    font-size: 18px;      /* 文字も大きく */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 15px;    /* 文字位置の微調整 */
+    text-decoration: none; /* リンクの下線を消す */
+}

@@ -1,0 +1,227 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI相談室 - ステッピア</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #DCECCF;
+            --bubble-ai: #F9F4E8;
+            --bubble-user: #FFFFFF;
+            --text-brown: #5D4037;
+            --star-yellow: #FFF2AF;
+            --heart-pink: #FFC1CC;
+        }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'Zen Maru Gothic', sans-serif;
+            margin: 0; padding: 0;
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-brown);
+            overflow-x: hidden;
+        }
+
+        .main-wrapper {
+            width: 100%;
+            max-width: 650px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 15px 320px; 
+            box-sizing: border-box;
+        }
+
+        /* --- ヘッダー --- */
+        .header-area {
+            margin-bottom: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .header-logo { 
+            width: 130px;
+            height: auto; 
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+        h1 { font-size: 30px; font-weight: 900; margin: 0; letter-spacing: 0.15em; }
+
+        /* --- チャットエリア --- */
+        .chat-container {
+            width: 100%;
+            display: flex; flex-direction: column; gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .ai-row { display: flex; align-items: flex-start; gap: 20px; width: 100%; }
+        .avatar-ai { 
+            width: 110px; height: 110px; border-radius: 50%; 
+            background: white; padding: 3px; flex-shrink: 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            object-fit: contain;
+            margin-top: -80px; 
+        }
+        .ai-bubble {
+            flex: 1; background: var(--bubble-ai); padding: 25px;
+            border-radius: 25px; border-top-left-radius: 2px;
+            box-shadow: 0 5px 0 #E0DBC5; line-height: 1.8; font-weight: 700;
+            font-size: 18px; position: relative;
+        }
+        .ai-bubble::before {
+            content: ""; position: absolute; top: 25px; left: -18px;
+            border-style: solid; border-width: 12px 20px 12px 0;
+            border-color: transparent var(--bubble-ai) transparent transparent;
+        }
+
+        .user-row { display: flex; justify-content: flex-end; align-items: flex-start; gap: 20px; width: 100%; }
+        .user-bubble {
+            max-width: 75%; background: var(--bubble-user); padding: 25px;
+            border-radius: 25px; border-top-right-radius: 2px;
+            box-shadow: 0 5px 0 #D0D0D0; line-height: 1.8; font-weight: 700;
+            font-size: 18px; position: relative;
+        }
+        .user-bubble::after {
+            content: ""; position: absolute; top: 25px; right: -18px;
+            border-style: solid; border-width: 12px 0 12px 20px;
+            border-color: transparent transparent transparent var(--bubble-user);
+        }
+        .avatar-user { 
+            width: 115px; height: auto; flex-shrink: 0; object-fit: contain;
+            margin-top: -80px; 
+        }
+
+        /* --- 入力エリア --- */
+        .input-section { position: relative; width: 100%; margin-top: 280px; }
+        .input-card {
+            background: var(--bubble-ai); border-radius: 50px; padding: 15px 30px;
+            box-shadow: 0 8px 0 #E0DBC5; display: flex; align-items: center; gap: 20px;
+        }
+        textarea {
+            flex: 1; border: none; outline: none; background: white;
+            border-radius: 30px; padding: 20px; font-family: inherit;
+            font-size: 18px; font-weight: 700; resize: none; height: 60px;
+            color: var(--text-brown);
+        }
+
+        .heart-btn {
+            background: var(--heart-pink); width: 100px; height: 100px;
+            display: flex; align-items: center; justify-content: center;
+            border: none; cursor: pointer; flex-shrink: 0;
+            font-weight: 900; color: var(--text-brown); font-size: 20px;
+            clip-path: path('M50 85C-10 40-10 15 20 5 35 0 50 15 50 15s15-15 30-10C110 15 110 40 50 85Z');
+            transition: 0.2s; padding-bottom: 12px;
+        }
+        .heart-btn:active { transform: scale(0.95); }
+
+        /* --- 下部ナビゲーション --- */
+        .bottom-nav {
+            position: fixed; bottom: 10px; left: 0; width: 100%; 
+            display: flex; justify-content: space-between; 
+            padding: 0 10px; box-sizing: border-box; z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .star-btn {
+            text-decoration: none; position: relative; display: flex; 
+            align-items: center; justify-content: center;
+            width: 130px; height: 130px;
+            pointer-events: auto; 
+            transition: transform 0.2s ease-out;
+        }
+
+        .star-icon { 
+            font-size: 135px; color: var(--star-yellow); 
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.15)); line-height: 1;
+        }
+
+        .star-text {
+            position: absolute; 
+            top: 50%; left: 50%; 
+            /* 通常時の中央位置 */
+            transform: translate(-50%, -45%) rotate(0deg);
+            font-size: 22px; font-weight: 900; 
+            color: #000; 
+            white-space: nowrap;
+            /* アニメーションをなめらかにする */
+            transition: transform 0.15s ease-out;
+        }
+
+        /* 【ここがポイント】クリック時に文字が右肩上がりに傾き、クイっと上がる */
+        .star-btn:active .star-text {
+            /* translate(-40%, -65%): 少し右(-50%→-40%)、上(-45%→-65%)に移動
+               rotate(15deg): 右肩上がり（時計回り）に15度傾ける
+            */
+            transform: translate(-40%, -65%) rotate(15deg);
+        }
+
+        /* ボタン全体も少し沈む動き */
+        .star-btn:active {
+            transform: scale(0.95);
+        }
+
+        @media (min-width: 1000px) {
+            .bottom-nav {
+                left: 50%; transform: translateX(-50%);
+                max-width: 1200px; padding: 0 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <div class="header-area">
+            <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" class="header-logo" alt="ロゴ">
+            <h1>AI相談室</h1>
+        </div>
+
+        <div class="chat-container">
+            {% if user_q %}
+            <div class="user-row">
+                <div class="user-bubble">{{ user_q }}</div>
+                <img src="{% static 'images/onna.png' %}" class="avatar-user">
+            </div>
+            {% endif %}
+
+            <div class="ai-row">
+                <img src="{% static 'images/otoko.png' %}" class="avatar-ai">
+                <div class="ai-bubble">
+                    {% if ai_answer %}
+                        {{ ai_answer|linebreaksbr }}
+                    {% else %}
+                        こんにちは！就活やお仕事の悩み、何でも聞かせてくださいね。
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <div class="input-card">
+                <form method="post" style="display: contents;">
+                    {% csrf_token %}
+                    <textarea name="user_input" placeholder="お悩みを入力してね..." required></textarea>
+                    <button type="submit" class="heart-btn">相談</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="{% url 'menu' %}" class="star-btn">
+            <span class="star-icon">★</span>
+            <span class="star-text">戻る</span>
+        </a>
+        <a href="{% url 'mypage' %}" class="star-btn">
+            <span class="star-icon">★</span>
+            <span class="star-text">履歴</span>
+        </a>
+    </div>
+
+</body>
+</html>

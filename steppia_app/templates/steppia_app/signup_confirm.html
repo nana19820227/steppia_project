@@ -1,0 +1,70 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登録確認 - ステッピア</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <div class="container">
+        <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" alt="ロゴ" class="mini-logo">
+        
+        <p class="page-title">ステッピア</p>
+        <h2>会員登録の確認</h2>
+
+        <div class="confirm-box">
+            <div class="confirm-row">
+                <label>姓</label>
+                <p>{{ last_name }}</p> 
+            </div>
+            <div class="confirm-row">
+                <label>名</label>
+                <p>{{ first_name }}</p>
+            </div>
+            <div class="confirm-row">
+                <label>せい</label>
+                <p>{{ last_name_kana }}</p>
+            </div>
+            <div class="confirm-row">
+                <label>めい</label>
+                <p>{{ first_name_kana }}</p>
+            </div>
+            <div class="confirm-row">
+                <label>住所</label>
+                <p>{{ address }}</p>
+            </div>
+            <div class="confirm-row">
+                <label>電話番号</label>
+                <p>{{ phone }}</p>
+            </div>
+            <div class="confirm-row">
+                <label>メール<br>アドレス</label>
+                <p>{{ email }}</p>
+            </div>
+        </div>
+
+        <div class="double-button-area">
+            <a href="{% url 'signup' %}" class="star-btn">戻る</a>
+
+            <form action="{% url 'signup_done' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="last_name" value="{{ last_name }}">
+                <input type="hidden" name="first_name" value="{{ first_name }}">
+                <input type="hidden" name="last_name_kana" value="{{ last_name_kana }}">
+                <input type="hidden" name="first_name_kana" value="{{ first_name_kana }}">
+                <input type="hidden" name="address" value="{{ address }}">
+                <input type="hidden" name="phone" value="{{ phone }}">
+                <input type="hidden" name="email" value="{{ email }}">
+
+                <button type="submit" class="star-btn">登録</button>
+            </form>
+        </div>
+
+    </div>
+
+</body>
+</html>

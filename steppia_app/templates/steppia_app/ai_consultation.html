@@ -1,0 +1,195 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI相談室 - ステッピア</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #DCECCF;
+            --bubble-ai: #F9F4E8;
+            --bubble-user: #FFFFFF;
+            --text-brown: #5D4037;
+            --star-yellow: #FFF2AF;
+            --heart-pink: #FFC1CC;
+        }
+        body {
+            background-color: var(--bg);
+            font-family: 'Zen Maru Gothic', sans-serif;
+            margin: 0; min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-brown); overflow-x: hidden;
+            padding: 20px 0 150px; /* 下部ナビがあるため余白をしっかり確保 */
+        }
+
+        /* --- ヘッダー --- */
+        .header-area { margin-bottom: 20px; text-align: center; }
+        .header-logo { width: 80px; height: auto; margin-bottom: 10px; }
+        h1 { font-size: 20px; font-weight: 900; margin: 0; letter-spacing: 0.1em; }
+
+        /* --- チャットエリア --- */
+        .chat-container {
+            width: 90%; max-width: 500px;
+            display: flex; flex-direction: column; gap: 15px;
+            margin-bottom: 30px;
+        }
+        .ai-row { display: flex; align-items: flex-start; gap: 10px; width: 100%; }
+        .avatar { 
+            width: 60px; height: 60px; object-fit: contain; flex-shrink: 0; 
+            border-radius: 50%; background: white; padding: 2px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+        }
+        .ai-bubble {
+            max-width: 75%; background: var(--bubble-ai); padding: 12px 18px;
+            border-radius: 20px; border-top-left-radius: 2px;
+            box-shadow: 0 3px 0 #E0DBC5; line-height: 1.6; font-weight: 700;
+            font-size: 15px;
+        }
+        .user-row { display: flex; justify-content: flex-end; width: 100%; }
+        .user-bubble {
+            max-width: 75%; background: var(--bubble-user); padding: 12px 18px;
+            border-radius: 20px; border-top-right-radius: 2px;
+            box-shadow: 0 3px 0 #D0D0D0; line-height: 1.6; font-weight: 700;
+            font-size: 15px;
+        }
+
+        /* --- 入力エリア --- */
+        .input-section { 
+            position: relative; 
+            width: 90%; 
+            max-width: 500px;
+            margin-top: 20px;
+        }
+        .input-card {
+            background: var(--bubble-ai); 
+            border-radius: 35px; 
+            padding: 12px 15px;
+            box-shadow: 0 6px 0 #E0DBC5; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+            position: relative;
+            z-index: 5; /* イラストより背面 */
+        }
+        textarea {
+            flex: 1; border: none; outline: none; background: white;
+            border-radius: 18px; padding: 12px; font-family: inherit;
+            font-size: 15px; font-weight: 700; resize: none; height: 50px; color: var(--text-brown);
+        }
+
+        /* 相談ボタン */
+        .heart-btn {
+            background: var(--heart-pink); width: 70px; height: 70px;
+            display: flex; align-items: center; justify-content: center;
+            border: none; cursor: pointer; flex-shrink: 0;
+            font-weight: 900; color: var(--text-brown); font-size: 14px;
+            clip-path: path('M35 62C-5 27-5 10 14.5 3.5 25.5 0 35 10 35 10s9.5-10 20.5-6.5C75 10 75 27 35 62Z');
+            transition: 0.2s; padding-bottom: 8px;
+            z-index: 6; /* カードより前面 */
+        }
+        .heart-btn:active { transform: scale(0.9); }
+
+        /* 女性イラスト：最前面に出して隠れないようにし、かつボタンの邪魔をしない */
+        .onna-illust {
+            position: absolute; 
+            right: -10px; /* 右側にひょっこり出す */
+            bottom: -20px; 
+            width: 100px; 
+            height: auto; 
+            z-index: 10; /* ボタン(z-index: 6)より大きくして、隠れるのを防ぐ */
+            pointer-events: none; /* これで重なっても下のボタンが押せる */
+        }
+
+        /* --- 下部ナビゲーション（星ボタン） --- */
+        .bottom-nav {
+            position: fixed; 
+            bottom: 30px; 
+            width: 100%; 
+            max-width: 500px;
+            display: flex; 
+            justify-content: center; /* 中央寄せに変更 */
+            gap: 60px; /* 星同士のちょうど良い間隔 */
+            padding: 0 20px; 
+            box-sizing: border-box; 
+            z-index: 100;
+        }
+        .star-nav-btn {
+            text-decoration: none; 
+            position: relative; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center;
+            width: 80px; height: 80px;
+            transition: transform 0.2s;
+        }
+        .star-nav-btn:hover { transform: scale(1.1); }
+
+        .star-icon { 
+            font-size: 80px; 
+            color: var(--star-yellow); 
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            line-height: 1;
+        }
+        .star-label { 
+            position: absolute; 
+            font-size: 13px; 
+            font-weight: 900; 
+            color: #000; /* 文字をはっきりさせるため黒系に */
+            top: 55%; 
+            left: 50%; 
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-area">
+        <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" class="header-logo">
+        <h1>AI相談室</h1>
+    </div>
+
+    <div class="chat-container">
+        <div class="ai-row">
+            <img src="{% static 'images/otoko.png' %}" class="avatar">
+            <div class="ai-bubble">
+                {% if ai_answer %}
+                    {{ ai_answer|linebreaksbr }}
+                {% else %}
+                    こんにちは！何かお悩みはありますか？<br>私に何でも話してくださいね。
+                {% endif %}
+            </div>
+        </div>
+
+        {% if ai_answer and user_q %}
+            <div class="user-row">
+                <div class="user-bubble">{{ user_q }}</div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="input-section">
+        <div class="input-card">
+            <form method="post" style="display: contents;">
+                {% csrf_token %}
+                <textarea name="user_input" placeholder="お悩みを入力してね..." required></textarea>
+                <button type="submit" class="heart-btn">相談</button>
+            </form>
+        </div>
+        <img src="{% static 'images/onna.png' %}" class="onna-illust">
+    </div>
+
+    <div class="bottom-nav">
+        <a href="{% url 'menu' %}" class="star-nav-btn">
+            <span class="star-icon">★</span>
+            <span class="star-label">ホーム</span>
+        </a>
+        <a href="{% url 'mypage' %}" class="star-nav-btn">
+            <span class="star-icon">★</span>
+            <span class="star-label">履歴</span>
+        </a>
+    </div>
+</body>
+</html>

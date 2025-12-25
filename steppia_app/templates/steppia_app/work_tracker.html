@@ -1,0 +1,186 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お仕事ログ - ステッピア</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bg: #DCECCF; 
+            --white: #FFFFFF;
+            --brown: #5D4037;
+            --beige: #FDF9F1;
+            --star-yellow: #FFF2AF; 
+            --text-black: #000000;
+            --ok-green: #4CAF50;
+            --ng-red: #F44336;
+        }
+        
+        body { 
+            background-color: var(--bg); 
+            margin: 0; 
+            font-family: 'Zen Maru Gothic', sans-serif; 
+            color: var(--brown); 
+        }
+
+        /* メインコンテンツの幅を制限 */
+        .container { 
+            max-width: 500px; 
+            margin: 0 auto; 
+            padding: 40px 20px 180px; /* 下部にボタンと重ならないための余白 */
+            box-sizing: border-box; 
+        }
+
+        .log-card {
+            background: var(--white); border-radius: 40px; padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; margin-bottom: 30px;
+        }
+
+        .title-area h2 { font-size: 24px; font-weight: 900; margin: 0 0 20px 0; }
+
+        .limit-box {
+            background: var(--beige); border: 2px dashed #FFA726; border-radius: 25px;
+            padding: 15px; margin-bottom: 25px;
+        }
+        .limit-label { font-size: 14px; font-weight: 900; color: #E65100; margin-bottom: 5px; }
+        .limit-value { font-size: 32px; font-weight: 900; color: #E65100; }
+
+        .form-group { text-align: left; margin-bottom: 15px; }
+        .form-label { font-size: 14px; font-weight: 900; margin-bottom: 6px; display: block; }
+        .input-box {
+            width: 100%; height: 50px; border-radius: 15px; border: 2px solid #eee;
+            padding: 0 15px; font-size: 16px; font-weight: 900; box-sizing: border-box; outline: none;
+        }
+
+        .save-btn {
+            width: 100%; height: 60px; background: var(--brown); color: var(--white);
+            border: none; border-radius: 20px; font-size: 18px; font-weight: 900;
+            cursor: pointer; margin-top: 10px; transition: transform 0.1s;
+        }
+        .save-btn:active { transform: scale(0.95); }
+
+        .logs-list { width: 100%; display: flex; flex-direction: column; gap: 15px; }
+        .log-item {
+            background: var(--white); border-radius: 25px; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .log-info { text-align: left; }
+        .log-date { font-size: 12px; color: #888; font-weight: 900; }
+        .log-company { font-size: 16px; font-weight: 900; margin: 2px 0; }
+        .log-details { font-size: 14px; color: var(--brown); font-weight: 700; }
+        .warning-text {
+            background: #FFEBEE; color: var(--ng-red); font-size: 11px; font-weight: 900;
+            padding: 5px 10px; border-radius: 10px; margin-top: 5px; display: inline-block;
+        }
+        .log-status { font-weight: 900; font-size: 14px; }
+        .status-ok { color: var(--ok-green); }
+        .status-ng { color: var(--ng-red); }
+
+        /* --- 【最重要】戻るボタンを画面に完全固定する設定 --- */
+        .bottom-nav { 
+            position: fixed !important; /* 他の設定を上書きして強制的に固定 */
+            bottom: 20px; 
+            left: 20px; 
+            z-index: 9999; /* 他のカードより必ず手前に表示 */
+            width: 130px; 
+            height: 130px;
+        }
+        
+        .star-link-btn {
+            position: relative; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            width: 100%; 
+            height: 100%; 
+            text-decoration: none; 
+            cursor: pointer;
+            transition: transform 0.2s ease-out;
+        }
+
+        /* クリック時にボタン全体を縮小 */
+        .star-link-btn:active { 
+            transform: scale(0.9); 
+        }
+
+        .star-icon { 
+            font-size: 130px; 
+            color: var(--star-yellow); 
+            filter: drop-shadow(0 6px 15px rgba(0,0,0,0.15)); 
+            line-height: 1;
+        }
+
+        .star-text {
+            position: absolute; 
+            font-size: 24px; 
+            font-weight: 900; 
+            color: var(--text-black);
+            top: 50%; 
+            left: 50%; 
+            /* 初期位置：真ん中 */
+            transform: translate(-50%, -45%) rotate(0deg);
+            white-space: nowrap;
+            transition: transform 0.1s ease-out;
+        }
+
+        /* クリックした瞬間に文字を右肩上がりにクイッと上げる（他ページと同じ動き） */
+        .star-link-btn:active .star-text { 
+            transform: translate(-40%, -65%) rotate(15deg); 
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="log-card">
+            <div class="title-area"><h2>💼 お仕事ログ</h2></div>
+            <div class="limit-box">
+                <div class="limit-label">那奈さんの80%ライン</div>
+                <div class="limit-value">¥{{ limit_80|default:"4,000" }}</div>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group"><label class="form-label">🏢 会社名</label><input type="text" name="company" class="input-box"></div>
+                <div class="form-group"><label class="form-label">📅 就労日</label><input type="date" name="date" class="input-box" required></div>
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex: 1;"><label class="form-label">⏱️ 時間</label><input type="number" step="0.1" name="hours" class="input-box"></div>
+                    <div class="form-group" style="flex: 2;"><label class="form-label">💰 報酬(円)</label><input type="number" name="amount" class="input-box" required></div>
+                </div>
+                <button type="submit" class="save-btn">記録を保存する</button>
+            </form>
+        </div>
+
+        <div class="logs-list">
+            {% for log in logs %}
+            <div class="log-item">
+                <div class="log-info">
+                    <div class="log-date">{{ log.date|date:"m/d" }}</div>
+                    <div class="log-company">{{ log.company_name }}</div>
+                    <div class="log-details">¥{{ log.earnings }} ({{ log.hours }}h)</div>
+                    {% if log.is_over_limit %}<div class="warning-text">⚠️ ハローワークに申告してください</div>{% endif %}
+                </div>
+                <div class="log-status">
+                    {% if log.is_over_limit %}
+                        <span class="status-ng">❌NG</span>
+                    {% else %}
+                        <span class="status-ok">✅OK</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+                <p style="text-align: center; opacity: 0.5;">まだ記録がありません 🐑</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="{% url 'menu' %}" class="star-link-btn">
+            <span class="star-icon">★</span>
+            <span class="star-text">戻る</span>
+        </a>
+    </div>
+</body>
+</html>

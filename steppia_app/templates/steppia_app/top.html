@@ -1,0 +1,189 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ステッピア - TOP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-green: #DCECCF;
+            --card-beige: #F2EFE5;
+            --text-brown: #5D4037;
+            --btn-white: rgba(255, 255, 255, 0.8);
+        }
+
+        body {
+            background-color: var(--bg-green);
+            font-family: 'Zen Maru Gothic', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-brown);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* --- アイコンのサイズを大きく調整しました --- */
+        .top-logo {
+            width: 180px; /* 120pxから180pxへ拡大 */
+            height: auto;
+            margin-bottom: 5px; /* タイトルとの距離を少し詰めました */
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12)); /* 大きさに合わせて影も少し強調 */
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 900;
+            margin: 0 0 30px 0;
+            letter-spacing: 0.1em;
+        }
+
+        /* --- 今日の一言カード --- */
+        .daily-card {
+            background-color: var(--card-beige);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 40px;
+            text-align: left;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 900;
+            margin: 0 0 15px 0;
+        }
+
+        .card-message {
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 1.6;
+            margin: 0;
+            min-height: 3em;
+        }
+
+        /* --- メニューリスト --- */
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .menu-link {
+            display: block;
+            background-color: var(--btn-white);
+            padding: 20px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: var(--text-brown);
+            font-size: 18px;
+            font-weight: 900;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .menu-link:active {
+            transform: scale(0.98);
+            background-color: #fff;
+        }
+
+        /* ログアウト等 */
+        .footer-links {
+            margin-top: 40px;
+            font-size: 12px;
+        }
+        .footer-links form { display: inline; }
+        .footer-links button, .footer-links a {
+            color: #888;
+            background: none;
+            border: none;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" alt="ステッピア ロゴ" class="top-logo">
+        
+        <h1>ステッピア</h1>
+
+        <div class="daily-card">
+            <p class="card-title">今日の一言カード</p>
+            <p class="card-message" id="daily-quote">
+                読み込み中...
+            </p>
+        </div>
+
+        <div class="menu-list">
+            <a href="{% url 'ai_consult' %}" class="menu-link">AI相談室</a>
+            <a href="{% url 'consult_top' %}" class="menu-link">コンサル相談室</a>
+            <a href="{% url 'work_tracker' %}" class="menu-link">お仕事ログ（給付管理）</a>
+            <a href="{% url 'roulette' %}" class="menu-link">🎁 運試しルーレット</a>
+            <a href="{% url 'job_list' %}" class="menu-link">お試しインターン</a>
+            <a href="{% url 'progress' %}" class="menu-link">冒険マップ（進捗管理）</a>
+            <a href="{% url 'schedule' %}" class="menu-link">スケジュール</a>
+            <a href="{% url 'mypage' %}" class="menu-link">マイページ</a>
+        </div>
+
+        <div class="footer-links">
+            {% if user.is_authenticated %}
+                <p>ログイン中: {{ user.username }}</p>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">ログアウト</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">管理者ログイン</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        const quotes = [
+            "迷っても大丈夫。あなたは今日も前に進んでいます。",
+            "あなたのペースで大丈夫。一歩ずつ歩んでいきましょう。",
+            "失敗は成長の種。今日の経験が未来の力になります。",
+            "自分を信じて。あなたは素晴らしい可能性を持っています。",
+            "休息も大切な準備。今日は心と体をゆっくり休めましょう。",
+            "小さな成功を積み重ねて。それが大きな成果に繋がります。",
+            "周りと比べなくていい。昨日の自分を一歩超えていこう。",
+            "あなたの努力を, 誰かが必ず見ています。",
+            "新しい道は、一歩踏み出す勇気から始まります。",
+            "笑顔は最高のエネルギー。今日も一日を大切に。",
+            "焦らず、まずは深呼吸。答えはきっと見つかります。",
+            "完璧じゃなくていい。今できる最善を尽くすことが大切です。",
+            "あなたの「好き」を大切に。それが一番の強みになります。",
+            "支え合える仲間がいます。一人で抱え込まないで。",
+            "輝く未来は、今のあなたの手の中にあります。"
+        ];
+
+        function setDailyQuote() {
+            const now = new Date();
+            const dateNumber = now.getFullYear() + now.getMonth() + now.getDate();
+            const index = dateNumber % quotes.length;
+            const quoteElement = document.getElementById('daily-quote');
+            quoteElement.innerText = quotes[index];
+        }
+
+        window.onload = setDailyQuote;
+    </script>
+
+</body>
+</html>

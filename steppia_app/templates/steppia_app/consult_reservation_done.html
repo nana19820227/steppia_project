@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>予約完了 - ステッピア</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #DCECCF; --white: #FFFFFF; --brown: #5D4037; --star-yellow: #FFF2AF; }
+        body { background-color: var(--bg); margin: 0; font-family: 'Zen Maru Gothic', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; }
+        .done-card { background: var(--white); border-radius: 45px; padding: 50px 30px; width: 90%; max-width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; }
+        
+        /* 🆕 修正：絵文字用のスタイルを削除し、画像用のスタイルを追加 */
+        .done-icon-img {
+            width: 180px; /* ロゴのサイズを調整 */
+            height: auto;
+            margin-bottom: 30px;
+        }
+        
+        h1 { color: var(--brown); font-size: 24px; margin-bottom: 30px; line-height: 1.4; }
+        .home-btn { 
+            display: inline-block; background: var(--star-yellow); color: var(--brown); 
+            text-decoration: none; padding: 18px 40px; border-radius: 30px; 
+            font-weight: 900; font-size: 18px; box-shadow: 0 5px 0 #E6D58E; transition: 0.1s; 
+        }
+        .home-btn:active { transform: translateY(4px); box-shadow: none; }
+    </style>
+</head>
+<body>
+    <div class="done-card">
+        <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" class="done-icon-img" alt="予約完了">
+        
+        <h1>コンサル予約が<br>完了しました！</h1>
+        <p style="margin-bottom: 40px; opacity: 0.7; font-weight: 900;">
+            当日、お会いできるのを<br>楽しみにしています。
+        </p>
+        <a href="{% url 'menu' %}" class="home-btn">TOPメニューに戻る</a>
+    </div>
+</body>
+</html>

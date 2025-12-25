@@ -1,0 +1,84 @@
+{% load static %} <!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>設定完了 - ステッピア</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        :root {  --grass: #DCECCF; --wood: #6D4C41; --beige: #F9F5EB; }
+        
+        body { 
+            background-color: var(--grass); 
+            font-family: 'Zen Maru Gothic', sans-serif; 
+            margin: 0; padding: 40px 20px; 
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; 
+        }
+        
+        .container { 
+            width: 100%; max-width: 600px; text-align: center; 
+            background: rgba(255, 255, 255, 0.7); 
+            padding: 60px 40px; border-radius: 40px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
+        }
+
+        /* ロゴ：主役級のサイズ感 */
+        .top-logo { 
+            width: 220px; height: auto; margin-bottom: 10px; 
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.1)); 
+        }
+        .logo-text { font-size: 18px; font-weight: 900; color: var(--wood); margin: 0; }
+
+        .message-box { margin: 40px 0; }
+        h2 { font-size: 36px; font-weight: 900; color: #333; margin-bottom: 20px; }
+        p { font-size: 20px; font-weight: 700; color: #555; line-height: 1.6; }
+
+        /* ボタンエリア */
+        .btn-area { display: flex; flex-direction: column; gap: 25px; align-items: center; margin-top: 50px; }
+
+        /* メインアクション：アポ予約へ進む */
+        .main-action-btn {
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; max-width: 400px; height: 90px;
+            background-color: #F8E796; color: #333;
+            text-decoration: none; border-radius: 45px; 
+            font-weight: 900; font-size: 22px;
+            box-shadow: 0 8px 0 #D4C375; transition: 0.2s;
+        }
+        .main-action-btn:hover { transform: translateY(4px); box-shadow: 0 4px 0 #D4C375; background-color: #FFE066; }
+
+        /* 🆕 TOPへ戻る：'top' を 'menu' に修正済み */
+        .back-link { 
+            font-weight: 900; color: var(--wood); 
+            text-decoration: none; border-bottom: 3px solid var(--wood); 
+            padding-bottom: 5px; font-size: 18px; transition: 0.2s; 
+        }
+        .back-link:hover { color: #333; border-color: #333; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" alt="ロゴ" class="top-logo">
+        <p class="logo-text">ステッピア</p>
+
+        <div class="message-box">
+            <h2>設定完了！</h2>
+            <p>担当コンサルタントを登録しました。<br>
+               当日の面談を楽しみにしていてくださいね！</p>
+        </div>
+
+        <div class="btn-area">
+            <a href="{% url 'consult_reservation' %}" class="main-action-btn">
+                📅 アポ予約へ進む
+            </a>
+
+            <a href="{% url 'menu' %}" class="back-link">
+                TOPメニューへ戻る
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>冒険マップ制覇！ - ステッピア</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-image: url("{% static 'images/sakura_bg.png' %}"); /* */
+            background-size: cover; background-position: center;
+            margin: 0; overflow: hidden; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Zen Maru Gothic', sans-serif;
+        }
+        .celebration-card {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 50px 70px; border-radius: 50px; text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 4px solid #F8BBD0;
+            z-index: 10; position: relative;
+        }
+        h1 { font-size: 34px; color: #5D4037; margin-bottom: 20px; }
+        p { font-size: 22px; color: #5D4037; font-weight: 700; line-height: 1.8; }
+        
+        /* 🌸 花びらアニメーション */
+        .petal {
+            position: absolute; background-color: #FFC0CB; border-radius: 150% 0 150% 0;
+            opacity: 0.8; pointer-events: none; z-index: 20; top: -10vh;
+        }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg) translateX(20px); opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <div id="petals-container"></div>
+    <div class="celebration-card">
+        <h1>✨ 冒険マップ制覇！ ✨</h1>
+        <p>{{ request.user.last_name|default:request.user.username }}さん、<br>30歩すべて完走です！<br>
+        この満開の桜のように、<br>あなたの新しい一歩を応援しています🌸</p>
+    </div>
+    <script>
+        function createPetal() {
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            const size = Math.random() * 12 + 10;
+            petal.style.width = `${size}px`; petal.style.height = `${size}px`;
+            petal.style.left = `${Math.random() * 100}vw`;
+            const duration = Math.random() * 5 + 3;
+            const delay = Math.random() * 2;
+            petal.style.animation = `fall ${duration}s linear ${delay}s infinite`;
+            document.getElementById('petals-container').appendChild(petal);
+            setTimeout(() => { petal.remove(); }, (duration + delay + 1) * 1000);
+        }
+        setInterval(createPetal, 150);
+        for(let i=0; i<20; i++) createPetal();
+    </script>
+</body>
+</html>

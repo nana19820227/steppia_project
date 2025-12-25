@@ -1,0 +1,28 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登録完了 - ステッピア</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <div class="container">
+        <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" alt="ロゴ" class="main-image">
+        
+        <p class="page-title">ステッピア</p>
+        
+        <h2>登録が完了しました！</h2>
+        <p class="sub-title">これからよろしくお願いいたします。</p>
+
+        <div class="button-container">
+            <a href="{% url 'top' %}" class="btn-beige">トップへ戻る</a>
+        </div>
+
+    </div>
+
+</body>
+</html>

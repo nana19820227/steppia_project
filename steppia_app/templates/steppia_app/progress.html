@@ -1,0 +1,280 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BEING 冒険マップ - ステッピア</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        /* --- アニメーション --- */
+        @keyframes splash-anim {
+            0% { transform: translate(-50%, 0) scale(0.5); opacity: 0.8; }
+            50% { transform: translate(-50%, -40px) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -80px) scale(0.3); opacity: 0; }
+        }
+        @keyframes swim-no-flip { 
+            0% { transform: translateX(0); } 
+            50% { transform: translateX(60px); } 
+            100% { transform: translateX(0); } 
+        }
+
+        :root { 
+            --wood: #6D4C41; --grass: #DCECCF; --sky: #DCECCF; 
+            --star-yellow: #FFF2AF; --completed: #FFE082; --text-black: #000000;
+        }
+
+        body { 
+            background: var(--sky); margin: 0; padding: 0; 
+            font-family: 'Zen Maru Gothic', sans-serif; 
+            min-height: 100vh; width: 100%;
+            display: flex; justify-content: center; align-items: flex-start;
+            overflow: auto; 
+        }
+
+        .dollhouse-frame { 
+            position: relative; 
+            min-width: 1300px; 
+            min-height: 1250px; 
+            background: var(--grass); 
+            border: 15px solid var(--wood); 
+            box-sizing: border-box; 
+            margin: auto;
+            z-index: 1; 
+        }
+
+        /* --- 固定UI --- */
+        .header-panel { 
+            position: fixed; top: 10px; left: 50%; transform: translateX(-50%); 
+            width: 90%; max-width: 500px; 
+            background: rgba(255, 255, 255, 0.98); border: 4px solid var(--wood); 
+            border-radius: 20px; padding: 10px; z-index: 3000; 
+            display: flex; flex-direction: column; align-items: center; gap: 5px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+        }
+
+        /* 企業管理パネル（アコーディオン対応） */
+        .selection-sidebar {
+            position: fixed; top: 110px; right: 60px;
+            width: 200px;
+            background: rgba(255, 255, 255, 0.96); border: 3px solid var(--wood);
+            border-radius: 15px; z-index: 2500; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-header {
+            padding: 10px; background: var(--wood); color: white;
+            text-align: center; font-size: 13px; font-weight: 900;
+            cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;
+            user-select: none;
+        }
+
+        .sidebar-header::after {
+            content: '▲'; font-size: 10px; transition: transform 0.3s;
+        }
+
+        .sidebar-collapsed {
+            width: 150px;
+        }
+        .sidebar-collapsed .sidebar-header::after {
+            transform: rotate(180deg);
+        }
+
+        .sidebar-content {
+            max-height: 500px; padding: 10px; overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.2s;
+            opacity: 1;
+        }
+
+        .sidebar-collapsed .sidebar-content {
+            max-height: 0; padding: 0 10px; opacity: 0; pointer-events: none;
+        }
+
+        .bottom-nav { 
+            position: fixed !important; bottom: 25px; left: 25px; z-index: 4000; 
+        }
+
+        /* --- マップ要素 --- */
+        .step-tile { 
+            position: absolute; width: 160px; height: 85px; background: #FFFFFF; 
+            border: 3px solid var(--wood); border-radius: 20px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            z-index: 50; box-shadow: 0 7px 0 rgba(0,0,0,0.08); padding: 0 8px; 
+        }
+        .step-tile.completed { background: var(--completed); border-color: #FFA000; }
+        .player-pawn { position: absolute; width: 85px; z-index: 200; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; }
+
+        /* --- デコレーション・イラスト --- */
+        .deco-item { position: absolute; pointer-events: none; z-index: 10; }
+        
+        .magic-pond { 
+            /* 🆕 池のサイズを一回り半小さく調整 */
+            top: 980px; left: 100px; 
+            width: 175px; height: 105px; 
+            z-index: 150;
+            background: #81D4FA; border: 5px solid #FFF; border-radius: 50% 40% 60% 30%; 
+            overflow: hidden; box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+        }
+        
+        .funsui-area { top: 980px; left: 1050px; width: 140px; z-index: 150; }
+        .tree-deco { top: 60px; left: 40px; width: 100px; z-index: 150; }
+        .buranko-deco { top: 120px; left: 1080px; width: 130px; z-index: 150; }
+        .tobibako-deco { top: 980px; left: 580px; width: 120px; z-index: 150; }
+
+        .splash { 
+            position: absolute; background: #E1F5FE; width: 8px; height: 8px; border-radius: 50%; 
+            z-index: 160; box-shadow: 0 0 6px #B3E5FC; 
+        }
+
+        .star-link-btn { position: relative; display: flex; align-items: center; justify-content: center; width: 110px; height: 110px; text-decoration: none; cursor: pointer; }
+        .star-icon { font-size: 110px; color: var(--star-yellow); filter: drop-shadow(0 6px 15px rgba(0,0,0,0.15)); }
+        .star-text { position: absolute; font-size: 22px; font-weight: 900; color: var(--text-black); top: 50%; left: 50%; transform: translate(-50%, -45%); transition: 0.15s; }
+        .star-link-btn:active .star-text { transform: translate(-40%, -65%) rotate(15deg); }
+
+        @media (max-width: 768px) {
+            .header-panel { width: 85%; top: 5px; }
+            .selection-sidebar { width: 130px; top: 120px; right: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dollhouse-frame">
+        <svg id="path-svg" style="position:absolute; width:100%; height:100%; pointer-events:none; z-index:10;"><path id="path-line" fill="none" stroke="rgba(109, 76, 65, 0.15)" stroke-width="7" stroke-dasharray="12,12" /></svg>
+
+        <div class="header-panel">
+            <h2 style="font-size: 14px;">BEINGを叶える冒険航路</h2>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span id="current-company-display" style="font-size:11px; font-weight:900;">(未選択)</span>
+                <input type="number" id="warp-val" value="1" min="1" max="30" style="width:40px; border-radius:8px; border:2px solid var(--wood); text-align:center;">
+                <button onclick="warp()" style="background:#F48FB1; color:white; border:none; padding:5px 12px; border-radius:12px; font-weight:900; cursor:pointer; font-size:11px; box-shadow: 0 3px 0 #C2185B;">移動</button>
+            </div>
+        </div>
+
+        <div class="selection-sidebar" id="sidebar">
+            <div class="sidebar-header" onclick="toggleSidebar()">
+                🏢 企業管理
+            </div>
+            <div class="sidebar-content" id="sidebar-content">
+                <div id="company-list"></div>
+                <button onclick="addCompany()" style="width:100%; padding:8px; background:#81C784; color:white; border:none; border-radius:10px; font-weight:900; font-size:11px; margin-top:10px; cursor:pointer; box-shadow: 0 3px 0 #689F38;">+ 追加</button>
+            </div>
+        </div>
+
+        <div class="deco-item magic-pond">
+            <img src="{% static 'images/fish.png' %}" style="position:absolute; top:35%; width:40px; animation: swim-no-flip 8s linear infinite;">
+        </div>
+        
+        <div class="deco-item funsui-area">
+            <img src="{% static 'images/funsui.png' %}" class="funsui-img" style="width:100%; display:block;">
+            <div id="splash-container" style="position:absolute; top:15px; left:50%; transform:translateX(-50%); width:80%; height:30px;"></div>
+        </div>
+
+        <img src="{% static 'images/midorinoki.png' %}" class="deco-item tree-deco">
+        <img src="{% static 'images/buranko.png' %}" class="deco-item buranko-deco">
+        <img src="{% static 'images/tobibako.png' %}" class="deco-item tobibako-deco">
+        
+        <img src="{% static 'images/onna.png' %}" class="player-pawn" id="pawn" style="display:none;">
+        <div id="grid-root"></div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="{% url 'menu' %}" class="star-link-btn">
+            <span class="star-icon">★</span>
+            <span class="star-text">戻る</span>
+        </a>
+    </div>
+
+    <script>
+        let companies = JSON.parse(localStorage.getItem('steppia_companies')) || {};
+        let currentCompanyId = localStorage.getItem('steppia_current_id') || '';
+
+        const missionNames = ["経験・スキルの棚卸し", "コンサル面談①：診断", "価値観の言語化(AI)", "強み・武器の明確化", "転職軸とBEING確定", "業界・職種の市場調査", "ターゲット企業選定", "職務経歴書ドラフト作成", "コンサル面談②：書類添削", "志望動機・PRの最適化", "応募チャネル選定・登録", "応募計画の策定", "エントリー開始！", "カジュアル面談の実践", "コンサル面談③：振り返り", "書類選考の改善(AI)", "適性検査・SPI対策", "面接回答案の作成(AI)", "コンサル面談④：模擬面接", "1次面接挑戦(現場)", "面接FBの整理と改善", "🌟お試しインターン挑戦", "コンサル面談⑤：最終対策", "2次面接挑戦(管理職)", "企業研究の更なる深掘り", "逆質問・プレゼン準備", "最終面接挑戦(経営層)", "コンサル面談⑥：条件相談", "条件通知書確認・意思決定", "🎉新たなキャリアの始動！"];
+        let nodePoints = [];
+
+        function renderMap() {
+            const root = document.getElementById('grid-root'); root.innerHTML = ''; nodePoints = [];
+            const startX = 120; const startY = 240;
+            const gapX = 190; const gapY = 140;
+
+            for (let i = 1; i <= 30; i++) {
+                const row = Math.floor((i - 1) / 6); const col = (i - 1) % 6; const isRev = row % 2 !== 0;
+                const x = isRev ? (5 - col) * gapX + startX : col * gapX + startX; 
+                const y = row * gapY + startY;
+                const tile = document.createElement('div'); tile.className = 'step-tile'; 
+                tile.style.left = x + 'px'; tile.style.top = y + 'px';
+                tile.innerHTML = `<div style="font-size:9px; opacity:0.6; font-weight:900;">STEP ${i}</div><div style="width:100%; text-align:center; font-weight:900; font-size:11px; color:var(--wood);">${missionNames[i-1]}</div>`;
+                root.appendChild(tile); nodePoints.push({x: x + 80, y: y + 42.5});
+            }
+            drawPath(); updateView();
+        }
+
+        function updateView() {
+            const pawn = document.getElementById('pawn');
+            const listKeys = Object.keys(companies);
+            if (listKeys.length === 0) {
+                currentCompanyId = ''; document.getElementById('current-company-display').innerText = '(未選択)';
+                if(pawn) pawn.style.display = 'none';
+            } else {
+                if (!currentCompanyId || !companies[currentCompanyId]) currentCompanyId = listKeys[0];
+                const step = companies[currentCompanyId].step;
+                document.getElementById('current-company-display').innerText = companies[currentCompanyId].name;
+                document.getElementById('warp-val').value = step;
+                const p = nodePoints[step - 1];
+                if(pawn && p) {
+                    pawn.style.display = 'block';
+                    pawn.style.left = (p.x - 42) + 'px'; pawn.style.top = (p.y - 105) + 'px';
+                }
+                document.querySelectorAll('.step-tile').forEach((t, idx) => { t.classList.toggle('completed', idx < step); });
+                if (step === 30) { setTimeout(() => { window.location.href = "{% url 'congrats_map' %}"; }, 1300); }
+            }
+            renderCompanyList();
+            localStorage.setItem('steppia_companies', JSON.stringify(companies));
+            localStorage.setItem('steppia_current_id', currentCompanyId);
+        }
+
+        function renderCompanyList() {
+            const list = document.getElementById('company-list'); list.innerHTML = '';
+            for (const id in companies) {
+                const item = document.createElement('div'); 
+                item.style.padding = '8px'; item.style.marginBottom = '8px'; 
+                item.style.background = (id === currentCompanyId ? 'var(--completed)' : 'white');
+                item.style.border = '2px solid var(--wood)'; item.style.borderRadius = '12px'; 
+                item.style.cursor = 'pointer'; item.style.display = 'flex'; 
+                item.style.justifyContent = 'space-between'; item.style.alignItems = 'center';
+                item.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
+                item.onclick = () => { currentCompanyId = id; updateView(); };
+
+                item.innerHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px;">
+                        <span style="font-size: 11px; font-weight: 900;">${companies[id].name}</span>
+                        <span style="font-size: 9px; font-weight: 700; opacity: 0.6;">STEP ${companies[id].step}</span>
+                    </div>
+                    <span onclick="event.stopPropagation(); deleteCompany('${id}')" style="opacity: 0.3; font-size: 14px;">🗑️</span>
+                `;
+                list.appendChild(item);
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('sidebar-collapsed');
+        }
+
+        function addCompany() { const name = prompt("企業名を入力してください"); if (name) { const id = 'c' + Date.now(); companies[id] = { name: name, step: 1 }; currentCompanyId = id; updateView(); } }
+        function deleteCompany(id) { if (confirm(`削除しますか？`)) { delete companies[id]; if (currentCompanyId === id) currentCompanyId = ''; updateView(); } }
+        function warp() { if(!currentCompanyId) return; const v = parseInt(document.getElementById('warp-val').value); companies[currentCompanyId].step = v; updateView(); }
+        function drawPath() { const line = document.getElementById('path-line'); let d = `M ${nodePoints[0].x} ${nodePoints[0].y}`; for (let i = 1; i < nodePoints.length; i++) { d += ` L ${nodePoints[i].x} ${nodePoints[i].y}`; } line.setAttribute('d', d); }
+        function createSplash() {
+            const container = document.getElementById('splash-container'); if(!container) return;
+            const splash = document.createElement('div'); splash.className = 'splash';
+            splash.style.left = `${50 + (Math.random() * 20 - 10)}%`; 
+            const duration = Math.random() * 0.8 + 0.6; 
+            splash.style.animation = `splash-anim ${duration}s ease-out forwards`;
+            container.appendChild(splash); setTimeout(() => splash.remove(), duration * 1000);
+        }
+
+        window.onload = () => { renderMap(); setInterval(createSplash, 350); };
+    </script>
+</body>
+</html>

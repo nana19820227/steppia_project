@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>コンサル予約 - ステッピア</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ステッピア共通のデザイン定義 */
+        :root {
+            --bg: #DCECCF; /* 背景の癒やしグリーン */
+            --white: #FFFFFF;
+            --text-brown: #5D4037; /* 優しい茶色の文字 */
+            --btn-green: #81C784; /* 予約ボタンの緑 */
+            --btn-green-shadow: #66BB6A;
+        }
+        body {
+            background-color: var(--bg);
+            font-family: 'Zen Maru Gothic', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-brown);
+        }
+
+        /* メインの白いカード */
+        .reservation-card {
+            background: var(--white);
+            width: 90%;
+            max-width: 400px;
+            padding: 40px 30px;
+            border-radius: 40px; /* 丸い角 */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); /* 優しい影 */
+            text-align: center;
+        }
+
+        /* ロゴ画像 */
+        .app-logo { width: 180px; margin-bottom: 20px; }
+
+        h2 { font-size: 24px; font-weight: 900; margin-bottom: 30px; }
+
+        /* 入力エリアのスタイル */
+        .form-group { margin-bottom: 25px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 10px; font-weight: 900; font-size: 16px; }
+        
+        /* 日付・時間入力欄を可愛く */
+        input[type="date"], input[type="time"] {
+            width: 100%; padding: 15px;
+            border-radius: 20px; border: 2px solid #eee;
+            background: #F9F9F9; font-family: inherit; font-size: 16px; font-weight: 700;
+            box-sizing: border-box; outline: none; transition: 0.3s; appearance: none; color: var(--text-brown);
+        }
+        input:focus { border-color: var(--btn-green); background: var(--white); }
+
+        /* 予約ボタン（マイページの緑ボタンと統一） */
+        .submit-btn {
+            width: 100%; padding: 18px; margin-top: 10px;
+            border: none; border-radius: 25px;
+            background: var(--btn-green); color: white;
+            font-size: 20px; font-weight: 900; cursor: pointer;
+            box-shadow: 0 5px 0 var(--btn-green-shadow); transition: 0.1s;
+        }
+        .submit-btn:active { transform: translateY(4px); box-shadow: none; }
+    </style>
+</head>
+<body>
+    <div class="reservation-card">
+        <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" class="app-logo" alt="Steppia">
+        <h2>コンサル予約</h2>
+
+        <form method="post" action="{% url 'consult_reservation_done' %}">
+            {% csrf_token %}
+            <input type="hidden" name="coupon_id" value="{{ request.GET.coupon_id }}">
+            <input type="hidden" name="consultant" value="{{ request.session.selected_consultant|default:'担当コンサルタント' }}">
+
+            <div class="form-group">
+                <label>📅 希望する日付</label>
+                <input type="date" name="date" required>
+            </div>
+            <div class="form-group">
+                <label>⏰ 希望する開始時間</label>
+                <input type="time" name="time" required>
+            </div>
+            <button type="submit" class="submit-btn">この内容で予約する</button>
+        </form>
+    </div>
+</body>
+</html>

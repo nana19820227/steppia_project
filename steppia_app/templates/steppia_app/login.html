@@ -1,0 +1,153 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログイン - ステッピア</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* 全体の設定 */
+        body {
+            background-color: #DCECCF; /* 背景色 */
+            margin: 0;
+            padding: 20px;
+            font-family: 'Zen Maru Gothic', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #5D4037;
+            box-sizing: border-box;
+        }
+
+        /* 白いカードのデザイン */
+        .container {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 40px; /* 角丸 */
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        /* 🆕 ロゴとタイトルの調整 */
+        .mini-logo {
+            width: 180px; /* ロゴの幅を100pxから180pxへ拡大！ */
+            height: auto; /* 高さは自動調整 */
+            margin-bottom: 10px; /* 下のテキストとの間隔を少し詰める */
+        }
+        .app-name {
+            font-size: 18px; /* テキストも少し大きく */
+            font-weight: 700;
+            color: #5d9e78;
+            margin: 0;
+        }
+        .page-title {
+            font-size: 28px;
+            font-weight: 900;
+            margin: 15px 0 40px; /* タイトル上下の余白を調整 */
+        }
+
+        /* フォーム周り（ラベルを上に配置） */
+        .form-group {
+            text-align: left;
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 15px;
+        }
+        
+        /* 入力フィールドのデザイン */
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            background-color: #F2EFE5;
+            border: 2px solid transparent;
+            border-radius: 15px;
+            padding: 16px;
+            font-size: 16px;
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        /* フォーカス時のスタイル */
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            background-color: white;
+            border-color: #5d9e78;
+        }
+
+        /* ボタンのデザイン */
+        .button-container {
+            margin-top: 40px;
+        }
+        .btn-green {
+            width: 100%;
+            background-color: #5d9e78;
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #3e6b51;
+            transition: all 0.1s ease;
+        }
+        .btn-green:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #3e6b51;
+        }
+
+        /* 戻るリンク */
+        .back-link-container {
+            margin-top: 30px;
+        }
+        .back-link {
+            color: #888;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" alt="ロゴ" class="mini-logo">
+        <p class="app-name">ステッピア</p>
+        <h2 class="page-title">ログイン</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">ユーザー名</label>
+                {{ form.username }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">パスワード</label>
+                {{ form.password }}
+            </div>
+
+            <div class="button-container">
+                <button type="submit" class="btn-green">ログインする</button>
+            </div>
+        </form>
+
+        <div class="back-link-container">
+            <a href="{% url 'menu' %}" class="back-link">トップへ戻る</a>
+        </div>
+
+    </div>
+
+</body>
+</html>

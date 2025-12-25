@@ -1,0 +1,65 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会員登録 - ステッピア</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <div class="container">
+        <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" alt="ロゴ" class="mini-logo">
+        
+        <p class="page-title">ステッピア</p>
+        <h2>会員登録の画面</h2>
+
+        <form action="{% url 'signup_confirm' %}" method="get" class="signup-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>姓</label>
+                <input type="text" name="last_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label>名</label>
+                <input type="text" name="first_name" required>
+            </div>
+
+            <div class="form-group">
+                <label>せい</label>
+                <input type="text" name="last_name_kana" required>
+            </div>
+
+            <div class="form-group">
+                <label>めい</label>
+                <input type="text" name="first_name_kana" required>
+            </div>
+
+            <div class="form-group">
+                <label>住所</label>
+                <input type="text" name="address" required>
+            </div>
+
+            <div class="form-group">
+                <label>電話番号</label>
+                <input type="text" name="phone" required>
+            </div>
+
+            <div class="form-group">
+                <label>メール<br>アドレス</label>
+                <input type="email" name="email" required>
+            </div>
+
+            <div class="star-button-area">
+                <button type="submit" class="star-btn">次へ</button>
+            </div>
+
+        </form>
+    </div>
+
+</body>
+</html>

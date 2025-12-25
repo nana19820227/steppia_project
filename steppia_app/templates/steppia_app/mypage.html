@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マイページ - ステッピア</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #DCECCF;
+            --white: #FFFFFF;
+            --text-brown: #5D4037;
+            --star-yellow: #FFF2AF;
+            --accent-green: #81C784;
+            --accent-pink: #F48FB1;
+        }
+        body {
+            background-color: var(--bg);
+            font-family: 'Zen Maru Gothic', sans-serif;
+            margin: 0; padding: 20px 10px 120px; /* 下部のボタンとの重なり防止 */
+            color: var(--text-brown);
+        }
+
+        /* ユーザー情報カード */
+        .user-card {
+            background: var(--white);
+            border-radius: 40px;
+            padding: 30px;
+            text-align: center;
+            max-width: 500px;
+            margin: 20px auto 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        .user-icon { font-size: 50px; margin-bottom: 10px; }
+
+        /* 各セクション共通スタイル */
+        .section-container { max-width: 600px; margin: 0 auto 40px; }
+        .section-title {
+            font-size: 20px; font-weight: 900;
+            margin-bottom: 15px; padding-left: 10px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .history-card {
+            background: var(--white);
+            border-radius: 30px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        }
+
+        /* クーポン・予約ボタン */
+        .status-btn {
+            padding: 10px 18px; border-radius: 20px;
+            font-size: 13px; font-weight: 900;
+            text-decoration: none; border: none;
+        }
+        .unused-label { background: #D4CD8D; color: white; cursor: default; }
+        .reserve-link { background: var(--accent-green); color: white; box-shadow: 0 4px 0 #66BB6A; }
+        .reserve-link:active { transform: translateY(2px); box-shadow: none; }
+
+        /* 履歴の詳細テキスト */
+        .info-box { display: flex; flex-direction: column; gap: 4px; }
+        .date-label { font-size: 11px; opacity: 0.6; font-weight: 700; }
+        .main-text { font-size: 16px; font-weight: 900; }
+        .sub-text { font-size: 13px; opacity: 0.8; font-weight: 700; }
+
+        /* --- 戻るボタン（統一デザイン） --- */
+        .back-nav { 
+            position: fixed; 
+            bottom: 20px; 
+            left: 20px; 
+            z-index: 1000; 
+        }
+        
+        .star-btn {
+            position: relative; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            width: 120px; 
+            height: 120px; 
+            text-decoration: none;
+            transition: transform 0.2s ease-out;
+        }
+
+        .star-icon { 
+            font-size: 120px; 
+            color: var(--star-yellow); 
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1)); 
+            line-height: 1;
+        }
+
+        .star-text {
+            position: absolute; 
+            font-size: 22px; 
+            font-weight: 900;
+            color: #000; 
+            top: 50%; 
+            left: 50%; 
+            /* 初期位置：まっすぐ */
+            transform: translate(-50%, -45%) rotate(0deg);
+            white-space: nowrap;
+            transition: transform 0.15s ease-out;
+        }
+
+        /* 【ここを統一】クリック時に文字が右肩上がりにクイッと上がる */
+        .star-btn:active .star-text {
+            /* translate: 少し右、大きく上に移動 / rotate: 右に15度傾ける */
+            transform: translate(-40%, -65%) rotate(15deg);
+        }
+
+        .star-btn:active {
+            transform: scale(0.95);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="user-card">
+        <div class="user-icon">👤</div>
+        <h2 style="margin:0;">ようこそ、{{ user.username }} さん</h2>
+        <p style="opacity:0.7; font-weight:900; margin-top:5px;">担当：{{ consultant_name }}</p>
+    </div>
+
+    <div class="section-container">
+        <div class="section-title">🎫 私のクーポン</div>
+        {% for coupon in coupons %}
+        <div class="history-card">
+            <div class="info-box">
+                <span class="date-label">{{ coupon.won_at|date:"Y/m/d" }} 獲得</span>
+                <span class="main-text">✨ {{ coupon.prize_name }}</span>
+            </div>
+            {% if coupon.prize_name == "コンサル面談30分" %}
+                <a href="{% url 'consult_reservation' %}?coupon_id={{ coupon.id }}" class="status-btn reserve-link">予約する</a>
+            {% else %}
+                <span class="status-btn unused-label">未使用</span>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p style="text-align:center; opacity:0.5;">まだクーポンはありません 🐑</p>
+        {% endfor %}
+    </div>
+
+    <div class="section-container">
+        <div class="section-title">📅 コンサル予約状況</div>
+        {% for schedule in mypage_schedules %}
+        <div class="history-card">
+            <div class="info-box">
+                <span class="date-label">{{ schedule.date|date:"Y/m/d" }} {{ schedule.time|time:"H:i" }}</span>
+                <span class="main-text">{{ schedule.detail }}</span>
+            </div>
+            <span style="font-size: 20px;">✅</span>
+        </div>
+        {% empty %}
+        <p style="text-align:center; opacity:0.5;">予定されている予約はありません</p>
+        {% endfor %}
+    </div>
+
+    <div class="section-container">
+        <div class="section-title">💼 応募したお仕事</div>
+        {% for app in applications %}
+        <div class="history-card">
+            <div class="info-box">
+                <span class="date-label">{{ app.applied_at|date:"Y/m/d" }} 応募</span>
+                <span class="main-text">{{ app.job.title }}</span>
+                <span class="sub-text">{{ app.job.company_name }}</span>
+            </div>
+            <span class="status-btn" style="background:#E3F2FD; color:#1976D2;">選考中</span>
+        </div>
+        {% empty %}
+        <p style="text-align:center; opacity:0.5;">まだ応募したお仕事はありません</p>
+        {% endfor %}
+    </div>
+
+    <div class="section-container">
+        <div class="section-title">💬 AI相談履歴</div>
+        {% for log in logs %}
+        <div class="history-card" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+            <div class="info-box">
+                <span class="date-label">{{ log.created_at|date:"Y/m/d H:i" }}</span>
+                <span class="main-text" style="font-size: 14px; color: #78909C;">Q: {{ log.user_question }}</span>
+                <span class="sub-text" style="color: var(--text-brown);">A: {{ log.ai_response|truncatechars:50 }}</span>
+            </div>
+        </div>
+        {% empty %}
+        <p style="text-align:center; opacity:0.5;">相談履歴はありません</p>
+        {% endfor %}
+    </div>
+
+    <div class="back-nav">
+        <a href="{% url 'menu' %}" class="star-btn">
+            <span class="star-icon">★</span>
+            <span class="star-text">戻る</span>
+        </a>
+    </div>
+
+</body>
+</html>

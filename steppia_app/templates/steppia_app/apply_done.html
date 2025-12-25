@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>応募完了 | ステッピア</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+             --grass: #DCECCF; --wood: #6D4C41; --beige: #F9F5EB; 
+            --star-yellow: #F8E796; --accent-pink: #E91E63; 
+        }
+        
+        body { 
+            background-color: var(--grass); font-family: 'Zen Maru Gothic', sans-serif; 
+            margin: 0; padding: 20px; display: flex; justify-content: center; 
+            align-items: center; min-height: 100vh; box-sizing: border-box;
+        }
+
+        /* 統一感のあるカードデザイン */
+        .done-card { 
+            background: white; padding: 60px 40px; border-radius: 50px; 
+            text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.1); 
+            width: 100%; max-width: 650px; border: 4px solid #fff;
+        }
+
+        /* 羊ロゴ（220px） */
+        .top-logo { 
+            width: 220px; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.1)); 
+            margin-bottom: 30px; 
+        }
+
+        h1 { color: #2E7D32; font-size: 30px; font-weight: 900; margin: 0 0 35px 0; }
+
+        /* 🕊 プロ仕様のメッセージボックス */
+        .message-box { 
+            background: var(--beige); padding: 40px 30px; border-radius: 35px; 
+            margin-bottom: 45px; border: 2px dashed var(--grass); 
+            display: inline-block; width: 100%; box-sizing: border-box;
+        }
+
+        .message-text { 
+            color: var(--wood); font-size: 19px; font-weight: 700; 
+            line-height: 2.2; text-align: center; margin: 0;
+            /* 句読点の泣き別れを防ぐ */
+            word-break: keep-all; overflow-wrap: break-word;
+        }
+
+        /* 担当者名の強調 */
+        .consultant-highlight { 
+            color: var(--accent-pink); font-weight: 900; font-size: 23px;
+            border-bottom: 2px solid #FFD1D1; padding: 0 4px;
+        }
+
+        .sub-message { font-size: 16px; color: #888; margin-top: 15px; display: block; }
+
+        /* メニューに戻るボタン */
+        .back-btn { 
+            display: inline-block; padding: 18px 60px; background: var(--star-yellow); 
+            color: #333; text-decoration: none; border-radius: 40px; 
+            font-weight: 900; font-size: 20px; box-shadow: 0 6px 0 #D4C375; 
+            transition: 0.2s; 
+        }
+        .back-btn:hover { transform: translateY(3px); box-shadow: 0 3px 0 #D4C375; }
+    </style>
+</head>
+<body>
+    <div class="done-card">
+        <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" class="top-logo">
+        
+        <h1>ご応募ありがとうございます！</h1>
+        
+        <div class="message-box">
+            <p class="message-text">
+                あなたの「一歩」を、<br>大切にお預かりしました。
+                <br><br>
+                後ほど、担当の <span class="consultant-highlight">{{ consultant_name }}</span> より<br>
+                ご登録いただいた連絡先へ<br>詳細をご案内いたします。
+                <br>
+                <span class="sub-message">お話しできるのを、心より楽しみにしています。</span>
+            </p>
+        </div>
+        
+        <a href="{% url 'menu' %}" class="back-btn">メニューに戻る</a>
+    </div>
+</body>
+</html>

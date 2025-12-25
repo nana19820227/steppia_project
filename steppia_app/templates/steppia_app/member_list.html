@@ -1,0 +1,59 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会員リスト - ステッピア</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <div class="container">
+        <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" alt="ロゴ" class="mini-logo">
+        <p class="page-title">ステッピア</p>
+        
+        <h2>登録会員リスト</h2>
+
+        <div class="member-list">
+            {% for member in members %}
+                <div class="member-card">
+                    <p class="member-name">{{ member.last_name }} {{ member.first_name }} 様</p>
+                    <p class="member-info">📩 {{ member.email }}</p>
+                    <p class="member-info">📞 {{ member.phone }}</p>
+                </div>
+            {% empty %}
+                <p>まだ登録された会員はいません。</p>
+            {% endfor %}
+        </div>
+
+        <div style="margin-top: 40px;">
+            <a href="{% url 'top' %}" class="btn-beige">トップへ戻る</a>
+        </div>
+    </div>
+
+    <style>
+        .member-card {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            text-align: left;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .member-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .member-info {
+            font-size: 14px;
+            margin: 0;
+            color: #666;
+        }
+    </style>
+
+</body>
+</html>
