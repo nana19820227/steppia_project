@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import JsonResponse
-from django.contrib.auth import login # 🆕 追加
-from django.contrib.auth.forms import UserCreationForm # 🆕 追加
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
 import pytz
 
 # すべてのモデルをインポート
@@ -17,14 +17,14 @@ def top(request):
 # --- 2. 会員登録（ログイン用アカウント作成） ---
 def signup(request):
     """
-    ステップ1: ログイン用のユーザーアカウントを作成する
+    ステップ1: ログイン用のユーザーアカウント(User)を作成する
     """
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)  # アカウント作成後、自動でログイン状態にする
-            return redirect('signup_profile') # 詳細情報入力へ
+            return redirect('signup_profile') 
     else:
         form = UserCreationForm()
     return render(request, 'steppia_app/signup.html', {'form': form})
@@ -32,7 +32,7 @@ def signup(request):
 @login_required
 def signup_profile(request):
     """
-    ステップ2: 会員詳細情報（名前・住所など）の入力画面
+    ステップ2: 会員詳細情報（Member）の入力画面
     """
     return render(request, 'steppia_app/signup_profile.html')
 
@@ -54,7 +54,6 @@ def signup_done(request):
     """会員登録完了：新しいMemberを作成しログインユーザーと紐付け"""
     if request.method == 'POST':
         Member.objects.create(
-            # 現在ログインしているユーザーを会員情報に紐付ける
             user=request.user,
             last_name=request.POST.get('last_name'),
             first_name=request.POST.get('first_name'),
@@ -116,14 +115,12 @@ def work_tracker(request):
             )
             return redirect('work_tracker')
 
-    # 現在のログインユーザーに紐づく会員情報を取得
     member = Member.objects.filter(user=request.user).first()
     daily_wage = member.daily_wage if member else 0
     limit_80 = int(daily_wage * 0.8)
     logs = WorkLog.objects.filter(user=request.user).order_by('-date')
     
     for log in logs:
-        # 賃金日額の80%を超えているか判定
         log.is_over_limit = (log.earnings > limit_80) if limit_80 > 0 else False
     
     context = {
@@ -182,7 +179,7 @@ def ai_consult(request):
         "副業": "複数の収入源を持つことで、精神的な安定とスキルアップに繋がります。",
         "時短": "勤務時間が短い分、密度濃く働くという決意を伝えて交渉しましょう。",
         "年下": "年下の面接官や上司に対しても、謙虚さとプロ意識を持って対等に接しましょう。",
-        "馴染めるか": "最初は聞き役に徹し、職場のルールや空気を理解することから始めましょう。",
+        "馴染めるか": "最初は聞き役に徹し、職場のルールや空気に理解することから始めましょう。",
         "マネジメント": "リーダー経験がなくても、後輩の育成経験などは立派な管理能力です。",
         "パワハラ": "口コミサイトや面接時の社員の雰囲気で、社風を事前に確認しましょう。",
         "平均年収": "40代女性の平均を参考にしつつ、自分のスキルに見合った額を把握しましょう。",
@@ -224,7 +221,6 @@ def ai_consult(request):
     return render(request, 'steppia_app/ai_consult.html', {'ai_answer': ai_answer, 'user_q': user_q})
 
 def ai_history(request):
-    """履歴表示用にマイページへリダイレクト"""
     return redirect('mypage')
 
 # --- 6. マイページ ---
@@ -245,7 +241,11 @@ def mypage(request):
 # --- 7. 進捗管理（冒険マップ） ---
 @login_required
 def progress(request):
-    """マップの各ステップの達成状況を判定"""
+    """デバイス自動判別と達成状況の判定"""
+    # ユーザーエージェントでモバイル判定
+    user_agent = request.META.get('HTTP_USER_AGENT', '').lower()
+    is_mobile = any(device in user_agent for device in ['iphone', 'android', 'mobile'])
+
     is_signed_up = Member.objects.filter(user=request.user).exists()
     has_logs = AIConsultLog.objects.exists()
     has_res = Schedule.objects.filter(detail__contains='コンサル予約').exists()
@@ -262,14 +262,16 @@ def progress(request):
     current_pos = 1
     for i in range(1, 31):
         if status.get(f'step{i}'): current_pos = i
-    return render(request, 'steppia_app/progress.html', {'status': status, 'current_pos': current_pos})
+    
+    # モバイルなら専用テンプレートを表示
+    template = 'steppia_app/progress_mobile.html' if is_mobile else 'steppia_app/progress.html'
+    return render(request, template, {'status': status, 'current_pos': current_pos})
 
 # --- 8. コンサル予約・スケジュール ---
 def consult_top(request): 
     return render(request, 'steppia_app/consult_top.html')
 
 def consult_setting(request):
-    """担当コンサルタントの選択"""
     if request.method == 'POST':
         request.session['selected_consultant'] = request.POST.get('consultant_name')
         return redirect('consult_setting_done')
@@ -279,7 +281,6 @@ def consult_reservation(request):
     return render(request, 'steppia_app/consult_reservation.html')
 
 def consult_confirm(request):
-    """予約内容の確認"""
     return render(request, 'steppia_app/consult_confirm.html', {
         'date': request.POST.get('date'), 
         'time': request.POST.get('time'), 
@@ -290,7 +291,6 @@ def consult_setting_done(request):
     return render(request, 'steppia_app/consult_setting_done.html')
 
 def consult_reservation_done(request):
-    """予約の保存とクーポンの使用処理"""
     if request.method == 'POST':
         Schedule.objects.create(
             date=request.POST.get('date'), 
@@ -306,7 +306,6 @@ def consult_reservation_done(request):
     return render(request, 'steppia_app/consult_reservation_done.html')
 
 def schedule(request):
-    """一般的なスケジュール管理"""
     if request.method == 'POST':
         Schedule.objects.create(
             date=request.POST.get('date'), 
@@ -318,16 +317,11 @@ def schedule(request):
 # --- 9. 🎁 ルーレット関連（1日1回日本時間制限版） ---
 @login_required
 def roulette(request):
-    """1日1回制限の判定を行いルーレット画面を表示"""
-    # 日本時間（JST）の取得
     jst = pytz.timezone('Asia/Tokyo')
     now_jst = timezone.now().astimezone(jst)
     today_jst = now_jst.date()
 
-    # 会員情報を取得
     member = Member.objects.filter(user=request.user).first()
-    
-    # 今日すでに回したか判定
     can_spin = True
     if member and member.last_roulette_date == today_jst:
         can_spin = False
@@ -336,19 +330,15 @@ def roulette(request):
 
 @login_required
 def roulette_result(request, item):
-    """ルーレット結果の保存と実行日の更新"""
-    # 日本時間で今日の日付を取得
     jst = pytz.timezone('Asia/Tokyo')
     now_jst = timezone.now().astimezone(jst)
     today_jst = now_jst.date()
 
-    # 最後に回した日を更新
     member = Member.objects.filter(user=request.user).first()
     if member:
         member.last_roulette_date = today_jst
         member.save()
 
-    # 当選品が「賞」または「面談」を含む場合にクーポンを発行
     is_win = "賞" in item or "面談" in item
     if is_win:
         Coupon.objects.get_or_create(user=request.user, prize_name=item, is_used=False)
@@ -358,16 +348,13 @@ def roulette_result(request, item):
 
 @login_required
 def congrats(request):
-    """当選おめでとう画面"""
     prize = request.GET.get('prize', '豪華賞品')
     return render(request, 'steppia_app/congrats.html', {'prize': prize})
 
 def roulette_lost(request):
-    """残念画面"""
     return render(request, 'steppia_app/roulette_lost.html')
 
 # --- 10. 🌸 冒険マップお祝い関連 ---
 @login_required
 def congrats_map(request):
-    """全ステップ達成のお祝い画面"""
     return render(request, 'steppia_app/congrats_map.html')
