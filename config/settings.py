@@ -9,8 +9,12 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-vvyo@62z3nv3jc@jtf7r1
 # Render上ではDEBUGをFalseにし、手元のMacではTrueにする設定
 DEBUG = 'RENDER' not in os.environ
 
-# RenderのURLとローカル環境を許可
-ALLOWED_HOSTS = ['*']
+# 🆕 Renderのドメインとローカル環境を許可
+ALLOWED_HOSTS = ['steppia-project.onrender.com', '127.0.0.1', 'localhost', '*']
+
+# 🆕 CSRF対策（RenderなどのHTTPS環境で必須）
+# これがないと、スマホなどの外部からログインしようとした際に403エラーになります
+CSRF_TRUSTED_ORIGINS = ['https://steppia-project.onrender.com']
 
 # --- 2. アプリケーション定義 ---
 INSTALLED_APPS = [
@@ -54,7 +58,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # --- 3. データベース設定 ---
-# RenderのPostgreSQLがあればそれを使い、なければSQLiteを使う
 DATABASES = {
     'default': dj_database_url.config(
         default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
@@ -72,18 +75,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # --- 5. 言語・時刻設定 ---
 LANGUAGE_CODE = 'ja'
-TIME_ZONE = 'Asia/Tokyo' # 🆕 ルーレットの0:00リセットに必須
+TIME_ZONE = 'Asia/Tokyo' 
 USE_I18N = True
 USE_TZ = True
 
 # --- 6. 静的ファイル・メディア設定 ---
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
-
-# 🆕 Renderのデプロイ時にファイルをまとめる場所
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# WhiteNoiseで効率的に配信する設定
 if not DEBUG:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
