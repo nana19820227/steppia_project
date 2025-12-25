@@ -13,11 +13,7 @@
             50% { transform: translate(-50%, -40px) scale(1.2); opacity: 1; }
             100% { transform: translate(-50%, -80px) scale(0.3); opacity: 0; }
         }
-        @keyframes swim-no-flip { 
-            0% { transform: translateX(0); } 
-            50% { transform: translateX(60px); } 
-            100% { transform: translateX(0); } 
-        }
+        @keyframes swim-no-flip { 0% { transform: translateX(0); } 50% { transform: translateX(100px); } 100% { transform: translateX(0); } }
 
         :root { 
             --wood: #6D4C41; --grass: #DCECCF; --sky: #DCECCF; 
@@ -29,7 +25,7 @@
             font-family: 'Zen Maru Gothic', sans-serif; 
             min-height: 100vh; width: 100%;
             display: flex; justify-content: center; align-items: flex-start;
-            overflow: auto; 
+            overflow-x: hidden; /* 🆕 横揺れ防止 */
         }
 
         .dollhouse-frame { 
@@ -41,6 +37,7 @@
             box-sizing: border-box; 
             margin: auto;
             z-index: 1; 
+            transition: transform 0.3s ease; /* 🆕 スムーズな切り替え */
         }
 
         /* --- 固定UI --- */
@@ -53,10 +50,9 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
         }
 
-        /* 企業管理パネル（アコーディオン対応） */
         .selection-sidebar {
-            position: fixed; top: 110px; right: 60px;
-            width: 200px;
+            position: fixed; top: 110px; right: 20px; /* 🆕 右端に寄せる */
+            width: 180px;
             background: rgba(255, 255, 255, 0.96); border: 3px solid var(--wood);
             border-radius: 15px; z-index: 2500; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             overflow: hidden;
@@ -70,26 +66,16 @@
             user-select: none;
         }
 
-        .sidebar-header::after {
-            content: '▲'; font-size: 10px; transition: transform 0.3s;
-        }
-
-        .sidebar-collapsed {
-            width: 150px;
-        }
-        .sidebar-collapsed .sidebar-header::after {
-            transform: rotate(180deg);
-        }
+        .sidebar-header::after { content: '▲'; font-size: 10px; transition: transform 0.3s; }
+        .sidebar-collapsed { width: 130px; }
+        .sidebar-collapsed .sidebar-header::after { transform: rotate(180deg); }
 
         .sidebar-content {
             max-height: 500px; padding: 10px; overflow: hidden;
-            transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.2s;
-            opacity: 1;
+            transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.2s; opacity: 1;
         }
 
-        .sidebar-collapsed .sidebar-content {
-            max-height: 0; padding: 0 10px; opacity: 0; pointer-events: none;
-        }
+        .sidebar-collapsed .sidebar-content { max-height: 0; padding: 0 10px; opacity: 0; pointer-events: none; }
 
         .bottom-nav { 
             position: fixed !important; bottom: 25px; left: 25px; z-index: 4000; 
@@ -105,36 +91,34 @@
         .step-tile.completed { background: var(--completed); border-color: #FFA000; }
         .player-pawn { position: absolute; width: 85px; z-index: 200; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; }
 
-        /* --- デコレーション・イラスト --- */
         .deco-item { position: absolute; pointer-events: none; z-index: 10; }
-        
-        .magic-pond { 
-            /* 🆕 池のサイズを一回り半小さく調整 */
-            top: 980px; left: 100px; 
-            width: 175px; height: 105px; 
-            z-index: 150;
-            background: #81D4FA; border: 5px solid #FFF; border-radius: 50% 40% 60% 30%; 
-            overflow: hidden; box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
-        }
-        
+        .magic-pond { top: 950px; left: 60px; width: 260px; height: 160px; z-index: 150; background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
         .funsui-area { top: 980px; left: 1050px; width: 140px; z-index: 150; }
         .tree-deco { top: 60px; left: 40px; width: 100px; z-index: 150; }
         .buranko-deco { top: 120px; left: 1080px; width: 130px; z-index: 150; }
         .tobibako-deco { top: 980px; left: 580px; width: 120px; z-index: 150; }
 
-        .splash { 
-            position: absolute; background: #E1F5FE; width: 8px; height: 8px; border-radius: 50%; 
-            z-index: 160; box-shadow: 0 0 6px #B3E5FC; 
-        }
+        .splash { position: absolute; background: #E1F5FE; width: 8px; height: 8px; border-radius: 50%; z-index: 160; box-shadow: 0 0 6px #B3E5FC; }
 
-        .star-link-btn { position: relative; display: flex; align-items: center; justify-content: center; width: 110px; height: 110px; text-decoration: none; cursor: pointer; }
-        .star-icon { font-size: 110px; color: var(--star-yellow); filter: drop-shadow(0 6px 15px rgba(0,0,0,0.15)); }
-        .star-text { position: absolute; font-size: 22px; font-weight: 900; color: var(--text-black); top: 50%; left: 50%; transform: translate(-50%, -45%); transition: 0.15s; }
-        .star-link-btn:active .star-text { transform: translate(-40%, -65%) rotate(15deg); }
+        .star-link-btn { position: relative; display: flex; align-items: center; justify-content: center; width: 100px; height: 100px; text-decoration: none; cursor: pointer; }
+        .star-icon { font-size: 100px; color: var(--star-yellow); filter: drop-shadow(0 6px 15px rgba(0,0,0,0.15)); }
+        .star-text { position: absolute; font-size: 20px; font-weight: 900; color: var(--text-black); top: 50%; left: 50%; transform: translate(-50%, -45%); }
 
+        /* 🆕 スマホ向けの特別設定（全体を縮小） */
         @media (max-width: 768px) {
-            .header-panel { width: 85%; top: 5px; }
-            .selection-sidebar { width: 130px; top: 120px; right: 20px; }
+            .dollhouse-frame {
+                /* 画面サイズに合わせて約0.3倍に縮小 */
+                transform: scale(0.28); 
+                transform-origin: top center;
+                margin-top: 100px; /* ヘッダーとの隙間 */
+                margin-bottom: -850px; /* 縮小して空いた下の隙間を埋める */
+            }
+            .header-panel { width: 95%; max-width: none; }
+            .selection-sidebar { 
+                top: auto; bottom: 130px; right: 20px; 
+                width: 150px; z-index: 5000;
+            }
+            .bottom-nav { bottom: 20px; left: 20px; transform: scale(0.85); }
         }
     </style>
 </head>
@@ -161,10 +145,7 @@
             </div>
         </div>
 
-        <div class="deco-item magic-pond">
-            <img src="{% static 'images/fish.png' %}" style="position:absolute; top:35%; width:40px; animation: swim-no-flip 8s linear infinite;">
-        </div>
-        
+        <div class="deco-item magic-pond"><img src="{% static 'images/fish.png' %}" style="position:absolute; top:35%; width:50px; animation: swim-no-flip 10s linear infinite;"></div>
         <div class="deco-item funsui-area">
             <img src="{% static 'images/funsui.png' %}" class="funsui-img" style="width:100%; display:block;">
             <div id="splash-container" style="position:absolute; top:15px; left:50%; transform:translateX(-50%); width:80%; height:30px;"></div>
@@ -242,38 +223,18 @@
                 item.style.border = '2px solid var(--wood)'; item.style.borderRadius = '12px'; 
                 item.style.cursor = 'pointer'; item.style.display = 'flex'; 
                 item.style.justifyContent = 'space-between'; item.style.alignItems = 'center';
-                item.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
                 item.onclick = () => { currentCompanyId = id; updateView(); };
-
-                item.innerHTML = `
-                    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px;">
-                        <span style="font-size: 11px; font-weight: 900;">${companies[id].name}</span>
-                        <span style="font-size: 9px; font-weight: 700; opacity: 0.6;">STEP ${companies[id].step}</span>
-                    </div>
-                    <span onclick="event.stopPropagation(); deleteCompany('${id}')" style="opacity: 0.3; font-size: 14px;">🗑️</span>
-                `;
+                item.innerHTML = `<div style="display:flex; flex-direction:column; align-items:flex-start; gap:2px;"><span style="font-size:11px; font-weight:900;">${companies[id].name}</span><span style="font-size:9px; font-weight:700; opacity:0.6;">STEP ${companies[id].step}</span></div><span onclick="event.stopPropagation(); deleteCompany('${id}')" style="opacity:0.3; font-size:14px;">🗑️</span>`;
                 list.appendChild(item);
             }
         }
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('sidebar-collapsed');
-        }
-
+        function toggleSidebar() { const sidebar = document.getElementById('sidebar'); sidebar.classList.toggle('sidebar-collapsed'); }
         function addCompany() { const name = prompt("企業名を入力してください"); if (name) { const id = 'c' + Date.now(); companies[id] = { name: name, step: 1 }; currentCompanyId = id; updateView(); } }
         function deleteCompany(id) { if (confirm(`削除しますか？`)) { delete companies[id]; if (currentCompanyId === id) currentCompanyId = ''; updateView(); } }
         function warp() { if(!currentCompanyId) return; const v = parseInt(document.getElementById('warp-val').value); companies[currentCompanyId].step = v; updateView(); }
         function drawPath() { const line = document.getElementById('path-line'); let d = `M ${nodePoints[0].x} ${nodePoints[0].y}`; for (let i = 1; i < nodePoints.length; i++) { d += ` L ${nodePoints[i].x} ${nodePoints[i].y}`; } line.setAttribute('d', d); }
-        function createSplash() {
-            const container = document.getElementById('splash-container'); if(!container) return;
-            const splash = document.createElement('div'); splash.className = 'splash';
-            splash.style.left = `${50 + (Math.random() * 20 - 10)}%`; 
-            const duration = Math.random() * 0.8 + 0.6; 
-            splash.style.animation = `splash-anim ${duration}s ease-out forwards`;
-            container.appendChild(splash); setTimeout(() => splash.remove(), duration * 1000);
-        }
-
+        function createSplash() { const container = document.getElementById('splash-container'); if(!container) return; const splash = document.createElement('div'); splash.className = 'splash'; splash.style.left = `${50 + (Math.random() * 20 - 10)}%`; const duration = Math.random() * 0.8 + 0.6; splash.style.animation = `splash-anim ${duration}s ease-out forwards`; container.appendChild(splash); setTimeout(() => splash.remove(), duration * 1000); }
         window.onload = () => { renderMap(); setInterval(createSplash, 350); };
     </script>
 </body>
