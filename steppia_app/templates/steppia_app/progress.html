@@ -39,51 +39,49 @@
             z-index: 1; 
         }
 
-        /* --- 固定UI --- */
+        /* --- 🆕 統合されたヘッダーパネル（企業管理をここに配置） --- */
         .header-panel { 
-            position: fixed; top: 10px; left: 50%; transform: translateX(-50%); 
-            width: 90%; max-width: 500px; 
+            position: fixed; top: 15px; left: 50%; transform: translateX(-50%); 
+            width: 95%; max-width: 800px; 
             background: rgba(255, 255, 255, 0.98); border: 4px solid var(--wood); 
-            border-radius: 20px; padding: 10px; z-index: 3000; 
-            display: flex; flex-direction: column; align-items: center; gap: 5px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+            border-radius: 25px; padding: 12px 20px; z-index: 3000; 
+            display: flex; flex-direction: column; align-items: center; gap: 10px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2); 
         }
 
-        /* 🆕 企業管理を左端に固定 */
-        .selection-sidebar {
-            position: fixed; top: 120px; left: 20px; 
-            width: 180px;
-            background: rgba(255, 255, 255, 0.96); border: 3px solid var(--wood);
-            border-radius: 15px; z-index: 2500; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .header-top { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+        
+        .company-controls { 
+            display: flex; align-items: center; gap: 10px; width: 100%; 
+            padding-top: 8px; border-top: 2px dashed rgba(109, 76, 65, 0.2);
         }
 
-        .sidebar-header {
-            padding: 10px; background: var(--wood); color: white;
-            text-align: center; font-size: 13px; font-weight: 900;
-            cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;
+        select {
+            flex-grow: 1; padding: 6px 12px; border-radius: 12px;
+            border: 2px solid var(--wood); font-family: 'Zen Maru Gothic', sans-serif;
+            font-weight: 900; font-size: 13px; color: var(--wood); cursor: pointer;
         }
 
-        .sidebar-content {
-            max-height: 500px; padding: 10px; overflow: hidden;
-            transition: max-height 0.3s ease;
+        .btn-mini {
+            padding: 6px 12px; border-radius: 12px; border: none; font-weight: 900; 
+            font-size: 12px; cursor: pointer; color: white; transition: 0.2s;
         }
+        .btn-add { background: #81C784; box-shadow: 0 3px 0 #689F38; }
+        .btn-warp { background: #F48FB1; box-shadow: 0 3px 0 #C2185B; }
+        .btn-del { background: #e57373; box-shadow: 0 3px 0 #c62828; }
 
-        .sidebar-collapsed .sidebar-content { max-height: 0; padding: 0 10px; opacity: 0; }
-
-        /* 🆕 戻るボタンを右下に配置して全体のバランスを調整 */
+        /* --- 🆕 戻るボタンを左下に配置 --- */
         .bottom-nav { 
-            position: fixed !important; bottom: 30px; right: 30px; z-index: 4000; 
+            position: fixed !important; bottom: 30px; left: 30px; z-index: 4000; 
         }
 
         .star-link-btn { 
             position: relative; display: flex; align-items: center; justify-content: center; 
-            width: 110px; height: 110px; text-decoration: none; 
+            width: 100px; height: 100px; text-decoration: none; 
         }
-        .star-icon { font-size: 110px; color: var(--star-yellow); filter: drop-shadow(0 6px 15px rgba(0,0,0,0.15)); }
+        .star-icon { font-size: 100px; color: var(--star-yellow); filter: drop-shadow(0 6px 15px rgba(0,0,0,0.15)); }
         .star-text { 
-            position: absolute; font-size: 22px; font-weight: 900; color: var(--text-black); 
+            position: absolute; font-size: 20px; font-weight: 900; color: var(--text-black); 
             top: 50%; left: 50%; transform: translate(-50%, -45%); 
         }
 
@@ -99,17 +97,20 @@
 
         .deco-item { position: absolute; pointer-events: none; z-index: 10; }
         
-        /* 🆕 デコレーション位置の微調整（サイドバーとの重なりを回避） */
-        .buranko-deco { top: 60px; left: 220px; width: 130px; z-index: 150; } /* サイドバーの右隣へ */
-        .tree-deco { top: 30px; left: 1150px; width: 100px; z-index: 150; } /* 右上端でバランスをとる */
-        .magic-pond { top: 1020px; left: 40px; width: 260px; height: 160px; z-index: 150; background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; }
+        /* --- デコレーション位置（微調整） --- */
+        .buranko-deco { top: 120px; left: 60px; width: 130px; z-index: 150; }
+        .tree-deco { top: 100px; left: 1100px; width: 120px; z-index: 150; }
+        
+        /* 🆕 池（magic-pond）を少し右側に移動 */
+        .magic-pond { top: 1020px; left: 250px; width: 280px; height: 180px; z-index: 150; background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; }
+        
         .funsui-area { top: 1080px; left: 1120px; width: 140px; z-index: 150; }
-        .tobibako-deco { top: 1050px; left: 550px; width: 120px; z-index: 150; }
+        .tobibako-deco { top: 1050px; left: 750px; width: 120px; z-index: 150; }
 
         @media (max-width: 768px) {
-            .dollhouse-frame { transform: scale(0.28); transform-origin: top center; margin-top: 100px; margin-bottom: -850px; }
-            .selection-sidebar { left: 15px; top: auto; bottom: 140px; width: 150px; }
-            .bottom-nav { right: 15px; bottom: 25px; transform: scale(0.85); }
+            .dollhouse-frame { transform: scale(0.28); transform-origin: top center; margin-top: 150px; margin-bottom: -850px; }
+            .header-panel { width: 98%; padding: 10px; border-radius: 15px; }
+            .bottom-nav { left: 15px; bottom: 20px; transform: scale(0.8); }
         }
     </style>
 </head>
@@ -118,19 +119,20 @@
         <svg id="path-svg" style="position:absolute; width:100%; height:100%; pointer-events:none; z-index:10;"><path id="path-line" fill="none" stroke="rgba(109, 76, 65, 0.15)" stroke-width="7" stroke-dasharray="12,12" /></svg>
 
         <div class="header-panel">
-            <h2 style="font-size: 14px;">BEINGを叶える冒険航路</h2>
-            <div style="display:flex; align-items:center; gap:8px;">
-                <span id="current-company-display" style="font-size:11px; font-weight:900;">(未選択)</span>
-                <input type="number" id="warp-val" value="1" min="1" max="30" style="width:40px; border-radius:8px; border:2px solid var(--wood); text-align:center;">
-                <button onclick="warp()" style="background:#F48FB1; color:white; border:none; padding:5px 12px; border-radius:12px; font-weight:900; cursor:pointer; font-size:11px; box-shadow: 0 3px 0 #C2185B;">移動</button>
+            <div class="header-top">
+                <h2 style="font-size: 16px; margin: 0; color: var(--wood);">BEINGを叶える冒険航路</h2>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <input type="number" id="warp-val" value="1" min="1" max="30" style="width:45px; border-radius:10px; border:2px solid var(--wood); text-align:center; font-weight:900;">
+                    <button onclick="warp()" class="btn-mini btn-warp">移動</button>
+                </div>
             </div>
-        </div>
-
-        <div class="selection-sidebar" id="sidebar">
-            <div class="sidebar-header" onclick="toggleSidebar()">🏢 企業管理</div>
-            <div class="sidebar-content" id="sidebar-content">
-                <div id="company-list"></div>
-                <button onclick="addCompany()" style="width:100%; padding:8px; background:#81C784; color:white; border:none; border-radius:10px; font-weight:900; font-size:11px; margin-top:10px; cursor:pointer; box-shadow: 0 3px 0 #689F38;">+ 追加</button>
+            
+            <div class="company-controls">
+                <select id="company-select" onchange="changeCompany(this.value)">
+                    <option value="">企業を選択してください</option>
+                </select>
+                <button onclick="addCompany()" class="btn-mini btn-add">+ 追加</button>
+                <button onclick="deleteCurrentCompany()" class="btn-mini btn-del">🗑️</button>
             </div>
         </div>
 
@@ -181,14 +183,24 @@
 
         function updateView() {
             const pawn = document.getElementById('pawn');
-            const listKeys = Object.keys(companies);
-            if (listKeys.length === 0) {
-                currentCompanyId = ''; document.getElementById('current-company-display').innerText = '(未選択)';
+            const select = document.getElementById('company-select');
+            
+            // セレクトボックスの更新
+            select.innerHTML = '<option value="">企業を選択してください</option>';
+            for (const id in companies) {
+                const opt = document.createElement('option');
+                opt.value = id;
+                opt.textContent = `${companies[id].name} (STEP ${companies[id].step})`;
+                if (id === currentCompanyId) opt.selected = true;
+                select.appendChild(opt);
+            }
+
+            if (!currentCompanyId || !companies[currentCompanyId]) {
+                currentCompanyId = '';
                 if(pawn) pawn.style.display = 'none';
+                document.querySelectorAll('.step-tile').forEach(t => t.classList.remove('completed'));
             } else {
-                if (!currentCompanyId || !companies[currentCompanyId]) currentCompanyId = listKeys[0];
                 const step = companies[currentCompanyId].step;
-                document.getElementById('current-company-display').innerText = companies[currentCompanyId].name;
                 document.getElementById('warp-val').value = step;
                 const p = nodePoints[step - 1];
                 if(pawn && p) {
@@ -198,29 +210,32 @@
                 document.querySelectorAll('.step-tile').forEach((t, idx) => { t.classList.toggle('completed', idx < step); });
                 if (step === 30) { setTimeout(() => { window.location.href = "{% url 'congrats_map' %}"; }, 1300); }
             }
-            renderCompanyList();
+            
             localStorage.setItem('steppia_companies', JSON.stringify(companies));
             localStorage.setItem('steppia_current_id', currentCompanyId);
         }
 
-        function renderCompanyList() {
-            const list = document.getElementById('company-list'); list.innerHTML = '';
-            for (const id in companies) {
-                const item = document.createElement('div'); 
-                item.style.padding = '8px'; item.style.marginBottom = '8px'; 
-                item.style.background = (id === currentCompanyId ? 'var(--completed)' : 'white');
-                item.style.border = '2px solid var(--wood)'; item.style.borderRadius = '12px'; 
-                item.style.cursor = 'pointer'; item.style.display = 'flex'; 
-                item.style.justifyContent = 'space-between'; item.style.alignItems = 'center';
-                item.onclick = () => { currentCompanyId = id; updateView(); };
-                item.innerHTML = `<div style="display:flex; flex-direction:column; align-items:flex-start; gap:2px;"><span style="font-size:11px; font-weight:900;">${companies[id].name}</span><span style="font-size:9px; font-weight:700; opacity:0.6;">STEP ${companies[id].step}</span></div><span onclick="event.stopPropagation(); deleteCompany('${id}')" style="opacity:0.3; font-size:14px;">🗑️</span>`;
-                list.appendChild(item);
+        function changeCompany(id) { currentCompanyId = id; updateView(); }
+        
+        function addCompany() { 
+            const name = prompt("企業名を入力してください"); 
+            if (name) { 
+                const id = 'c' + Date.now(); 
+                companies[id] = { name: name, step: 1 }; 
+                currentCompanyId = id; 
+                updateView(); 
+            } 
+        }
+
+        function deleteCurrentCompany() {
+            if (!currentCompanyId) return;
+            if (confirm(`${companies[currentCompanyId].name} を削除しますか？`)) {
+                delete companies[currentCompanyId];
+                currentCompanyId = '';
+                updateView();
             }
         }
 
-        function toggleSidebar() { const sidebar = document.getElementById('sidebar'); sidebar.classList.toggle('sidebar-collapsed'); }
-        function addCompany() { const name = prompt("企業名を入力してください"); if (name) { const id = 'c' + Date.now(); companies[id] = { name: name, step: 1 }; currentCompanyId = id; updateView(); } }
-        function deleteCompany(id) { if (confirm(`削除しますか？`)) { delete companies[id]; if (currentCompanyId === id) currentCompanyId = ''; updateView(); } }
         function warp() { if(!currentCompanyId) return; const v = parseInt(document.getElementById('warp-val').value); companies[currentCompanyId].step = v; updateView(); }
         function drawPath() { const line = document.getElementById('path-line'); let d = `M ${nodePoints[0].x} ${nodePoints[0].y}`; for (let i = 1; i < nodePoints.length; i++) { d += ` L ${nodePoints[i].x} ${nodePoints[i].y}`; } line.setAttribute('d', d); }
         function createSplash() { const container = document.getElementById('splash-container'); if(!container) return; const splash = document.createElement('div'); splash.className = 'splash'; splash.style.left = `${50 + (Math.random() * 20 - 10)}%`; const duration = Math.random() * 0.8 + 0.6; splash.style.animation = `splash-anim ${duration}s ease-out forwards`; container.appendChild(splash); setTimeout(() => splash.remove(), duration * 1000); }
