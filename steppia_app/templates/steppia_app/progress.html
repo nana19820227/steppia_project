@@ -50,8 +50,9 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
         }
 
+        /* 🆕 企業管理を左側に移動 */
         .selection-sidebar {
-            position: fixed; top: 110px; right: 20px;
+            position: fixed; top: 110px; left: 20px; 
             width: 180px;
             background: rgba(255, 255, 255, 0.96); border: 3px solid var(--wood);
             border-radius: 15px; z-index: 2500; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
@@ -77,8 +78,9 @@
 
         .sidebar-collapsed .sidebar-content { max-height: 0; padding: 0 10px; opacity: 0; pointer-events: none; }
 
+        /* 🆕 戻るボタンを右側に移動してバランス調整 */
         .bottom-nav { 
-            position: fixed !important; bottom: 25px; left: 25px; z-index: 4000; 
+            position: fixed !important; bottom: 25px; right: 25px; z-index: 4000; 
         }
 
         /* --- マップ要素 --- */
@@ -93,12 +95,12 @@
 
         .deco-item { position: absolute; pointer-events: none; z-index: 10; }
         
-        /* 🆕 デコレーションの座標を四隅に離して重なりを回避 */
-        .tree-deco { top: 20px; left: 20px; width: 100px; z-index: 150; } /* 左上隅へ */
-        .buranko-deco { top: 40px; left: 1150px; width: 130px; z-index: 150; } /* 右上隅へ */
-        .magic-pond { top: 1020px; left: 40px; width: 260px; height: 160px; z-index: 150; background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); } /* 左下へ */
-        .funsui-area { top: 1080px; left: 1120px; width: 140px; z-index: 150; } /* 右下隅へ下げて木との距離を最大化 */
-        .tobibako-deco { top: 1050px; left: 550px; width: 120px; z-index: 150; } /* 下部中央へ */
+        /* 🆕 デコレーション位置の調整（重なり回避） */
+        .tree-deco { top: 20px; left: 1150px; width: 100px; z-index: 150; } /* 右上へ移動してバランス取り */
+        .buranko-deco { top: 50px; left: 240px; width: 130px; z-index: 150; } /* 左側、サイドバーの横へ */
+        .magic-pond { top: 1020px; left: 40px; width: 260px; height: 160px; z-index: 150; background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
+        .funsui-area { top: 1080px; left: 1120px; width: 140px; z-index: 150; }
+        .tobibako-deco { top: 1050px; left: 550px; width: 120px; z-index: 150; }
 
         .splash { position: absolute; background: #E1F5FE; width: 8px; height: 8px; border-radius: 50%; z-index: 160; box-shadow: 0 0 6px #B3E5FC; }
 
@@ -115,10 +117,10 @@
             }
             .header-panel { width: 95%; max-width: none; }
             .selection-sidebar { 
-                top: auto; bottom: 130px; right: 20px; 
+                top: auto; bottom: 130px; left: 20px; right: auto;
                 width: 150px; z-index: 5000;
             }
-            .bottom-nav { bottom: 20px; left: 20px; transform: scale(0.85); }
+            .bottom-nav { bottom: 20px; right: 20px; left: auto; transform: scale(0.85); }
         }
     </style>
 </head>
@@ -168,7 +170,7 @@
         let companies = JSON.parse(localStorage.getItem('steppia_companies')) || {};
         let currentCompanyId = localStorage.getItem('steppia_current_id') || '';
 
-        const missionNames = ["経験・スキルの棚卸し", "コンサル面談①：診断", "価値観の言語化(AI)", "強み・武器の明確化", "転職軸とBEING確定", "業界・職種の市場調査", "ターゲット企業選定", "職務経歴書ドラフト作成", "コンサル面談②：書類添削", "志望動機・PRの最適化", "応募チャネル選定・登録", "応募計画の策定", "エントリー開始！", "カジュアル面談の実践", "コンサル面談③：振り返り", "書類選考の改善(AI)", "適性検査・SPI対策", "面接回答案の作成(AI)", "コンサル面談④：模擬面接", "1次面接挑戦(現場)", "面接FBの整理と改善", "🌟お試しインターン挑戦", "コンサル面談⑤：最終対策", "2次面接挑戦(管理職)", "企業研究の更なる深掘り", "逆質問・プレゼン準備", "最終面接挑戦(経営層)", "コンサル面談⑥：条件相談", "条件通知書確認・意思決定", "🎉新たなキャリアの始動！"];
+        const missionNames = ["経験・スキルの棚卸し", "コンサル面談①：診断", "価値観の言語化(AI)", "強み・武器の明確化", "転職軸とBEING確定", "業界・職種の市場調査", "ターゲット企業選定", "職務経歴書ドラフト作成", "コンサル面談②：書類添削", "志望動機・PRの最適化", "応募チャネル選定・登録", "応募計画の策定", "エントリー開始！", "カジュアル面談の実践", "コンサル面談③：振り返り", "書類選考の改善(AI)", "適性検査・SPI対策", "面接回答案の作成(AI)", "コンサル面談④：模擬面接", "1次面接挑戦(現場)", "面接FB의整理と改善", "🌟お試しインターン挑戦", "コンサル面談⑤：最終対策", "2次面接挑戦(管理職)", "企業研究の更なる深掘り", "逆質問・プレゼン準備", "最終面接挑戦(経営層)", "コンサル面談⑥：条件相談", "条件通知書確認・意思決定", "🎉新たなキャリアの始動！"];
         let nodePoints = [];
 
         function renderMap() {
