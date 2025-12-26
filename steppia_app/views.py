@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Sum
+from django.views.decorators.cache import never_cache  # 🆕 キャッシュ防止用
 import pytz
 
 # すべてのモデルをインポート
@@ -291,37 +292,50 @@ def schedule(request):
     return render(request, 'steppia_app/schedule.html', {'schedules': Schedule.objects.all().order_by('-date', '-time')})
 
 @login_required
+@never_cache
 def roulette(request):
-    jst = pytz.timezone('Asia/Tokyo'); now_jst = timezone.now().astimezone(jst)
-    member = Member.objects.filter(user=request.user).first()
-    # 1日1回判定
-    can_spin = not (member and member.last_roulette_date == now_jst.date())
+    """0時リセットの1日1回判定"""
+    jst = pytz.timezone('Asia/Tokyo')
+    now_jst = timezone.now().astimezone(jst)
+    today_date = now_jst.date()
+
+    # 会員情報を取得、なければ作成
+    member, created = Member.objects.get_or_create(
+        user=request.user,
+        defaults={'last_name': '（未登録）', 'first_name': request.user.username}
+    )
+    
+    # 最後に回した日が「今日」でなければ回せる
+    can_spin = not (member.last_roulette_date == today_date)
+    
     return render(request, 'steppia_app/roulette.html', {'can_spin': can_spin})
 
 @login_required
+@never_cache
 def roulette_result(request, item):
-    """🆕 ルーレット結果画面（1日1回制限を厳格化）"""
+    """ルーレット結果画面（0時起点の厳格ロック）"""
     jst = pytz.timezone('Asia/Tokyo')
     now_jst = timezone.now().astimezone(jst)
-    member = Member.objects.filter(user=request.user).first()
+    today_date = now_jst.date()
 
-    # すでに今日回していたら、ルーレットTOPへ戻す（不正防止）
-    if member and member.last_roulette_date == now_jst.date():
+    member, created = Member.objects.get_or_create(user=request.user)
+
+    # 1. 既に今日記録があれば追い出す
+    if member.last_roulette_date == today_date:
         return redirect('roulette')
 
-    # 回した日付を保存
-    if member:
-        member.last_roulette_date = now_jst.date()
-        member.save()
+    # 2. 結果を表示する前に日付を保存してロック
+    member.last_roulette_date = today_date
+    member.save()
 
-    # クーポン発行
+    # 3. クーポン発行
     is_win = "賞" in item or "面談" in item
     if is_win:
         Coupon.objects.get_or_create(
             user=request.user, 
             prize_name=item, 
             is_used=False,
-            won_at=now_jst.date()
+            won_at=today_date
         )
     return render(request, 'steppia_app/roulette_result.html', {'item': item, 'is_win': is_win})
 
