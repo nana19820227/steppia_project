@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
-from django.db.models import Sum  # 🆕 合計計算のために追加
+from django.db.models import Sum  # 合計計算のために使用
 import pytz
 
 # すべてのモデルをインポート
@@ -104,7 +104,6 @@ def work_tracker(request):
         company = request.POST.get('company')
         
         if date_str and amount:
-            # データの保存
             WorkLog.objects.create(
                 user=request.user,
                 job=Job.objects.first(), 
@@ -114,7 +113,7 @@ def work_tracker(request):
                 earnings=int(amount)
             )
             
-            # その日の「合計金額」と「合計時間」をダブルチェック
+            # その日の合計金額と時間をチェック
             daily_stats = WorkLog.objects.filter(
                 user=request.user, 
                 date=date_str
@@ -129,10 +128,7 @@ def work_tracker(request):
             if total_pay >= 4000 or total_hrs > 2:
                 show_warning = True
 
-    # 履歴表示用
     logs = WorkLog.objects.filter(user=request.user).order_by('-date')
-    
-    # 日ごとの合計を計算し、制限オーバーの日を特定
     daily_summary = WorkLog.objects.filter(user=request.user).values('date').annotate(
         sum_pay=Sum('earnings'),
         sum_hrs=Sum('hours')
@@ -158,7 +154,7 @@ def work_tracker(request):
 
 @login_required
 def edit_work_log(request, pk):
-    """🆕 ログの修正処理"""
+    """ログの修正処理"""
     log = get_object_or_404(WorkLog, pk=pk, user=request.user)
     if request.method == 'POST':
         log.company_name = request.POST.get('company')
@@ -171,7 +167,7 @@ def edit_work_log(request, pk):
 
 @login_required
 def delete_work_log(request, pk):
-    """🆕 ログの削除処理"""
+    """ログの削除処理"""
     log = get_object_or_404(WorkLog, pk=pk, user=request.user)
     log.delete()
     return redirect('work_tracker')
@@ -338,5 +334,12 @@ def roulette_result(request, item):
 @login_required
 def congrats(request): return render(request, 'steppia_app/congrats.html', {'prize': request.GET.get('prize', '豪華賞品')})
 def roulette_lost(request): return render(request, 'steppia_app/roulette_lost.html')
+
+# --- 🆕 修正：ログイン中の名前をHTMLに渡す ---
 @login_required
-def congrats_map(request): return render(request, 'steppia_app/congrats_map.html')
+def congrats_map(request):
+    """ゴール時のお祝い画面にお名前を表示する"""
+    member = Member.objects.filter(user=request.user).first()
+    # 会員登録された名前を優先し、なければユーザー名を使用
+    user_name = member.first_name if member else request.user.username
+    return render(request, 'steppia_app/congrats_map.html', {'user_name': user_name})
