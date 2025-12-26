@@ -3,59 +3,110 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>冒険マップ制覇！ - ステッピア</title>
-    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>おめでとう！ - ステッピア</title>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-image: url("{% static 'images/sakura_bg.png' %}"); /* */
-            background-size: cover; background-position: center;
-            margin: 0; overflow: hidden; height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            font-family: 'Zen Maru Gothic', sans-serif;
+        :root { 
+            --bg: #DCECCF; 
+            --brown: #5D4037;
+            --star-yellow: #FFF2AF; 
+            --text-black: #000000;
         }
-        .celebration-card {
-            background: rgba(255, 255, 255, 0.85);
-            padding: 50px 70px; border-radius: 50px; text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15); border: 4px solid #F8BBD0;
-            z-index: 10; position: relative;
-        }
-        h1 { font-size: 34px; color: #5D4037; margin-bottom: 20px; }
-        p { font-size: 22px; color: #5D4037; font-weight: 700; line-height: 1.8; }
         
-        /* 🌸 花びらアニメーション */
-        .petal {
-            position: absolute; background-color: #FFC0CB; border-radius: 150% 0 150% 0;
-            opacity: 0.8; pointer-events: none; z-index: 20; top: -10vh;
+        body { 
+            background-color: var(--bg); 
+            margin: 0; 
+            font-family: 'Zen Maru Gothic', sans-serif; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .congrats-card {
+            background: white;
+            padding: 50px 30px;
+            border-radius: 50px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+            border: 8px solid #FFE082;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 { font-size: 32px; color: #E65100; margin-bottom: 10px; }
+        p { font-size: 18px; color: var(--brown); font-weight: 700; line-height: 1.6; }
+
+        /* 紙吹雪のアニメーション */
+        .confetti {
+            position: absolute; width: 15px; height: 15px; background: #f00;
+            animation: fall 3s linear infinite;
         }
         @keyframes fall {
-            0% { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0; }
-            10% { opacity: 1; }
-            100% { transform: translateY(110vh) rotate(720deg) translateX(20px); opacity: 0.7; }
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+
+        /* 戻るボタンの設定（他ページと統一） */
+        .bottom-nav { 
+            position: fixed !important; 
+            bottom: 20px; 
+            left: 20px; 
+            z-index: 9999; 
+            width: 120px; 
+            height: 120px; 
+        }
+        .star-link-btn {
+            position: relative; display: flex; align-items: center; justify-content: center;
+            width: 100%; height: 100%; text-decoration: none; cursor: pointer;
+            transition: transform 0.2s ease-out;
+        }
+        /* クリック時にボタン全体を縮小 */
+        .star-link-btn:active { 
+            transform: scale(0.9); 
+        }
+        .star-icon { font-size: 120px; color: var(--star-yellow); filter: drop-shadow(0 6px 12px rgba(0,0,0,0.1)); line-height: 1; }
+        .star-text {
+            position: absolute; font-size: 22px; font-weight: 900; color: var(--text-black);
+            top: 50%; left: 50%; transform: translate(-50%, -45%); white-space: nowrap;
         }
     </style>
 </head>
 <body>
-    <div id="petals-container"></div>
-    <div class="celebration-card">
-        <h1>✨ 冒険マップ制覇！ ✨</h1>
-        <p>{{ request.user.last_name|default:request.user.username }}さん、<br>30歩すべて完走です！<br>
-        この満開の桜のように、<br>あなたの新しい一歩を応援しています🌸</p>
+    <div id="confetti-container"></div>
+
+    <div class="congrats-card">
+        <div style="font-size: 60px; margin-bottom: 20px;">🎊</div>
+        <h1>ついにゴール！</h1>
+        <p>{{ user_name }}さん、30ステップ完走<br>本当におめでとうございます！<br>新しい冒険の始まりですね🌸</p>
     </div>
+
+    <div class="bottom-nav">
+        <a href="{% url 'menu' %}" class="star-link-btn">
+            <span class="star-icon">★</span>
+            <span class="star-text">戻る</span>
+        </a>
+    </div>
+
     <script>
-        function createPetal() {
-            const petal = document.createElement('div');
-            petal.className = 'petal';
-            const size = Math.random() * 12 + 10;
-            petal.style.width = `${size}px`; petal.style.height = `${size}px`;
-            petal.style.left = `${Math.random() * 100}vw`;
-            const duration = Math.random() * 5 + 3;
-            const delay = Math.random() * 2;
-            petal.style.animation = `fall ${duration}s linear ${delay}s infinite`;
-            document.getElementById('petals-container').appendChild(petal);
-            setTimeout(() => { petal.remove(); }, (duration + delay + 1) * 1000);
+        // 紙吹雪を生成するスクリプト
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            for (let i = 0; i < 50; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.backgroundColor = ['#FFD54F', '#F48FB1', '#81C784', '#64B5F6', '#BA68C8'][Math.floor(Math.random() * 5)];
+                c.style.animationDelay = Math.random() * 3 + 's';
+                c.style.opacity = Math.random();
+                container.appendChild(c);
+            }
         }
-        setInterval(createPetal, 150);
-        for(let i=0; i<20; i++) createPetal();
+        window.onload = createConfetti;
     </script>
 </body>
 </html>
