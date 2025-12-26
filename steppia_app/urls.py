@@ -1,26 +1,8 @@
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.models import User
-from django.http import HttpResponse
 from . import views
 
-# 🆕 緊急用：ユーザーを削除して、スタッフ権限（管理者）を持つスーパーユーザーとして作り直す
-def make_user(request):
-    username = 'okamuranana'
-    password = 'admin2026'
-    
-    # 既存のユーザーを一度削除して、権限トラブルをリセットする
-    User.objects.filter(username=username).delete()
-    
-    # 【最強の管理者（スーパーユーザー）】として新規作成
-    User.objects.create_superuser(username, '', password)
-    
-    return HttpResponse(f"ユーザー '{username}' を【最強の管理者】として再作成しました！管理画面（/admin/）で試してください。")
-
 urlpatterns = [
-    # 🆕 修正のために一時的に復活
-    path('make-user-emergency/', make_user),
-    
     # --- 1. メニュー画面（TOP） ---
     path('', views.top, name='menu'),
     
