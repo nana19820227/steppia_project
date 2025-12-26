@@ -13,7 +13,6 @@ DEBUG = 'RENDER' not in os.environ
 ALLOWED_HOSTS = ['steppia-project.onrender.com', '127.0.0.1', 'localhost', '*']
 
 # 🆕 CSRF対策（RenderなどのHTTPS環境で必須）
-# これがないと、スマホなどの外部からログインしようとした際に403エラーになります
 CSRF_TRUSTED_ORIGINS = ['https://steppia-project.onrender.com']
 
 # --- 2. アプリケーション定義 ---
@@ -58,9 +57,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # --- 3. データベース設定 ---
+# 🆕 Renderの環境変数 DATABASE_URL があればそれを使用し、なければローカルの SQLite を使用する設定
 DATABASES = {
     'default': dj_database_url.config(
-        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
+        default=os.environ.get('DATABASE_URL', f'sqlite:///{BASE_DIR / "db.sqlite3"}'),
         conn_max_age=600
     )
 }
