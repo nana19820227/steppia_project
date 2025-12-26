@@ -14,6 +14,16 @@
         body { background-color: var(--bg); margin: 0; font-family: 'Zen Maru Gothic', sans-serif; color: var(--brown); }
         .container { max-width: 500px; margin: 0 auto; padding: 40px 20px 180px; box-sizing: border-box; }
 
+        /* 🆕 入力ボックスの右側にある上下矢印を消す設定 */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield; /* Firefox用 */
+        }
+
         /* 警告アラート */
         .warning-alert {
             background-color: #ffebee; border: 3px solid var(--ng-red); border-radius: 25px;
@@ -35,7 +45,6 @@
 
         .save-btn { width: 100%; height: 60px; background: var(--brown); color: var(--white); border: none; border-radius: 20px; font-size: 18px; font-weight: 900; cursor: pointer; margin-top: 10px; }
 
-        /* ログ一覧のデザイン */
         .logs-list { width: 100%; display: flex; flex-direction: column; gap: 15px; }
         .log-item {
             background: var(--white); border-radius: 25px; padding: 18px;
@@ -47,7 +56,6 @@
         .log-company { font-size: 16px; font-weight: 900; margin: 2px 0; }
         .log-details { font-size: 14px; color: var(--brown); font-weight: 700; }
         
-        /* 🆕 修正・削除ボタンのエリア */
         .log-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
         .log-status { font-weight: 900; font-size: 13px; margin-bottom: 5px; }
         .status-ok { color: var(--ok-green); }
@@ -59,7 +67,6 @@
 
         .warning-text { background: #FFEBEE; color: var(--ng-red); font-size: 10px; font-weight: 900; padding: 4px 8px; border-radius: 8px; margin-top: 5px; display: inline-block; }
 
-        /* 戻るボタン */
         .bottom-nav { position: fixed !important; bottom: 20px; left: 20px; z-index: 9999; width: 120px; height: 120px; }
         .star-link-btn { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; text-decoration: none; }
         .star-icon { font-size: 120px; color: var(--star-yellow); filter: drop-shadow(0 6px 12px rgba(0,0,0,0.1)); }
@@ -84,11 +91,11 @@
             </div>
             <form method="POST">
                 {% csrf_token %}
-                <div class="form-group"><label class="form-label">🏢 会社名</label><input type="text" name="company" class="input-box" placeholder="例：創造社"></div>
+                <div class="form-group"><label class="form-label">🏢 会社名</label><input type="text" name="company" class="input-box"></div>
                 <div class="form-group"><label class="form-label">📅 就労日</label><input type="date" name="date" class="input-box" required value="{{ today|date:'Y-m-d' }}"></div>
                 <div style="display: flex; gap: 10px;">
-                    <div class="form-group" style="flex: 1;"><label class="form-label">⏱️ 時間</label><input type="number" step="0.1" name="hours" class="input-box" placeholder="2.0"></div>
-                    <div class="form-group" style="flex: 2;"><label class="form-label">💰 報酬(円)</label><input type="number" name="amount" class="input-box" required placeholder="5000"></div>
+                    <div class="form-group" style="flex: 1;"><label class="form-label">⏱️ 時間</label><input type="number" step="0.1" name="hours" class="input-box"></div>
+                    <div class="form-group" style="flex: 2;"><label class="form-label">💰 報酬(円)</label><input type="number" name="amount" class="input-box" required></div>
                 </div>
                 <button type="submit" class="save-btn">記録を保存する</button>
             </form>
