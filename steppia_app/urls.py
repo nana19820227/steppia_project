@@ -5,21 +5,15 @@ from django.http import HttpResponse
 from . import views
 
 # 🆕 緊急用：ユーザーを強制作成する関数
-# Renderの更新（デプロイ）でデータが消えるたびに、このURLを叩く必要があります
 def make_user(request):
     username = 'okamuranana'
     password = 'admin2026'
-    
-    # 既存のユーザーを一度削除してリセット（上書き作成するため）
     User.objects.filter(username=username).delete()
-    
-    # 【最強の管理者（スーパーユーザー）】として新規作成
     User.objects.create_superuser(username, '', password)
-    
-    return HttpResponse(f"ユーザー '{username}' を【最強の管理者】として作成しました！すぐにログイン画面で試してください。")
+    return HttpResponse(f"ユーザー '{username}' を【最強の管理者】として作成しました！")
 
 urlpatterns = [
-    # 🆕 ログインができない時のための「救済用URL」
+    # 🆕 救済用URL
     path('make-user-emergency/', make_user),
     
     # --- 1. メニュー画面（TOP） ---
@@ -40,6 +34,9 @@ urlpatterns = [
     
     # --- 4. お仕事ログ ---
     path('work-tracker/', views.work_tracker, name='work_tracker'),
+    # 🆕 修正用と削除用の住所を追加しました
+    path('work-tracker/edit/<int:pk>/', views.edit_work_log, name='edit_work_log'),
+    path('work-tracker/delete/<int:pk>/', views.delete_work_log, name='delete_work_log'),
     
     # --- 5. 相談室・マイページ ---
     path('ai-consult/', views.ai_consult, name='ai_consult'),

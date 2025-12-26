@@ -8,136 +8,86 @@
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --bg: #DCECCF; 
-            --white: #FFFFFF;
-            --brown: #5D4037;
-            --beige: #FDF9F1;
-            --star-yellow: #FFF2AF; 
-            --text-black: #000000;
-            --ok-green: #4CAF50;
-            --ng-red: #F44336;
+            --bg: #DCECCF; --white: #FFFFFF; --brown: #5D4037; --beige: #FDF9F1;
+            --star-yellow: #FFF2AF; --text-black: #000000; --ok-green: #4CAF50; --ng-red: #F44336;
         }
-        
-        body { 
-            background-color: var(--bg); 
-            margin: 0; 
-            font-family: 'Zen Maru Gothic', sans-serif; 
-            color: var(--brown); 
-        }
+        body { background-color: var(--bg); margin: 0; font-family: 'Zen Maru Gothic', sans-serif; color: var(--brown); }
+        .container { max-width: 500px; margin: 0 auto; padding: 40px 20px 180px; box-sizing: border-box; }
 
-        .container { 
-            max-width: 500px; 
-            margin: 0 auto; 
-            padding: 40px 20px 180px; 
-            box-sizing: border-box; 
-        }
-
-        /* 🆕 保存直後の大きな警告メッセージ */
+        /* 警告アラート */
         .warning-alert {
             background-color: #ffebee; border: 3px solid var(--ng-red); border-radius: 25px;
-            padding: 20px; margin-bottom: 25px; text-align: center;
-            animation: shake 0.5s ease-in-out;
+            padding: 20px; margin-bottom: 25px; text-align: center; animation: shake 0.5s ease-in-out;
         }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 
-        .log-card {
-            background: var(--white); border-radius: 40px; padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; margin-bottom: 30px;
-        }
-
+        .log-card { background: var(--white); border-radius: 40px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; margin-bottom: 30px; }
         .title-area h2 { font-size: 24px; font-weight: 900; margin: 0 0 20px 0; }
 
-        /* 🆕 言い回しを分かりやすく修正 */
-        .limit-box {
-            background: var(--beige); border: 2px dashed #FFA726; border-radius: 25px;
-            padding: 20px; margin-bottom: 25px;
-        }
+        .limit-box { background: var(--beige); border: 2px dashed #FFA726; border-radius: 25px; padding: 20px; margin-bottom: 25px; }
         .limit-label { font-size: 16px; font-weight: 900; color: #E65100; margin-bottom: 8px; }
         .limit-value { font-size: 36px; font-weight: 900; color: #E65100; display: block; }
         .limit-sub { font-size: 12px; font-weight: 900; color: #F57C00; margin-top: 5px; opacity: 0.8; }
 
         .form-group { text-align: left; margin-bottom: 15px; }
         .form-label { font-size: 14px; font-weight: 900; margin-bottom: 6px; display: block; }
-        .input-box {
-            width: 100%; height: 50px; border-radius: 15px; border: 2px solid #eee;
-            padding: 0 15px; font-size: 16px; font-weight: 900; box-sizing: border-box; outline: none;
-        }
+        .input-box { width: 100%; height: 50px; border-radius: 15px; border: 2px solid #eee; padding: 0 15px; font-size: 16px; font-weight: 900; box-sizing: border-box; outline: none; }
 
-        .save-btn {
-            width: 100%; height: 60px; background: var(--brown); color: var(--white);
-            border: none; border-radius: 20px; font-size: 18px; font-weight: 900;
-            cursor: pointer; margin-top: 10px; transition: transform 0.1s;
-        }
-        .save-btn:active { transform: scale(0.95); }
+        .save-btn { width: 100%; height: 60px; background: var(--brown); color: var(--white); border: none; border-radius: 20px; font-size: 18px; font-weight: 900; cursor: pointer; margin-top: 10px; }
 
+        /* ログ一覧のデザイン */
         .logs-list { width: 100%; display: flex; flex-direction: column; gap: 15px; }
         .log-item {
-            background: var(--white); border-radius: 25px; padding: 15px 20px;
-            display: flex; justify-content: space-between; align-items: center;
+            background: var(--white); border-radius: 25px; padding: 18px;
+            display: flex; justify-content: space-between; align-items: flex-start;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
-        .log-info { text-align: left; }
+        .log-info { text-align: left; flex: 1; }
         .log-date { font-size: 12px; color: #888; font-weight: 900; }
         .log-company { font-size: 16px; font-weight: 900; margin: 2px 0; }
         .log-details { font-size: 14px; color: var(--brown); font-weight: 700; }
         
-        .warning-text {
-            background: #FFEBEE; color: var(--ng-red); font-size: 11px; font-weight: 900;
-            padding: 5px 10px; border-radius: 10px; margin-top: 5px; display: inline-block;
-        }
-        .log-status { font-weight: 900; font-size: 14px; }
+        /* 🆕 修正・削除ボタンのエリア */
+        .log-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .log-status { font-weight: 900; font-size: 13px; margin-bottom: 5px; }
         .status-ok { color: var(--ok-green); }
         .status-ng { color: var(--ng-red); }
 
-        .bottom-nav { 
-            position: fixed !important; bottom: 20px; left: 20px; z-index: 9999; width: 130px; height: 130px;
-        }
-        .star-link-btn {
-            position: relative; display: flex; align-items: center; justify-content: center;
-            width: 100%; height: 100%; text-decoration: none; cursor: pointer;
-            transition: transform 0.2s ease-out;
-        }
-        .star-link-btn:active { transform: scale(0.9); }
-        .star-icon { font-size: 130px; color: var(--star-yellow); filter: drop-shadow(0 6px 15px rgba(0,0,0,0.15)); line-height: 1; }
-        .star-text {
-            position: absolute; font-size: 24px; font-weight: 900; color: var(--text-black);
-            top: 50%; left: 50%; transform: translate(-50%, -45%); white-space: nowrap;
-        }
-        .star-link-btn:active .star-text { transform: translate(-40%, -65%) rotate(15deg); }
+        .action-links { display: flex; gap: 10px; }
+        .btn-edit { color: #888; text-decoration: none; font-size: 11px; font-weight: 900; padding: 5px 8px; border: 1.5px solid #eee; border-radius: 8px; }
+        .btn-delete { color: #e57373; text-decoration: none; font-size: 11px; font-weight: 900; padding: 5px 8px; border: 1.5px solid #ffebee; border-radius: 8px; }
+
+        .warning-text { background: #FFEBEE; color: var(--ng-red); font-size: 10px; font-weight: 900; padding: 4px 8px; border-radius: 8px; margin-top: 5px; display: inline-block; }
+
+        /* 戻るボタン */
+        .bottom-nav { position: fixed !important; bottom: 20px; left: 20px; z-index: 9999; width: 120px; height: 120px; }
+        .star-link-btn { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; text-decoration: none; }
+        .star-icon { font-size: 120px; color: var(--star-yellow); filter: drop-shadow(0 6px 12px rgba(0,0,0,0.1)); }
+        .star-text { position: absolute; font-size: 22px; font-weight: 900; color: var(--text-black); top: 50%; left: 50%; transform: translate(-50%, -45%); }
     </style>
 </head>
 <body>
     <div class="container">
-        
         {% if show_warning %}
         <div class="warning-alert">
             <div style="font-size: 40px; margin-bottom: 10px;">⚠️</div>
-            <div style="font-weight: 900; color: var(--ng-red); font-size: 18px; line-height: 1.6;">
-                本日の合計が制限を超えました。<br>
-                ハローワークへ申告してください！
-            </div>
+            <div style="font-weight: 900; color: var(--ng-red); font-size: 18px; line-height: 1.6;">本日の合計が制限を超えました。<br>ハローワークへ申告してください！</div>
         </div>
         {% endif %}
 
         <div class="log-card">
             <div class="title-area"><h2>💼 お仕事ログ</h2></div>
-            
             <div class="limit-box">
                 <div class="limit-label">ハローワーク申告の目安</div>
                 <div class="limit-value">¥{{ limit_pay|default:"4,000" }}</div>
                 <div class="limit-sub">※1日の合計が「2時間」を超える場合も申告が必要です</div>
             </div>
-
             <form method="POST">
                 {% csrf_token %}
                 <div class="form-group"><label class="form-label">🏢 会社名</label><input type="text" name="company" class="input-box" placeholder="例：創造社"></div>
                 <div class="form-group"><label class="form-label">📅 就労日</label><input type="date" name="date" class="input-box" required value="{{ today|date:'Y-m-d' }}"></div>
                 <div style="display: flex; gap: 10px;">
-                    <div class="form-group" style="flex: 1;"><label class="form-label">⏱️ 合計時間</label><input type="number" step="0.1" name="hours" class="input-box" placeholder="2.0"></div>
+                    <div class="form-group" style="flex: 1;"><label class="form-label">⏱️ 時間</label><input type="number" step="0.1" name="hours" class="input-box" placeholder="2.0"></div>
                     <div class="form-group" style="flex: 2;"><label class="form-label">💰 報酬(円)</label><input type="number" name="amount" class="input-box" required placeholder="5000"></div>
                 </div>
                 <button type="submit" class="save-btn">記録を保存する</button>
@@ -151,16 +101,16 @@
                     <div class="log-date">{{ log.date|date:"m/d" }}</div>
                     <div class="log-company">{{ log.company_name }}</div>
                     <div class="log-details">¥{{ log.earnings }} ({{ log.hours }}h)</div>
-                    {% if log.is_over_limit %}
-                        <div class="warning-text">⚠️ 金額または時間の制限超過（要申告）</div>
-                    {% endif %}
+                    {% if log.is_over_limit %}<div class="warning-text">⚠️ 制限超過（要申告）</div>{% endif %}
                 </div>
-                <div class="log-status">
-                    {% if log.is_over_limit %}
-                        <span class="status-ng">❌要申告</span>
-                    {% else %}
-                        <span class="status-ok">✅OK</span>
-                    {% endif %}
+                <div class="log-actions">
+                    <div class="log-status">
+                        {% if log.is_over_limit %}<span class="status-ng">❌要申告</span>{% else %}<span class="status-ok">✅OK</span>{% endif %}
+                    </div>
+                    <div class="action-links">
+                        <a href="{% url 'edit_work_log' log.pk %}" class="btn-edit">修正</a>
+                        <a href="{% url 'delete_work_log' log.pk %}" class="btn-delete" onclick="return confirm('この記録を消してもいいですか？')">削除</a>
+                    </div>
                 </div>
             </div>
             {% empty %}
@@ -169,11 +119,6 @@
         </div>
     </div>
 
-    <div class="bottom-nav">
-        <a href="{% url 'menu' %}" class="star-link-btn">
-            <span class="star-icon">★</span>
-            <span class="star-text">戻る</span>
-        </a>
-    </div>
+    <div class="bottom-nav"><a href="{% url 'menu' %}" class="star-link-btn"><span class="star-icon">★</span><span class="star-text">戻る</span></a></div>
 </body>
 </html>

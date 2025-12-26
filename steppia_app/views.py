@@ -91,7 +91,7 @@ def apply_done(request):
     consultant_name = request.session.get('selected_consultant', '担当コンサルタント')
     return render(request, 'steppia_app/apply_done.html', {'consultant_name': consultant_name})
 
-# --- 4. お仕事ログ ---
+# --- 4. お仕事ログ（累積判定＋管理機能） ---
 @login_required
 def work_tracker(request):
     """累積判定版：1日の「金額(4000円)」または「時間(2時間)」を超えたら警告を出します"""
@@ -110,11 +110,11 @@ def work_tracker(request):
                 job=Job.objects.first(), 
                 company_name=company if company else "（未入力）",
                 date=date_str,
-                hours=float(hours) if hours else 0, # 小数点(1.5時間など)も扱えるようにfloatに変更
+                hours=float(hours) if hours else 0,
                 earnings=int(amount)
             )
             
-            # 🆕 保存した日の「合計金額」と「合計時間」をダブルチェック
+            # その日の「合計金額」と「合計時間」をダブルチェック
             daily_stats = WorkLog.objects.filter(
                 user=request.user, 
                 date=date_str
@@ -126,26 +126,22 @@ def work_tracker(request):
             total_pay = daily_stats['total_pay'] or 0
             total_hrs = daily_stats['total_hrs'] or 0
             
-            # 4,000円以上、または2時間を超えた場合に警告
             if total_pay >= 4000 or total_hrs > 2:
                 show_warning = True
 
     # 履歴表示用
     logs = WorkLog.objects.filter(user=request.user).order_by('-date')
     
-    # 🆕 日ごとの合計を計算し、制限（4000円超 または 2時間超）の日を特定する
+    # 日ごとの合計を計算し、制限オーバーの日を特定
     daily_summary = WorkLog.objects.filter(user=request.user).values('date').annotate(
         sum_pay=Sum('earnings'),
         sum_hrs=Sum('hours')
     )
-    
-    # 制限オーバーの日付リストを作成
     over_limit_dates = [
         item['date'] for item in daily_summary 
         if item['sum_pay'] >= 4000 or item['sum_hrs'] > 2
     ]
 
-    # 履歴一覧の各行に「！マーク」などの判定用フラグをセット
     for log in logs:
         log.is_over_limit = log.date in over_limit_dates
     
@@ -155,9 +151,30 @@ def work_tracker(request):
         'total_hours': sum(log.hours for log in logs) if logs else 0, 
         'total_earnings': sum(log.earnings for log in logs) if logs else 0,
         'limit_pay': 4000,
-        'limit_hrs': 2
+        'limit_hrs': 2,
+        'today': timezone.now().date()
     }
     return render(request, 'steppia_app/work_tracker.html', context)
+
+@login_required
+def edit_work_log(request, pk):
+    """🆕 ログの修正処理"""
+    log = get_object_or_404(WorkLog, pk=pk, user=request.user)
+    if request.method == 'POST':
+        log.company_name = request.POST.get('company')
+        log.date = request.POST.get('date')
+        log.hours = float(request.POST.get('hours') or 0)
+        log.earnings = int(request.POST.get('amount') or 0)
+        log.save()
+        return redirect('work_tracker')
+    return render(request, 'steppia_app/edit_work_log.html', {'log': log})
+
+@login_required
+def delete_work_log(request, pk):
+    """🆕 ログの削除処理"""
+    log = get_object_or_404(WorkLog, pk=pk, user=request.user)
+    log.delete()
+    return redirect('work_tracker')
 
 # --- 5. AI相談室 ---
 def ai_consult(request):
