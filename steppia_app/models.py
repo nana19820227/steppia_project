@@ -31,10 +31,18 @@ class Member(models.Model):
         return f"{self.last_name} {self.first_name}"
 
     def can_spin_roulette(self):
-        """今日ルーレットを回せるか判定する"""
+        """
+        今日ルーレットを回せるか判定する（日本時間基準）
+        """
         if not self.last_roulette_date:
             return True
-        return self.last_roulette_date < timezone.now().date()
+        
+        # 🆕 修正ポイント: localdate() を使うことで settings.py の Asia/Tokyo を基準にします
+        # これにより、日本の深夜0時を過ぎた瞬間に日付が切り替わります。
+        today = timezone.localdate()
+        
+        # 保存されている日付が「今日」より前であれば回せる
+        return self.last_roulette_date < today
 
 # 2. 求人情報
 class Job(models.Model):
@@ -51,13 +59,11 @@ class Job(models.Model):
     def __str__(self):
         return self.title
 
-# 3. 応募履歴・進捗管理（単数形に変更）
+# 3. 応募履歴・進捗管理
 class Application(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="ユーザー", related_name="applications")
     job = models.ForeignKey(Job, on_delete=models.CASCADE, verbose_name="応募先企業")
     applied_at = models.DateTimeField('応募日時', auto_now_add=True)
-    
-    # 冒険マップの進捗（1〜30）
     current_step = models.IntegerField('現在のステップ', default=1)
     status = models.CharField('選考ステータス', max_length=50, default='連絡待ち')
 
@@ -140,15 +146,13 @@ class Coupon(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.prize_name}"
 
-# --- シグナル設定（User作成時にMemberを自動生成） ---
+# --- シグナル設定 ---
 @receiver(post_save, sender=User)
 def create_user_member(sender, instance, created, **kwargs):
     if created:
-        # Userが新規作成されたとき、空のMemberを作成する
         Member.objects.create(user=instance, email=instance.email)
 
 @receiver(post_save, sender=User)
 def save_user_member(sender, instance, **kwargs):
-    # Userが保存されたとき、Memberも同期して保存する
     if hasattr(instance, 'profile'):
         instance.profile.save()
