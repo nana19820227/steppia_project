@@ -9,11 +9,11 @@
     <style>
         /* --- アニメーション --- */
         @keyframes splash-anim {
-            0% { transform: translate(-50%, 0) scale(0.5); opacity: 0.8; }
-            50% { transform: translate(-50%, -40px) scale(1.2); opacity: 1; }
-            100% { transform: translate(-50%, -80px) scale(0.3); opacity: 0; }
+            0% { transform: translate(-50%, 0) scale(0.3); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translate(-50%, -100px) scale(1.5); opacity: 0; }
         }
-        @keyframes swim-no-flip { 0% { transform: translateX(0); } 50% { transform: translateX(100px); } 100% { transform: translateX(0); } }
+        @keyframes swim-no-flip { 0% { transform: translateX(0); } 50% { transform: translateX(60px); } 100% { transform: translateX(0); } }
 
         :root { 
             --wood: #6D4C41; --grass: #DCECCF; --sky: #DCECCF; 
@@ -39,7 +39,7 @@
             z-index: 1; 
         }
 
-        /* --- 🆕 統合されたヘッダーパネル（企業管理をここに配置） --- */
+        /* --- ヘッダーパネル --- */
         .header-panel { 
             position: fixed; top: 15px; left: 50%; transform: translateX(-50%); 
             width: 95%; max-width: 800px; 
@@ -70,15 +70,18 @@
         .btn-warp { background: #F48FB1; box-shadow: 0 3px 0 #C2185B; }
         .btn-del { background: #e57373; box-shadow: 0 3px 0 #c62828; }
 
-        /* --- 🆕 戻るボタンを左下に配置 --- */
+        /* --- 🆕 戻るボタンの配置調整（バランス重視） --- */
         .bottom-nav { 
-            position: fixed !important; bottom: 30px; left: 30px; z-index: 4000; 
+            position: fixed !important; bottom: 40px; left: 45px; z-index: 4000; 
         }
 
         .star-link-btn { 
             position: relative; display: flex; align-items: center; justify-content: center; 
             width: 100px; height: 100px; text-decoration: none; 
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        .star-link-btn:hover { transform: scale(1.1) rotate(-5deg); }
+
         .star-icon { font-size: 100px; color: var(--star-yellow); filter: drop-shadow(0 6px 15px rgba(0,0,0,0.15)); }
         .star-text { 
             position: absolute; font-size: 20px; font-weight: 900; color: var(--text-black); 
@@ -97,20 +100,25 @@
 
         .deco-item { position: absolute; pointer-events: none; z-index: 10; }
         
-        /* --- デコレーション位置（微調整） --- */
+        /* --- デコレーション位置 --- */
         .buranko-deco { top: 120px; left: 60px; width: 130px; z-index: 150; }
         .tree-deco { top: 100px; left: 1100px; width: 120px; z-index: 150; }
         
-        /* 🆕 池（magic-pond）を少し右側に移動 */
-        .magic-pond { top: 1020px; left: 250px; width: 280px; height: 180px; z-index: 150; background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; }
+        /* 🆕 池（magic-pond）を一回り小さく調整 */
+        .magic-pond { top: 1040px; left: 280px; width: 220px; height: 140px; z-index: 150; background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
         
         .funsui-area { top: 1080px; left: 1120px; width: 140px; z-index: 150; }
         .tobibako-deco { top: 1050px; left: 750px; width: 120px; z-index: 150; }
 
+        /* 🆕 水飛沫のスタイル定義 */
+        .splash {
+            position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; pointer-events: none;
+        }
+
         @media (max-width: 768px) {
             .dollhouse-frame { transform: scale(0.28); transform-origin: top center; margin-top: 150px; margin-bottom: -850px; }
             .header-panel { width: 98%; padding: 10px; border-radius: 15px; }
-            .bottom-nav { left: 15px; bottom: 20px; transform: scale(0.8); }
+            .bottom-nav { left: 25px; bottom: 30px; transform: scale(0.8); }
         }
     </style>
 </head>
@@ -136,10 +144,11 @@
             </div>
         </div>
 
-        <div class="deco-item magic-pond"><img src="{% static 'images/fish.png' %}" style="position:absolute; top:35%; width:50px; animation: swim-no-flip 10s linear infinite;"></div>
+        <div class="deco-item magic-pond"><img src="{% static 'images/fish.png' %}" style="position:absolute; top:35%; width:40px; animation: swim-no-flip 10s linear infinite;"></div>
+        
         <div class="deco-item funsui-area">
             <img src="{% static 'images/funsui.png' %}" class="funsui-img" style="width:100%; display:block;">
-            <div id="splash-container" style="position:absolute; top:15px; left:50%; transform:translateX(-50%); width:80%; height:30px;"></div>
+            <div id="splash-container" style="position:absolute; top:20px; left:50%; width:40px; height:20px;"></div>
         </div>
 
         <img src="{% static 'images/midorinoki.png' %}" class="deco-item tree-deco">
@@ -184,8 +193,6 @@
         function updateView() {
             const pawn = document.getElementById('pawn');
             const select = document.getElementById('company-select');
-            
-            // セレクトボックスの更新
             select.innerHTML = '<option value="">企業を選択してください</option>';
             for (const id in companies) {
                 const opt = document.createElement('option');
@@ -210,36 +217,31 @@
                 document.querySelectorAll('.step-tile').forEach((t, idx) => { t.classList.toggle('completed', idx < step); });
                 if (step === 30) { setTimeout(() => { window.location.href = "{% url 'congrats_map' %}"; }, 1300); }
             }
-            
             localStorage.setItem('steppia_companies', JSON.stringify(companies));
             localStorage.setItem('steppia_current_id', currentCompanyId);
         }
 
         function changeCompany(id) { currentCompanyId = id; updateView(); }
-        
-        function addCompany() { 
-            const name = prompt("企業名を入力してください"); 
-            if (name) { 
-                const id = 'c' + Date.now(); 
-                companies[id] = { name: name, step: 1 }; 
-                currentCompanyId = id; 
-                updateView(); 
-            } 
-        }
-
-        function deleteCurrentCompany() {
-            if (!currentCompanyId) return;
-            if (confirm(`${companies[currentCompanyId].name} を削除しますか？`)) {
-                delete companies[currentCompanyId];
-                currentCompanyId = '';
-                updateView();
-            }
-        }
-
+        function addCompany() { const name = prompt("企業名を入力してください"); if (name) { const id = 'c' + Date.now(); companies[id] = { name: name, step: 1 }; currentCompanyId = id; updateView(); } }
+        function deleteCurrentCompany() { if (!currentCompanyId) return; if (confirm(`${companies[currentCompanyId].name} を削除しますか？`)) { delete companies[currentCompanyId]; currentCompanyId = ''; updateView(); } }
         function warp() { if(!currentCompanyId) return; const v = parseInt(document.getElementById('warp-val').value); companies[currentCompanyId].step = v; updateView(); }
         function drawPath() { const line = document.getElementById('path-line'); let d = `M ${nodePoints[0].x} ${nodePoints[0].y}`; for (let i = 1; i < nodePoints.length; i++) { d += ` L ${nodePoints[i].x} ${nodePoints[i].y}`; } line.setAttribute('d', d); }
-        function createSplash() { const container = document.getElementById('splash-container'); if(!container) return; const splash = document.createElement('div'); splash.className = 'splash'; splash.style.left = `${50 + (Math.random() * 20 - 10)}%`; const duration = Math.random() * 0.8 + 0.6; splash.style.animation = `splash-anim ${duration}s ease-out forwards`; container.appendChild(splash); setTimeout(() => splash.remove(), duration * 1000); }
-        window.onload = () => { renderMap(); setInterval(createSplash, 350); };
+
+        // 🆕 噴水の水飛沫アニメーション
+        function createSplash() { 
+            const container = document.getElementById('splash-container'); 
+            if(!container) return; 
+            const splash = document.createElement('div'); 
+            splash.className = 'splash'; 
+            // 飛ぶ方向をランダムに散らす
+            splash.style.left = `${Math.random() * 100}%`; 
+            const duration = Math.random() * 0.5 + 0.5; 
+            splash.style.animation = `splash-anim ${duration}s ease-out forwards`; 
+            container.appendChild(splash); 
+            setTimeout(() => splash.remove(), duration * 1000); 
+        }
+
+        window.onload = () => { renderMap(); setInterval(createSplash, 150); }; // 生成速度をアップ
     </script>
 </body>
 </html>
