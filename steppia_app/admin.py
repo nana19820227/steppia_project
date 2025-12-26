@@ -1,18 +1,19 @@
 from django.contrib import admin
-from .models import Member, Job, Schedule, AIConsultTemplate, AIConsultLog, Applications, WorkLog
+# Applications を Application (単数形) に修正
+from .models import Member, Job, Schedule, AIConsultTemplate, AIConsultLog, Application, WorkLog, Coupon
 
-# 1. 会員情報を詳細に表示する設定
-@admin.register(Member)  # 👈 これで登録されるので、下の register() は不要です
+@admin.register(Member)
 class MemberAdmin(admin.ModelAdmin):
-    # 管理画面の一覧に「名前」「メール」「賃金日額」を表示
-    list_display = ('last_name', 'first_name', 'email', 'daily_wage')
-    # 検索窓でメールアドレスや名前を探せるようにする
+    list_display = ('last_name', 'first_name', 'email', 'daily_wage', 'last_roulette_date')
     search_fields = ('last_name', 'first_name', 'email')
 
-# 2. その他のモデルはシンプルに登録
+@admin.register(Application)
+class ApplicationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'job', 'current_step', 'status', 'applied_at')
+
 admin.site.register(Job)
 admin.site.register(Schedule)
 admin.site.register(AIConsultTemplate)
 admin.site.register(AIConsultLog)
-admin.site.register(Applications)
-admin.site.register(WorkLog)  
+admin.site.register(WorkLog)
+admin.site.register(Coupon)

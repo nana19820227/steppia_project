@@ -5,20 +5,23 @@ from django.http import JsonResponse
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Sum
-from django.views.decorators.cache import never_cache  # 🆕 キャッシュ防止用
+from django.views.decorators.cache import never_cache
 import pytz
 
-# すべてのモデルをインポート
-from .models import Schedule, Member, Job, AIConsultTemplate, AIConsultLog, Applications, WorkLog, Coupon
+# すべてのモデルをインポート（Applicationは単数形）
+from .models import (
+    Schedule, Member, Job, AIConsultTemplate, 
+    AIConsultLog, Application, WorkLog, Coupon
+)
 
 # --- 1. 基本・メニュー ---
 def top(request):
-    """メインメニュー画面を表示する"""
+    """トップ画面"""
     return render(request, 'steppia_app/top.html')
 
-# --- 2. 会員登録 ---
+# --- 2. 会員登録フロー ---
 def signup(request):
-    """ステップ1: ログイン用のユーザーアカウント作成"""
+    """ステップ1: アカウント作成"""
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -31,11 +34,11 @@ def signup(request):
 
 @login_required
 def signup_profile(request):
-    """ステップ2: 会員詳細情報の入力画面"""
+    """ステップ2: 詳細入力"""
     return render(request, 'steppia_app/signup_profile.html')
 
 def signup_confirm(request):
-    """会員登録確認画面"""
+    """登録内容確認"""
     context = {
         'last_name': request.GET.get('last_name'),
         'first_name': request.GET.get('first_name'),
@@ -49,49 +52,52 @@ def signup_confirm(request):
 
 @login_required
 def signup_done(request):
-    """会員登録完了：Memberを作成"""
+    """完了画面：自動作成されたMemberを更新"""
     if request.method == 'POST':
-        Member.objects.create(
-            user=request.user,
-            last_name=request.POST.get('last_name'),
-            first_name=request.POST.get('first_name'),
-            last_name_kana=request.POST.get('last_name_kana'),
-            first_name_kana=request.POST.get('first_name_kana'),
-            address=request.POST.get('address'),
-            phone=request.POST.get('phone'),
-            email=request.POST.get('email')
-        )
+        member = request.user.profile
+        member.last_name = request.POST.get('last_name')
+        member.first_name = request.POST.get('first_name')
+        member.last_name_kana = request.POST.get('last_name_kana')
+        member.first_name_kana = request.POST.get('first_name_kana')
+        member.address = request.POST.get('address')
+        member.phone = request.POST.get('phone')
+        member.email = request.POST.get('email')
+        member.save()
     return render(request, 'steppia_app/signup_done.html')
 
 @login_required
 def member_list(request):
-    """管理者用：会員一覧画面"""
+    """管理者用：会員一覧画面（urls.pyのエラー解消用）"""
     members = Member.objects.all()
     return render(request, 'steppia_app/member_list.html', {'members': members})
 
 # --- 3. 求人・応募機能 ---
 def job_list(request):
+    """求人一覧"""
     jobs = Job.objects.all()
     return render(request, 'steppia_app/job_list.html', {'jobs': jobs})
 
 def job_detail(request, pk):
+    """求人詳細"""
     job = get_object_or_404(Job, pk=pk)
     return render(request, 'steppia_app/job_detail.html', {'job': job})
 
 @login_required
 def apply_to_job(request, pk):
+    """応募処理"""
     job = get_object_or_404(Job, pk=pk)
-    Applications.objects.get_or_create(user=request.user, job=job)
+    Application.objects.get_or_create(user=request.user, job=job)
     return redirect('apply_done')
 
 def apply_done(request):
+    """応募完了"""
     consultant_name = request.session.get('selected_consultant', '担当コンサルタント')
     return render(request, 'steppia_app/apply_done.html', {'consultant_name': consultant_name})
 
-# --- 4. お仕事ログ（累積判定＋修正・削除機能） ---
+# --- 4. お仕事ログ ---
 @login_required
 def work_tracker(request):
-    """1日の合計「4000円」または「2時間」超過判定"""
+    """就労記録管理"""
     show_warning = False
     if request.method == 'POST':
         date_str = request.POST.get('date')
@@ -101,42 +107,29 @@ def work_tracker(request):
         if date_str and amount:
             WorkLog.objects.create(
                 user=request.user,
-                job=Job.objects.first(), 
                 company_name=company if company else "（未入力）",
                 date=date_str,
                 hours=float(hours) if hours else 0,
                 earnings=int(amount)
             )
-            daily_stats = WorkLog.objects.filter(user=request.user, date=date_str).aggregate(
+            stats = WorkLog.objects.filter(user=request.user, date=date_str).aggregate(
                 total_pay=Sum('earnings'), total_hrs=Sum('hours')
             )
-            total_pay = daily_stats['total_pay'] or 0
-            total_hrs = daily_stats['total_hrs'] or 0
-            if total_pay >= 4000 or total_hrs > 2:
+            if (stats['total_pay'] or 0) >= 4000 or (stats['total_hrs'] or 0) > 2:
                 show_warning = True
 
     logs = WorkLog.objects.filter(user=request.user).order_by('-date')
-    daily_summary = WorkLog.objects.filter(user=request.user).values('date').annotate(
-        sum_pay=Sum('earnings'), sum_hrs=Sum('hours')
-    )
-    over_limit_dates = [
-        item['date'] for item in daily_summary 
-        if item['sum_pay'] >= 4000 or item['sum_hrs'] > 2
-    ]
-    for log in logs:
-        log.is_over_limit = log.date in over_limit_dates
-    
     context = {
         'logs': logs, 'show_warning': show_warning,
-        'total_hours': sum(log.hours for log in logs) if logs else 0, 
-        'total_earnings': sum(log.earnings for log in logs) if logs else 0,
-        'limit_pay': 4000, 'limit_hrs': 2, 'today': timezone.now().date()
+        'total_hours': sum(log.hours for log in logs), 
+        'total_earnings': sum(log.earnings for log in logs),
+        'today': timezone.now().date()
     }
     return render(request, 'steppia_app/work_tracker.html', context)
 
 @login_required
 def edit_work_log(request, pk):
-    """ログの修正"""
+    """ログ編集"""
     log = get_object_or_404(WorkLog, pk=pk, user=request.user)
     if request.method == 'POST':
         log.company_name = request.POST.get('company')
@@ -149,12 +142,11 @@ def edit_work_log(request, pk):
 
 @login_required
 def delete_work_log(request, pk):
-    """ログの削除"""
-    log = get_object_or_404(WorkLog, pk=pk, user=request.user)
-    log.delete()
+    """ログ削除"""
+    get_object_or_404(WorkLog, pk=pk, user=request.user).delete()
     return redirect('work_tracker')
 
-# --- 5. AI相談室 ---
+# --- 5. AI相談室（全50項目搭載版） ---
 def ai_consult(request):
     ai_answer = ""
     user_q = ""
@@ -164,15 +156,15 @@ def ai_consult(request):
         "自信がない": "小さな成功体験を積み重ねることが大切です。まずは今日一歩踏み出した自分を褒めましょう。",
         "ブランク": "家事や育児で培った「段取り力」や「忍耐力」も立派なキャリアです。",
         "年齢制限": "法律で年齢制限は禁止されています。スキルと意欲があればチャンスは必ずあります。",
-        "リスキリング": "デジタルスキルを身につけると事務職やIT職など選択肢が大きく広がります。まずは興味のある分野を探すことから始めましょう。",
+        "リスキリング": "デジタルスキルを身につけると事務職やIT職など選択肢が大きく広がります。",
         "Python": "初心者でも学びやすい言語です。自動化スキルは事務職でも重宝されます。",
-        "Excel": "VLOOKUPやピボットテーブルができると、事務職の採用率がグッと上がります。",
+        "Excel": "VLOOKUPやピボットテーブルができると、採用率がグッと上がります。",
         "AI": "AIを使いこなせる人材は今、非常に求められています。まずは触れてみることから！",
         "デザイン": "CanvaやPenpotなど、初心者向けのツールから始めると楽しく学べます。",
         "履歴書": "手書きよりパソコン作成が一般的です。清潔感のある写真を用意しましょう。",
         "職務経歴書": "「何をしてきたか」だけでなく「何ができるか」を具体的に書きましょう。",
         "自己PR": "自分の強みが会社にどう貢献できるか、具体例を交えて伝えましょう。",
-        "志望動機": "「なぜこの会社なのか」を自分の言葉で語ることが内定への近道です。",
+        "志望動機": "「なぜこの会社なのか」を自分の言葉で語ることが内定への道です。",
         "面接": "面接は対話です。笑顔と元気な挨拶があれば、第一印象はバッチリです。",
         "オンライン面接": "背景や照明に気をつけ、カメラを見て話すと意欲が伝わります。",
         "逆質問": "「入社までに準備しておくことは？」など、前向きな質問を用意しましょう。",
@@ -184,13 +176,13 @@ def ai_consult(request):
         "ワークライフバランス": "仕事も家庭も大切にするために、優先順位を決めておきましょう。",
         "給料": "相場を知ることは大切です。スキルを上げて昇給を目指す道もあります。",
         "福利厚生": "育休や介護休暇の取得実績があるかチェックしておくと安心です。",
-        "正社員": "安定を求めるなら正社員ですが、まずは派遣やパートからステップアップする道もあります。",
+        "正社員": "安定を求めるなら正社員ですが、まずは派遣やパートから進む道もあります。",
         "派遣": "短期間でスキルを身につけたい時や、色々な職場を経験したい時に有効です。",
         "パート": "時間の融通が利きやすいのが魅力。ブランク明けの復帰に最適です。",
-        "失業保険": "ハローワークで手続きが必要です。受給しながらの再就職活動も可能です。",
+        "失業保険": "ハローワークで手続きが必要です。受給しながらの活動も可能です。",
         "社会保険": "106万円や130万円の壁を意識しつつ、保障の手厚い加入を目指すのも手です。",
         "有給休暇": "パートやアルバイトでも条件を満たせば取得できます。大切な権利です。",
-        "最低賃金": "最低賃金は年々上がっています。自分の給料が基準を下回っていないか確認しましょう。",
+        "最低賃金": "最低賃金は年々上がっています。基準を下回っていないか確認しましょう。",
         "資格": "実務に直結する資格から取るのが効率的です。コンサルタントに相談してください。",
         "マネジメント": "後輩の指導経験などもマネジメント経験として評価されます。",
         "転職回数": "多いことを気にするより、その経験をどう活かすかを前向きに伝えましょう。",
@@ -208,67 +200,94 @@ def ai_consult(request):
         "マップ": "STEP 30を目指して進みましょう。ゴールには素敵な演出が待っています！",
         "相談": "どんな小さなことでもOK。AI相談室やコンサルタントを頼ってください。",
         "未来": "一歩踏み出した今、あなたの未来はすでに変わり始めています。",
-        "気分転換": "時には休むことも大切です。お気に入りの飲み物を飲んだり、外の空気を吸ったりして、リフレッシュしましょう。"
+        "気分転換": "時には休むことも大切です。お気に入りの飲み物を飲んでリフレッシュしましょう。"
     }
     if request.method == 'POST':
         user_q = (request.POST.get('user_input') or request.POST.get('user_text', '')).strip()
         if user_q:
-            user_q_clean = user_q.replace('。','').replace('？','').replace('?','')
-            all_templates = AIConsultTemplate.objects.all()
-            template_match = None
-            for t in all_templates:
-                t_q_clean = t.question.replace('。','').replace('？','').replace('?','').strip()
-                if t_q_clean and (t_q_clean in user_q_clean or user_q_clean in t_q_clean):
-                    template_match = t
-                    break
+            template_match = AIConsultTemplate.objects.filter(question__icontains=user_q).first()
             if template_match:
                 ai_answer = template_match.answer
             else:
-                found_answer = None
-                for keyword, answer in FAQ_DATA.items():
-                    if keyword in user_q: found_answer = answer; break
-                ai_answer = found_answer if found_answer else "その悩み、一緒に考えましょう。担当コンサルタントに直接メッセージを送ってみてくださいね。"
-            AIConsultLog.objects.create(user_question=user_q, ai_response=ai_answer)
+                ai_answer = next((val for key, val in FAQ_DATA.items() if key in user_q), "その悩み、一緒に考えましょう。担当コンサルタントに相談してくださいね。")
+            AIConsultLog.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                user_question=user_q, 
+                ai_response=ai_answer
+            )
     return render(request, 'steppia_app/ai_consult.html', {'ai_answer': ai_answer, 'user_q': user_q})
 
-def ai_history(request): return redirect('mypage')
+@login_required
+def ai_history(request):
+    """urls.pyのエラー解消：マイページへリダイレクト"""
+    return redirect('mypage')
 
 # --- 6. マイページ ---
 @login_required
 def mypage(request):
-    logs = AIConsultLog.objects.all().order_by('-created_at')
-    mypage_schedules = Schedule.objects.filter(detail__contains='コンサル予約').order_by('-date', '-time')
-    user_applications = Applications.objects.filter(user=request.user).order_by('-applied_at')
-    consultant_name = request.session.get('selected_consultant', '未設定')
+    """ユーザー情報統合表示"""
+    logs = AIConsultLog.objects.filter(user=request.user).order_by('-created_at')
+    mypage_schedules = Schedule.objects.filter(user=request.user, detail__contains='コンサル予約').order_by('-date', '-time')
+    user_applications = Application.objects.filter(user=request.user).order_by('-applied_at')
     coupons = Coupon.objects.filter(user=request.user, is_used=False).order_by('-won_at')
     return render(request, 'steppia_app/mypage.html', {
         'logs': logs, 'mypage_schedules': mypage_schedules, 
-        'applications': user_applications, 'consultant_name': consultant_name, 
-        'coupons': coupons
+        'applications': user_applications, 'coupons': coupons
     })
 
 # --- 7. 進捗管理（冒険マップ） ---
 @login_required
 def progress(request):
+    """現在の歩数計算"""
     work_log_count = WorkLog.objects.filter(user=request.user).count()
-    current_pos = work_log_count + 1
-    status = {
-        'is_signed_up': Member.objects.filter(user=request.user).exists(),
-        'has_applied': Applications.objects.filter(user=request.user).exists(),
-        'work_log_count': work_log_count,
-    }
     return render(request, 'steppia_app/progress.html', {
-        'status': status, 'current_pos': current_pos, 'work_log_count': work_log_count
+        'current_pos': work_log_count + 1,
+        'has_applied': Application.objects.filter(user=request.user).exists(),
+        'work_log_count': work_log_count
     })
 
-# --- 8. コンサル予約・ルーレット ---
-def consult_top(request): return render(request, 'steppia_app/consult_top.html')
-def consult_setting(request):
-    if request.method == 'POST':
-        request.session['selected_consultant'] = request.POST.get('consultant_name')
-        return redirect('consult_setting_done')
-    return render(request, 'steppia_app/consult_setting.html')
+# --- 8. ルーレット・おめでとう ---
+@login_required
+@never_cache
+def roulette(request):
+    """1日1回判定"""
+    member = request.user.profile
+    return render(request, 'steppia_app/roulette.html', {'can_spin': member.can_spin_roulette()})
 
+@login_required
+@never_cache
+def roulette_result(request, item):
+    """抽選結果保存"""
+    member = request.user.profile
+    if not member.can_spin_roulette():
+        return redirect('roulette')
+    jst = pytz.timezone('Asia/Tokyo')
+    member.last_roulette_date = timezone.now().astimezone(jst).date()
+    member.save()
+    is_win = any(k in item for k in ["賞", "面談", "券", "ギフト"])
+    if is_win:
+        Coupon.objects.create(user=request.user, prize_name=item)
+    return render(request, 'steppia_app/roulette_result.html', {'item': item, 'is_win': is_win})
+
+@login_required
+def congrats(request):
+    """urls.pyのエラー解消：おめでとう画面表示"""
+    prize = request.GET.get('prize', 'ステキな景品')
+    return render(request, 'steppia_app/congrats.html', {'prize': prize})
+
+@login_required
+def congrats_map(request):
+    """ゴールお祝い"""
+    name = request.user.profile.first_name or request.user.username
+    return render(request, 'steppia_app/congrats_map.html', {'user_name': name})
+
+def roulette_lost(request):
+    """ハズレ画面"""
+    return render(request, 'steppia_app/roulette_lost.html')
+
+# --- 9. 予約・スケジュール ---
+def consult_top(request): return render(request, 'steppia_app/consult_top.html')
+def consult_setting(request): return render(request, 'steppia_app/consult_setting.html')
 def consult_reservation(request): return render(request, 'steppia_app/consult_reservation.html')
 
 def consult_confirm(request):
@@ -278,75 +297,23 @@ def consult_confirm(request):
 
 def consult_setting_done(request): return render(request, 'steppia_app/consult_setting_done.html')
 
+@login_required
 def consult_reservation_done(request):
     if request.method == 'POST':
-        Schedule.objects.create(date=request.POST.get('date'), time=request.POST.get('time'), detail=f"{request.POST.get('consultant')} コンサル予約")
+        Schedule.objects.create(
+            user=request.user,
+            date=request.POST.get('date'), 
+            time=request.POST.get('time'), 
+            detail=f"{request.POST.get('consultant')} コンサル予約"
+        )
         coupon_id = request.POST.get('coupon_id')
         if coupon_id:
-            coupon = Coupon.objects.filter(id=coupon_id, user=request.user).first()
-            if coupon: coupon.is_used = True; coupon.save()
+            Coupon.objects.filter(id=coupon_id, user=request.user).update(is_used=True)
     return render(request, 'steppia_app/consult_reservation_done.html')
 
+@login_required
 def schedule(request):
-    if request.method == 'POST': Schedule.objects.create(date=request.POST.get('date'), time=request.POST.get('time'), detail=request.POST.get('detail'))
-    return render(request, 'steppia_app/schedule.html', {'schedules': Schedule.objects.all().order_by('-date', '-time')})
-
-@login_required
-@never_cache
-def roulette(request):
-    """0時リセットの1日1回判定"""
-    jst = pytz.timezone('Asia/Tokyo')
-    now_jst = timezone.now().astimezone(jst)
-    today_date = now_jst.date()
-
-    # 会員情報を取得、なければ作成
-    member, created = Member.objects.get_or_create(
-        user=request.user,
-        defaults={'last_name': '（未登録）', 'first_name': request.user.username}
-    )
-    
-    # 最後に回した日が「今日」でなければ回せる
-    can_spin = not (member.last_roulette_date == today_date)
-    
-    return render(request, 'steppia_app/roulette.html', {'can_spin': can_spin})
-
-@login_required
-@never_cache
-def roulette_result(request, item):
-    """ルーレット結果画面（0時起点の厳格ロック）"""
-    jst = pytz.timezone('Asia/Tokyo')
-    now_jst = timezone.now().astimezone(jst)
-    today_date = now_jst.date()
-
-    member, created = Member.objects.get_or_create(user=request.user)
-
-    # 1. 既に今日記録があれば追い出す
-    if member.last_roulette_date == today_date:
-        return redirect('roulette')
-
-    # 2. 結果を表示する前に日付を保存してロック
-    member.last_roulette_date = today_date
-    member.save()
-
-    # 3. クーポン発行
-    is_win = "賞" in item or "面談" in item
-    if is_win:
-        Coupon.objects.get_or_create(
-            user=request.user, 
-            prize_name=item, 
-            is_used=False,
-            won_at=today_date
-        )
-    return render(request, 'steppia_app/roulette_result.html', {'item': item, 'is_win': is_win})
-
-@login_required
-def congrats(request): return render(request, 'steppia_app/congrats.html', {'prize': request.GET.get('prize', '豪華賞品')})
-
-def roulette_lost(request): return render(request, 'steppia_app/roulette_lost.html')
-
-@login_required
-def congrats_map(request):
-    """ゴール時のお祝い画面にお名前を表示"""
-    member = Member.objects.filter(user=request.user).first()
-    user_name = member.first_name if member else request.user.username
-    return render(request, 'steppia_app/congrats_map.html', {'user_name': user_name})
+    if request.method == 'POST':
+        Schedule.objects.create(user=request.user, date=request.POST.get('date'), time=request.POST.get('time'), detail=request.POST.get('detail'))
+    schedules = Schedule.objects.filter(user=request.user).order_by('-date', '-time')
+    return render(request, 'steppia_app/schedule.html', {'schedules': schedules})
