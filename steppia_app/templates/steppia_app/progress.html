@@ -25,7 +25,7 @@
             font-family: 'Zen Maru Gothic', sans-serif; 
             min-height: 100vh; width: 100%;
             display: flex; justify-content: center; align-items: flex-start;
-            overflow-x: hidden; /* 🆕 横揺れ防止 */
+            overflow-x: hidden; 
         }
 
         .dollhouse-frame { 
@@ -37,7 +37,7 @@
             box-sizing: border-box; 
             margin: auto;
             z-index: 1; 
-            transition: transform 0.3s ease; /* 🆕 スムーズな切り替え */
+            transition: transform 0.3s ease;
         }
 
         /* --- 固定UI --- */
@@ -51,7 +51,7 @@
         }
 
         .selection-sidebar {
-            position: fixed; top: 110px; right: 20px; /* 🆕 右端に寄せる */
+            position: fixed; top: 110px; right: 20px;
             width: 180px;
             background: rgba(255, 255, 255, 0.96); border: 3px solid var(--wood);
             border-radius: 15px; z-index: 2500; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
@@ -92,11 +92,13 @@
         .player-pawn { position: absolute; width: 85px; z-index: 200; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; }
 
         .deco-item { position: absolute; pointer-events: none; z-index: 10; }
-        .magic-pond { top: 950px; left: 60px; width: 260px; height: 160px; z-index: 150; background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
-        .funsui-area { top: 980px; left: 1050px; width: 140px; z-index: 150; }
-        .tree-deco { top: 60px; left: 40px; width: 100px; z-index: 150; }
-        .buranko-deco { top: 120px; left: 1080px; width: 130px; z-index: 150; }
-        .tobibako-deco { top: 980px; left: 580px; width: 120px; z-index: 150; }
+        
+        /* 🆕 デコレーションの座標を四隅に離して重なりを回避 */
+        .tree-deco { top: 20px; left: 20px; width: 100px; z-index: 150; } /* 左上隅へ */
+        .buranko-deco { top: 40px; left: 1150px; width: 130px; z-index: 150; } /* 右上隅へ */
+        .magic-pond { top: 1020px; left: 40px; width: 260px; height: 160px; z-index: 150; background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); } /* 左下へ */
+        .funsui-area { top: 1080px; left: 1120px; width: 140px; z-index: 150; } /* 右下隅へ下げて木との距離を最大化 */
+        .tobibako-deco { top: 1050px; left: 550px; width: 120px; z-index: 150; } /* 下部中央へ */
 
         .splash { position: absolute; background: #E1F5FE; width: 8px; height: 8px; border-radius: 50%; z-index: 160; box-shadow: 0 0 6px #B3E5FC; }
 
@@ -104,14 +106,12 @@
         .star-icon { font-size: 100px; color: var(--star-yellow); filter: drop-shadow(0 6px 15px rgba(0,0,0,0.15)); }
         .star-text { position: absolute; font-size: 20px; font-weight: 900; color: var(--text-black); top: 50%; left: 50%; transform: translate(-50%, -45%); }
 
-        /* 🆕 スマホ向けの特別設定（全体を縮小） */
         @media (max-width: 768px) {
             .dollhouse-frame {
-                /* 画面サイズに合わせて約0.3倍に縮小 */
                 transform: scale(0.28); 
                 transform-origin: top center;
-                margin-top: 100px; /* ヘッダーとの隙間 */
-                margin-bottom: -850px; /* 縮小して空いた下の隙間を埋める */
+                margin-top: 100px; 
+                margin-bottom: -850px; 
             }
             .header-panel { width: 95%; max-width: none; }
             .selection-sidebar { 
@@ -136,9 +136,7 @@
         </div>
 
         <div class="selection-sidebar" id="sidebar">
-            <div class="sidebar-header" onclick="toggleSidebar()">
-                🏢 企業管理
-            </div>
+            <div class="sidebar-header" onclick="toggleSidebar()">🏢 企業管理</div>
             <div class="sidebar-content" id="sidebar-content">
                 <div id="company-list"></div>
                 <button onclick="addCompany()" style="width:100%; padding:8px; background:#81C784; color:white; border:none; border-radius:10px; font-weight:900; font-size:11px; margin-top:10px; cursor:pointer; box-shadow: 0 3px 0 #689F38;">+ 追加</button>
