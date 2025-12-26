@@ -94,7 +94,7 @@ def apply_done(request):
 # --- 4. お仕事ログ ---
 @login_required
 def work_tracker(request):
-    """🆕 累積判定版：1日の合計が4000円を超えたら警告を出す"""
+    """累積判定版：1日の「金額(4000円)」または「時間(2時間)」を超えたら警告を出します"""
     show_warning = False
     
     if request.method == 'POST':
@@ -110,36 +110,52 @@ def work_tracker(request):
                 job=Job.objects.first(), 
                 company_name=company if company else "（未入力）",
                 date=date_str,
-                hours=hours if hours else 0,
+                hours=float(hours) if hours else 0, # 小数点(1.5時間など)も扱えるようにfloatに変更
                 earnings=int(amount)
             )
             
-            # 🆕 保存した日の「合計金額」をチェック
-            daily_total = WorkLog.objects.filter(
+            # 🆕 保存した日の「合計金額」と「合計時間」をダブルチェック
+            daily_stats = WorkLog.objects.filter(
                 user=request.user, 
                 date=date_str
-            ).aggregate(Sum('earnings'))['earnings__sum'] or 0
+            ).aggregate(
+                total_pay=Sum('earnings'),
+                total_hrs=Sum('hours')
+            )
             
-            if daily_total >= 4000:
+            total_pay = daily_stats['total_pay'] or 0
+            total_hrs = daily_stats['total_hrs'] or 0
+            
+            # 4,000円以上、または2時間を超えた場合に警告
+            if total_pay >= 4000 or total_hrs > 2:
                 show_warning = True
 
     # 履歴表示用
     logs = WorkLog.objects.filter(user=request.user).order_by('-date')
     
-    # 🆕 日ごとの合計を計算し、4000円超の日を特定する
-    daily_sums = WorkLog.objects.filter(user=request.user).values('date').annotate(total=Sum('earnings'))
-    over_limit_dates = [item['date'] for item in daily_sums if item['total'] >= 4000]
+    # 🆕 日ごとの合計を計算し、制限（4000円超 または 2時間超）の日を特定する
+    daily_summary = WorkLog.objects.filter(user=request.user).values('date').annotate(
+        sum_pay=Sum('earnings'),
+        sum_hrs=Sum('hours')
+    )
+    
+    # 制限オーバーの日付リストを作成
+    over_limit_dates = [
+        item['date'] for item in daily_summary 
+        if item['sum_pay'] >= 4000 or item['sum_hrs'] > 2
+    ]
 
-    # 履歴一覧の各行に判定フラグをセット
+    # 履歴一覧の各行に「！マーク」などの判定用フラグをセット
     for log in logs:
         log.is_over_limit = log.date in over_limit_dates
     
     context = {
         'logs': logs,
-        'show_warning': show_warning, # 🆕 画面上部の警告用
+        'show_warning': show_warning,
         'total_hours': sum(log.hours for log in logs) if logs else 0, 
         'total_earnings': sum(log.earnings for log in logs) if logs else 0,
-        'limit_threshold': 4000
+        'limit_pay': 4000,
+        'limit_hrs': 2
     }
     return render(request, 'steppia_app/work_tracker.html', context)
 
