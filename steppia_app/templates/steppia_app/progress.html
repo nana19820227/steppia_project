@@ -70,9 +70,9 @@
         .btn-warp { background: #F48FB1; box-shadow: 0 3px 0 #C2185B; }
         .btn-del { background: #e57373; box-shadow: 0 3px 0 #c62828; }
 
-        /* --- 🆕 戻るボタンの配置調整（バランス重視） --- */
+        /* --- 🆕 戻るボタンの配置（PCでは枠の内側、スマホでは端に固定） --- */
         .bottom-nav { 
-            position: fixed !important; bottom: 40px; left: 45px; z-index: 4000; 
+            position: absolute !important; bottom: 40px; left: 60px; z-index: 4000; 
         }
 
         .star-link-btn { 
@@ -110,7 +110,6 @@
         .funsui-area { top: 1080px; left: 1120px; width: 140px; z-index: 150; }
         .tobibako-deco { top: 1050px; left: 750px; width: 120px; z-index: 150; }
 
-        /* 🆕 水飛沫のスタイル定義 */
         .splash {
             position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; pointer-events: none;
         }
@@ -118,7 +117,8 @@
         @media (max-width: 768px) {
             .dollhouse-frame { transform: scale(0.28); transform-origin: top center; margin-top: 150px; margin-bottom: -850px; }
             .header-panel { width: 98%; padding: 10px; border-radius: 15px; }
-            .bottom-nav { left: 25px; bottom: 30px; transform: scale(0.8); }
+            /* スマホでは以前の端に固定される設定を適用 */
+            .bottom-nav { position: fixed !important; left: 25px; bottom: 30px; transform: scale(0.8); }
         }
     </style>
 </head>
@@ -157,13 +157,13 @@
         
         <img src="{% static 'images/onna.png' %}" class="player-pawn" id="pawn" style="display:none;">
         <div id="grid-root"></div>
-    </div>
 
-    <div class="bottom-nav">
-        <a href="{% url 'menu' %}" class="star-link-btn">
-            <span class="star-icon">★</span>
-            <span class="star-text">戻る</span>
-        </a>
+        <div class="bottom-nav">
+            <a href="{% url 'menu' %}" class="star-link-btn">
+                <span class="star-icon">★</span>
+                <span class="star-text">戻る</span>
+            </a>
+        </div>
     </div>
 
     <script>
@@ -227,13 +227,11 @@
         function warp() { if(!currentCompanyId) return; const v = parseInt(document.getElementById('warp-val').value); companies[currentCompanyId].step = v; updateView(); }
         function drawPath() { const line = document.getElementById('path-line'); let d = `M ${nodePoints[0].x} ${nodePoints[0].y}`; for (let i = 1; i < nodePoints.length; i++) { d += ` L ${nodePoints[i].x} ${nodePoints[i].y}`; } line.setAttribute('d', d); }
 
-        // 🆕 噴水の水飛沫アニメーション
         function createSplash() { 
             const container = document.getElementById('splash-container'); 
             if(!container) return; 
             const splash = document.createElement('div'); 
             splash.className = 'splash'; 
-            // 飛ぶ方向をランダムに散らす
             splash.style.left = `${Math.random() * 100}%`; 
             const duration = Math.random() * 0.5 + 0.5; 
             splash.style.animation = `splash-anim ${duration}s ease-out forwards`; 
@@ -241,7 +239,7 @@
             setTimeout(() => splash.remove(), duration * 1000); 
         }
 
-        window.onload = () => { renderMap(); setInterval(createSplash, 150); }; // 生成速度をアップ
+        window.onload = () => { renderMap(); setInterval(createSplash, 150); };
     </script>
 </body>
 </html>
