@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from django.db.models import Sum  # 🆕 合計計算のために追加
 import pytz
 
 # すべてのモデルをインポート
@@ -93,41 +94,56 @@ def apply_done(request):
 # --- 4. お仕事ログ ---
 @login_required
 def work_tracker(request):
-    """就労状況の記録と制限チェック"""
+    """🆕 累積判定版：1日の合計が4000円を超えたら警告を出す"""
+    show_warning = False
+    
     if request.method == 'POST':
-        date = request.POST.get('date')
+        date_str = request.POST.get('date')
         hours = request.POST.get('hours')
         amount = request.POST.get('amount')
         company = request.POST.get('company')
-        first_job = Job.objects.first()
-        if date and amount:
+        
+        if date_str and amount:
+            # データの保存
             WorkLog.objects.create(
                 user=request.user,
-                job=first_job, 
+                job=Job.objects.first(), 
                 company_name=company if company else "（未入力）",
-                date=date,
+                date=date_str,
                 hours=hours if hours else 0,
                 earnings=int(amount)
             )
-            return redirect('work_tracker')
+            
+            # 🆕 保存した日の「合計金額」をチェック
+            daily_total = WorkLog.objects.filter(
+                user=request.user, 
+                date=date_str
+            ).aggregate(Sum('earnings'))['earnings__sum'] or 0
+            
+            if daily_total >= 4000:
+                show_warning = True
 
-    member = Member.objects.filter(user=request.user).first()
-    daily_wage = member.daily_wage if member else 0
-    limit_80 = int(daily_wage * 0.8)
+    # 履歴表示用
     logs = WorkLog.objects.filter(user=request.user).order_by('-date')
     
+    # 🆕 日ごとの合計を計算し、4000円超の日を特定する
+    daily_sums = WorkLog.objects.filter(user=request.user).values('date').annotate(total=Sum('earnings'))
+    over_limit_dates = [item['date'] for item in daily_sums if item['total'] >= 4000]
+
+    # 履歴一覧の各行に判定フラグをセット
     for log in logs:
-        log.is_over_limit = (log.earnings > limit_80) if limit_80 > 0 else False
+        log.is_over_limit = log.date in over_limit_dates
     
     context = {
-        'member': member, 'logs': logs, 
+        'logs': logs,
+        'show_warning': show_warning, # 🆕 画面上部の警告用
         'total_hours': sum(log.hours for log in logs) if logs else 0, 
-        'total_earnings': sum(log.earnings for log in logs) if logs else 0, 
-        'limit_80': limit_80
+        'total_earnings': sum(log.earnings for log in logs) if logs else 0,
+        'limit_threshold': 4000
     }
     return render(request, 'steppia_app/work_tracker.html', context)
 
-# --- 5. AI相談室 (FAQ 50項目搭載版) ---
+# --- 5. AI相談室 ---
 def ai_consult(request):
     ai_answer = ""
     user_q = ""
