@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from . import views
 
-# 🆕 緊急用：ユーザーを強制作成する関数
+# 🆕 緊急用：ユーザーを強制作成する関数（そのまま維持）
 def make_user(request):
     username = 'okamuranana'
     password = 'admin2026'
@@ -13,11 +13,13 @@ def make_user(request):
     return HttpResponse(f"ユーザー '{username}' を【最強の管理者】として作成しました！")
 
 urlpatterns = [
-    # 🆕 救済用URL
+    # 救済用URL
     path('make-user-emergency/', make_user),
     
     # --- 1. メニュー画面（TOP） ---
-    path('', views.top, name='menu'),
+    # 🆕 エラー防止：'top' と 'menu' どちらの名前で呼ばれても views.top を開くようにします
+    path('', views.top, name='top'),
+    path('menu/', views.top, name='menu'),
     
     # --- 2. 会員登録・求人関連 ---
     path('signup/', views.signup, name='signup'),
@@ -34,7 +36,6 @@ urlpatterns = [
     
     # --- 4. お仕事ログ ---
     path('work-tracker/', views.work_tracker, name='work_tracker'),
-    # 🆕 修正用と削除用の住所を追加しました
     path('work-tracker/edit/<int:pk>/', views.edit_work_log, name='edit_work_log'),
     path('work-tracker/delete/<int:pk>/', views.delete_work_log, name='delete_work_log'),
     
