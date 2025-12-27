@@ -23,6 +23,9 @@ class Member(models.Model):
     # ルーレットリセット用（日付で管理）
     last_roulette_date = models.DateField('最後にルーレットを回した日', null=True, blank=True)
 
+    # 🆕 担当コンサルタント名（マイページ表示用に追加）
+    assigned_consultant = models.CharField('担当コンサルタント', max_length=100, blank=True, null=True)
+
     class Meta:
         verbose_name = "会員情報"
         verbose_name_plural = "会員情報"
@@ -31,17 +34,10 @@ class Member(models.Model):
         return f"{self.last_name} {self.first_name}"
 
     def can_spin_roulette(self):
-        """
-        今日ルーレットを回せるか判定する（日本時間基準）
-        """
+        """今日ルーレットを回せるか判定する（日本時間基準）"""
         if not self.last_roulette_date:
             return True
-        
-        # 🆕 修正ポイント: localdate() を使うことで settings.py の Asia/Tokyo を基準にします
-        # これにより、日本の深夜0時を過ぎた瞬間に日付が切り替わります。
         today = timezone.localdate()
-        
-        # 保存されている日付が「今日」より前であれば回せる
         return self.last_roulette_date < today
 
 # 2. 求人情報
