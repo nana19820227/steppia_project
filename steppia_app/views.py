@@ -8,7 +8,7 @@ from django.db.models import Sum
 from django.views.decorators.cache import never_cache
 import pytz
 
-# すべてのモデルをインポート（Applicationは単数形）
+# すべてのモデルをインポート
 from .models import (
     Schedule, Member, Job, AIConsultTemplate, 
     AIConsultLog, Application, WorkLog, Coupon
@@ -67,37 +67,33 @@ def signup_done(request):
 
 @login_required
 def member_list(request):
-    """管理者用：会員一覧画面（urls.pyのエラー解消用）"""
     members = Member.objects.all()
     return render(request, 'steppia_app/member_list.html', {'members': members})
 
 # --- 3. 求人・応募機能 ---
 def job_list(request):
-    """求人一覧"""
     jobs = Job.objects.all()
     return render(request, 'steppia_app/job_list.html', {'jobs': jobs})
 
 def job_detail(request, pk):
-    """求人詳細"""
     job = get_object_or_404(Job, pk=pk)
     return render(request, 'steppia_app/job_detail.html', {'job': job})
 
 @login_required
 def apply_to_job(request, pk):
-    """応募処理"""
     job = get_object_or_404(Job, pk=pk)
     Application.objects.get_or_create(user=request.user, job=job)
     return redirect('apply_done')
 
 def apply_done(request):
-    """応募完了"""
-    consultant_name = request.session.get('selected_consultant', '担当コンサルタント')
+    """応募完了画面：保存された担当者名を優先表示"""
+    member = request.user.profile if request.user.is_authenticated else None
+    consultant_name = member.assigned_consultant if member and member.assigned_consultant else request.session.get('selected_consultant', '担当コンサルタント')
     return render(request, 'steppia_app/apply_done.html', {'consultant_name': consultant_name})
 
 # --- 4. お仕事ログ ---
 @login_required
 def work_tracker(request):
-    """就労記録管理"""
     show_warning = False
     if request.method == 'POST':
         date_str = request.POST.get('date')
@@ -129,7 +125,6 @@ def work_tracker(request):
 
 @login_required
 def edit_work_log(request, pk):
-    """ログ編集"""
     log = get_object_or_404(WorkLog, pk=pk, user=request.user)
     if request.method == 'POST':
         log.company_name = request.POST.get('company')
@@ -142,7 +137,6 @@ def edit_work_log(request, pk):
 
 @login_required
 def delete_work_log(request, pk):
-    """ログ削除"""
     get_object_or_404(WorkLog, pk=pk, user=request.user).delete()
     return redirect('work_tracker')
 
@@ -219,26 +213,31 @@ def ai_consult(request):
 
 @login_required
 def ai_history(request):
-    """urls.pyのエラー解消：マイページへリダイレクト"""
     return redirect('mypage')
 
 # --- 6. マイページ ---
 @login_required
 def mypage(request):
-    """ユーザー情報統合表示"""
+    """ユーザー情報統合表示（担当コンサルタント名を取得）"""
     logs = AIConsultLog.objects.filter(user=request.user).order_by('-created_at')
     mypage_schedules = Schedule.objects.filter(user=request.user, detail__contains='コンサル予約').order_by('-date', '-time')
     user_applications = Application.objects.filter(user=request.user).order_by('-applied_at')
     coupons = Coupon.objects.filter(user=request.user, is_used=False).order_by('-won_at')
+    
+    # 🆕 データベース（Member）から担当者名を取得
+    consultant_name = request.user.profile.assigned_consultant
+    
     return render(request, 'steppia_app/mypage.html', {
-        'logs': logs, 'mypage_schedules': mypage_schedules, 
-        'applications': user_applications, 'coupons': coupons
+        'logs': logs, 
+        'mypage_schedules': mypage_schedules, 
+        'applications': user_applications, 
+        'coupons': coupons,
+        'consultant_name': consultant_name # 🆕 HTMLへ渡す
     })
 
 # --- 7. 進捗管理（冒険マップ） ---
 @login_required
 def progress(request):
-    """現在の歩数計算"""
     work_log_count = WorkLog.objects.filter(user=request.user).count()
     return render(request, 'steppia_app/progress.html', {
         'current_pos': work_log_count + 1,
@@ -246,18 +245,16 @@ def progress(request):
         'work_log_count': work_log_count
     })
 
-# --- 8. ルーレット・おめでとう ---
+# --- 8. ルーレット ---
 @login_required
 @never_cache
 def roulette(request):
-    """1日1回判定"""
     member = request.user.profile
     return render(request, 'steppia_app/roulette.html', {'can_spin': member.can_spin_roulette()})
 
 @login_required
 @never_cache
 def roulette_result(request, item):
-    """抽選結果保存"""
     member = request.user.profile
     if not member.can_spin_roulette():
         return redirect('roulette')
@@ -271,21 +268,18 @@ def roulette_result(request, item):
 
 @login_required
 def congrats(request):
-    """urls.pyのエラー解消：おめでとう画面表示"""
     prize = request.GET.get('prize', 'ステキな景品')
     return render(request, 'steppia_app/congrats.html', {'prize': prize})
 
 @login_required
 def congrats_map(request):
-    """ゴールお祝い"""
     name = request.user.profile.first_name or request.user.username
     return render(request, 'steppia_app/congrats_map.html', {'user_name': name})
 
 def roulette_lost(request):
-    """ハズレ画面"""
     return render(request, 'steppia_app/roulette_lost.html')
 
-# --- 9. 予約・スケジュール ---
+# --- 9. 予約・スケジュール・設定 ---
 def consult_top(request): return render(request, 'steppia_app/consult_top.html')
 def consult_setting(request): return render(request, 'steppia_app/consult_setting.html')
 def consult_reservation(request): return render(request, 'steppia_app/consult_reservation.html')
@@ -295,7 +289,18 @@ def consult_confirm(request):
         'date': request.POST.get('date'), 'time': request.POST.get('time'), 'consultant': request.POST.get('consultant')
     })
 
-def consult_setting_done(request): return render(request, 'steppia_app/consult_setting_done.html')
+@login_required
+def consult_setting_done(request):
+    """🆕 担当コンサルタントをデータベースに保存する"""
+    if request.method == 'POST':
+        consultant_name = request.POST.get('consultant')
+        if consultant_name:
+            member = request.user.profile
+            member.assigned_consultant = consultant_name
+            member.save()
+            request.session['selected_consultant'] = consultant_name
+            
+    return render(request, 'steppia_app/consult_setting_done.html')
 
 @login_required
 def consult_reservation_done(request):
