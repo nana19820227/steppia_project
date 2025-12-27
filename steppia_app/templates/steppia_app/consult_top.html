@@ -8,11 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* 🆕 アプリ共通の癒やしグリーン */
             --bg: #DCECCF; 
             --white: #FFFFFF;
             --brown: #5D4037;
-            --star-yellow: #FFF2AF; /* 🆕 統一の黄色 */
+            --star-yellow: #FFF2AF;
             --text-black: #000000;
         }
         body {
@@ -22,8 +21,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh; /* height: 100vh から変更（中身がはみ出ても大丈夫なように） */
+            overflow-x: hidden;
         }
 
         /* 🏠 中央の白いカード */
@@ -35,12 +34,12 @@
             border-radius: 50px;
             text-align: center;
             box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+            z-index: 10; /* 星より下に配置 */
         }
 
-        /* 🆕 ロゴ部分の修正 */
         .illust-box { margin-bottom: 15px; }
         .illust-box img {
-            width: 180px; /* ロゴを少し大きめに表示 */
+            width: 180px;
             height: auto;
         }
 
@@ -51,7 +50,7 @@
             margin-bottom: 40px;
         }
 
-        /* メニューボタンのデザイン */
+        /* メニューボタン */
         .menu-btn {
             display: block;
             background: #F8F4E6;
@@ -66,17 +65,21 @@
         }
         .menu-btn:active { transform: scale(0.96); background: #F1EBDC; }
 
-        /* 🆕 左下のアプリ統一「星型戻る」ボタン */
-        .bottom-nav { position: fixed; bottom: 30px; left: 30px; z-index: 1000; }
+        /* --- 戻るボタンの設定 --- */
+        .bottom-nav { 
+            position: fixed; 
+            bottom: 30px; 
+            left: 30px; 
+            z-index: 1000; 
+        }
         .star-link-btn {
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 140px;
+            width: 140px; /* パソコンでの大きさ */
             height: 140px;
             text-decoration: none;
-            cursor: pointer;
         }
         .star-icon {
             font-size: 140px;
@@ -92,7 +95,33 @@
             left: 50%;
             transform: translate(-50%, -45%);
         }
-        .star-link-btn:hover .star-text { transform: translate(-50%, -45%) rotate(15deg); }
+
+        /* 🆕 【携帯（スマホ）向けの調整】 480px以下の画面の時 */
+        @media (max-width: 480px) {
+            /* 1. 星のボタンを小さくして、位置をさらに端に寄せる */
+            .bottom-nav {
+                bottom: 15px;
+                left: 10px;
+            }
+            .star-link-btn {
+                width: 80px; /* 140px から 80px に縮小 */
+                height: 80px;
+            }
+            .star-icon {
+                font-size: 80px;
+            }
+            .star-text {
+                font-size: 16px; /* 文字も小さくする */
+            }
+
+            /* 2. 中央のカードとの重なりを完全に防ぐための微調整 */
+            .menu-card {
+                padding: 40px 20px;
+                margin-bottom: 20px;
+            }
+            h1 { font-size: 22px; margin-bottom: 30px; }
+            .menu-btn { padding: 18px; font-size: 17px; }
+        }
     </style>
 </head>
 <body>
