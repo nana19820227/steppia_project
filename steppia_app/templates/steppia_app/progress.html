@@ -11,7 +11,6 @@
         @keyframes splash-anim {
             0% { transform: translate(-50%, 0) scale(0.3); opacity: 0; }
             20% { opacity: 1; }
-            /* 水飛沫の高さを少し抑える調整 (-80px) */
             100% { transform: translate(-50%, -80px) scale(1.2); opacity: 0; }
         }
         @keyframes swim-no-flip { 0% { transform: translateX(0); } 50% { transform: translateX(60px); } 100% { transform: translateX(0); } }
@@ -68,7 +67,7 @@
         .btn-warp { background: #F48FB1; }
         .btn-del { background: #e57373; }
 
-        /* --- 戻るボタン --- */
+        /* --- 戻るボタン (PC基本) --- */
         .bottom-nav { position: fixed; bottom: 20px; left: 15px; z-index: 4000; }
         .star-link-btn { 
             position: relative; display: flex; align-items: center; justify-content: center; 
@@ -92,12 +91,7 @@
         .deco-item { position: absolute; pointer-events: none; z-index: 5; }
         .splash { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; pointer-events: none; }
 
-        /* --- イラストサイズ --- */
-        .magic-pond { 
-            width: 220px; height: 140px; background: #81D4FA; 
-            border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; 
-            overflow: hidden; 
-        }
+        .magic-pond { width: 220px; height: 140px; background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; }
         .funsui-area { width: 140px; }
         .tobibako-deco { width: 120px; }
 
@@ -107,6 +101,12 @@
             .header-panel { width: 95%; padding: 8px; }
             .header-panel h2 { font-size: 12px !important; }
             
+            /* 🆕 戻るボタンをモバイル向けに縮小 */
+            .bottom-nav { bottom: 15px; left: 10px; }
+            .star-link-btn { width: 50px; height: 50px; }
+            .star-icon { font-size: 50px; }
+            .star-text { font-size: 11px; }
+
             .tree-deco { width: 80px !important; }
             .buranko-deco { width: 80px !important; }
             .magic-pond { width: 180px !important; height: 120px !important; }
@@ -145,7 +145,6 @@
             <img src="{% static 'images/funsui.png' %}" style="width:100%; display:block;">
             <div id="splash-container" style="position:absolute; top:20px; left:50%; width:40px; height:20px;"></div>
         </div>
-        
         <img id="tree-deco" src="{% static 'images/midorinoki.png' %}" class="deco-item tree-deco">
         <img id="buranko-deco" src="{% static 'images/buranko.png' %}" class="deco-item buranko-deco">
         <img id="tobibako-deco" src="{% static 'images/tobibako.png' %}" class="deco-item tobibako-deco">
@@ -204,50 +203,37 @@
                 nodePoints.push({x: x + (isMobile ? 55 : 70), y: y + (isMobile ? 30 : 35)});
             }
 
-            const lastPoint = nodePoints[nodePoints.length - 1]; // STEP 30
+            const lastPoint = nodePoints[nodePoints.length - 1];
             const pond = document.getElementById('pond-deco');
             const funsui = document.getElementById('funsui-deco');
             const tobibako = document.getElementById('tobibako-deco');
             const tree = document.getElementById('tree-deco');
             const buranko = document.getElementById('buranko-deco');
 
-            // --- イラスト配置のバランス調整 ---
-            // 1. 跳び箱：STEP 30から少し離して中央
+            // イラスト配置調整
             const tobibakoTop = lastPoint.y + (isMobile ? 120 : 140);
             tobibako.style.top = tobibakoTop + 'px';
             tobibako.style.left = "50%";
             tobibako.style.transform = "translateX(-50%)";
 
-            // 2. 噴水：跳び箱からさらに離す (水飛沫が当たらない距離に)
-            // モバイルなら200px、デスクトップなら240pxほど間隔を開ける
             const funsuiTop = tobibakoTop + (isMobile ? 180 : 220);
             funsui.style.top = funsuiTop + 'px';
             funsui.style.left = "50%";
             funsui.style.transform = "translateX(-50%)";
 
-            // 3. 池：噴水のすぐ下
             pond.style.top = (funsuiTop + (isMobile ? 130 : 150)) + 'px';
             pond.style.left = "50%";
             pond.style.transform = "translateX(-50%)";
 
-            // 上部のデコ（木・ブランコ）
             if (!isMobile) {
-                tree.style.top = "80px";
-                tree.style.left = (frameWidth - 180) + "px";
-                buranko.style.top = "120px";
-                buranko.style.left = "60px";
+                tree.style.top = "80px"; tree.style.left = (frameWidth - 180) + "px";
+                buranko.style.top = "120px"; buranko.style.left = "60px";
             } else {
-                tree.style.top = "130px";
-                tree.style.left = "10px";
-                buranko.style.top = "130px";
-                buranko.style.right = "10px";
-                buranko.style.left = "auto";
+                tree.style.top = "130px"; tree.style.left = "10px";
+                buranko.style.top = "130px"; buranko.style.right = "10px"; buranko.style.left = "auto";
             }
 
-            // 全体の高さを池の下までしっかり確保
-            const finalHeight = funsuiTop + (isMobile ? 450 : 550);
-            frame.style.height = finalHeight + 'px';
-
+            frame.style.height = (funsuiTop + (isMobile ? 450 : 550)) + 'px';
             drawPath(); updateView();
         }
 
