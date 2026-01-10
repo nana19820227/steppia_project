@@ -17,7 +17,6 @@
             display: flex; flex-direction: column; align-items: center; box-sizing: border-box;
         }
 
-        /* ユーザー情報：コンパクト化 */
         .user-card {
             background: var(--white); border-radius: 25px; padding: 15px;
             text-align: center; width: 100%; max-width: 400px;
@@ -31,14 +30,12 @@
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
-        /* セクション共通 */
         .section-container { width: 100%; max-width: 450px; margin-bottom: 25px; }
         .section-title {
             font-size: 15px; font-weight: 900; margin-bottom: 10px;
             padding-left: 8px; display: flex; align-items: center; gap: 6px;
         }
 
-        /* カード：厚みを薄く */
         .history-card {
             background: var(--white); border-radius: 18px; padding: 12px 15px;
             margin-bottom: 8px; display: flex; justify-content: space-between;
@@ -50,7 +47,6 @@
         .main-text { font-size: 13px; font-weight: 900; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .sub-text { font-size: 11px; opacity: 0.7; font-weight: 700; }
 
-        /* ボタン：スリム化 */
         .status-btn {
             padding: 6px 12px; border-radius: 12px; font-size: 11px;
             font-weight: 900; text-decoration: none; border: none; white-space: nowrap;
@@ -58,8 +54,8 @@
         .unused-label { background: #D4CD8D; color: white; }
         .reserve-link { background: var(--accent-green); color: white; box-shadow: 0 2px 0 #66BB6A; }
 
-        /* 🆕 折りたたみ制御 */
-        .foldable-content { display: none; flex-direction: column; }
+        /* 折りたたみ制御 */
+        .foldable-content { display: none; flex-direction: column; width: 100%; }
         .toggle-btn {
             background: rgba(255, 255, 255, 0.5); border: 1.5px solid var(--brown);
             color: var(--brown); padding: 6px; border-radius: 12px;
@@ -68,7 +64,6 @@
         }
         .toggle-btn.active { background: var(--brown); color: white; }
 
-        /* 戻るボタン：極小サイズ(65px) */
         .back-nav { position: fixed; bottom: 15px; left: 10px; z-index: 1000; pointer-events: none; }
         .star-btn {
             position: relative; display: flex; align-items: center; justify-content: center;
@@ -96,19 +91,44 @@
 
     <div class="section-container">
         <div class="section-title">🎫 私のクーポン</div>
-        <div id="coupon-list">
+        <div id="coupon-area">
             {% for coupon in coupons %}
-                <div class="history-card">
-                    <div class="info-box">
-                        <span class="date-label">{{ coupon.won_at|date:"Y/m/d" }} 獲得</span>
-                        <span class="main-text">✨ {{ coupon.prize_name }}</span>
+                {% if forloop.first %}
+                    <div class="history-card">
+                        <div class="info-box">
+                            <span class="date-label">{{ coupon.won_at|date:"Y/m/d" }} 獲得</span>
+                            <span class="main-text">✨ {{ coupon.prize_name }}</span>
+                        </div>
+                        {% if coupon.prize_name == "コンサル面談30分" %}
+                            <a href="{% url 'consult_reservation' %}?coupon_id={{ coupon.id }}" class="status-btn reserve-link">予約</a>
+                        {% else %}
+                            <span class="status-btn unused-label">未使用</span>
+                        {% endif %}
                     </div>
-                    {% if coupon.prize_name == "コンサル面談30分" %}
-                        <a href="{% url 'consult_reservation' %}?coupon_id={{ coupon.id }}" class="status-btn reserve-link">予約</a>
-                    {% else %}
-                        <span class="status-btn unused-label">未使用</span>
-                    {% endif %}
-                </div>
+                {% endif %}
+
+                {% if forloop.counter == 2 %}
+                    <button class="toggle-btn" onclick="toggleSection('coupon-more', this)">▼ 過去のクーポンを表示</button>
+                    <div id="coupon-more" class="foldable-content">
+                {% endif %}
+
+                {% if forloop.counter >= 2 %}
+                    <div class="history-card">
+                        <div class="info-box">
+                            <span class="date-label">{{ coupon.won_at|date:"Y/m/d" }} 獲得</span>
+                            <span class="main-text">✨ {{ coupon.prize_name }}</span>
+                        </div>
+                        {% if coupon.prize_name == "コンサル面談30分" %}
+                            <a href="{% url 'consult_reservation' %}?coupon_id={{ coupon.id }}" class="status-btn reserve-link">予約</a>
+                        {% else %}
+                            <span class="status-btn unused-label">未使用</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                {% if forloop.last and forloop.counter >= 2 %}
+                    </div>
+                {% endif %}
             {% empty %}
                 <p style="text-align:center; opacity:0.5; font-size:11px;">まだありません 🐑</p>
             {% endfor %}
@@ -117,51 +137,74 @@
 
     <div class="section-container">
         <div class="section-title">💬 AI相談履歴</div>
-        <div id="ai-summary">
+        <div id="ai-area">
             {% for log in logs %}
-                {% if forloop.counter <= 2 %}
+                {% if forloop.first %}
                     <div class="history-card" style="flex-direction: column; align-items: flex-start;">
                         <span class="date-label">{{ log.created_at|date:"m/d H:i" }}</span>
                         <span class="main-text" style="font-size: 11px; opacity: 0.6;">Q: {{ log.user_question|truncatechars:20 }}</span>
                         <span class="sub-text">A: {{ log.ai_response|truncatechars:30 }}</span>
                     </div>
                 {% endif %}
+
+                {% if forloop.counter == 2 %}
+                    <button class="toggle-btn" onclick="toggleSection('ai-more', this)">▼ 過去の相談を表示</button>
+                    <div id="ai-more" class="foldable-content">
+                {% endif %}
+
+                {% if forloop.counter >= 2 %}
+                    <div class="history-card" style="flex-direction: column; align-items: flex-start;">
+                        <span class="date-label">{{ log.created_at|date:"m/d H:i" }}</span>
+                        <span class="main-text" style="font-size: 11px; opacity: 0.6;">Q: {{ log.user_question|truncatechars:20 }}</span>
+                        <span class="sub-text">A: {{ log.ai_response|truncatechars:30 }}</span>
+                    </div>
+                {% endif %}
+
+                {% if forloop.last and forloop.counter >= 2 %}
+                    </div>
+                {% endif %}
+            {% empty %}
+                <p style="text-align:center; opacity:0.5; font-size:11px;">履歴はありません</p>
             {% endfor %}
         </div>
-
-        {% if logs|length > 2 %}
-            <button class="toggle-btn" onclick="toggleSection('ai-more', this)">▼ 過去の相談を表示</button>
-            <div id="ai-more" class="foldable-content">
-                {% for log in logs %}
-                    {% if forloop.counter > 2 %}
-                        <div class="history-card" style="flex-direction: column; align-items: flex-start;">
-                            <span class="date-label">{{ log.created_at|date:"m/d H:i" }}</span>
-                            <span class="main-text" style="font-size: 11px; opacity: 0.6;">Q: {{ log.user_question|truncatechars:20 }}</span>
-                            <span class="sub-text">A: {{ log.ai_response|truncatechars:30 }}</span>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        {% endif %}
-        
-        {% if not logs %}
-            <p style="text-align:center; opacity:0.5; font-size:11px;">履歴はありません</p>
-        {% endif %}
     </div>
 
     <div class="section-container">
         <div class="section-title">📅 コンサル予約</div>
-        {% for schedule in mypage_schedules %}
-            <div class="history-card">
-                <div class="info-box">
-                    <span class="date-label">{{ schedule.date|date:"m/d" }} {{ schedule.time|time:"H:i" }}</span>
-                    <span class="main-text">{{ schedule.detail }}</span>
-                </div>
-                <span style="font-size: 15px;">✅</span>
-            </div>
-        {% empty %}
-            <p style="text-align:center; opacity:0.5; font-size:11px;">予定はありません</p>
-        {% endfor %}
+        <div id="schedule-area">
+            {% for schedule in mypage_schedules %}
+                {% if forloop.first %}
+                    <div class="history-card">
+                        <div class="info-box">
+                            <span class="date-label">{{ schedule.date|date:"m/d" }} {{ schedule.time|time:"H:i" }}</span>
+                            <span class="main-text">{{ schedule.detail }}</span>
+                        </div>
+                        <span style="font-size: 15px;">✅</span>
+                    </div>
+                {% endif %}
+
+                {% if forloop.counter == 2 %}
+                    <button class="toggle-btn" onclick="toggleSection('schedule-more', this)">▼ 過去の予約を表示</button>
+                    <div id="schedule-more" class="foldable-content">
+                {% endif %}
+
+                {% if forloop.counter >= 2 %}
+                    <div class="history-card">
+                        <div class="info-box">
+                            <span class="date-label">{{ schedule.date|date:"m/d" }} {{ schedule.time|time:"H:i" }}</span>
+                            <span class="main-text">{{ schedule.detail }}</span>
+                        </div>
+                        <span style="font-size: 15px;">✅</span>
+                    </div>
+                {% endif %}
+
+                {% if forloop.last and forloop.counter >= 2 %}
+                    </div>
+                {% endif %}
+            {% empty %}
+                <p style="text-align:center; opacity:0.5; font-size:11px;">予定はありません</p>
+            {% endfor %}
+        </div>
     </div>
 
     <div class="back-nav">
@@ -177,7 +220,15 @@
             const isOpen = content.style.display === 'flex';
             content.style.display = isOpen ? 'none' : 'flex';
             btn.classList.toggle('active');
-            btn.innerText = isOpen ? '▼ 過去の履歴を表示' : '▲ 閉じる';
+            
+            // ボタンのテキストを出し分ける
+            if (id === 'coupon-more') {
+                btn.innerText = isOpen ? '▼ 過去のクーポンを表示' : '▲ 閉じる';
+            } else if (id === 'ai-more') {
+                btn.innerText = isOpen ? '▼ 過去の相談を表示' : '▲ 閉じる';
+            } else if (id === 'schedule-more') {
+                btn.innerText = isOpen ? '▼ 過去の予約を表示' : '▲ 閉じる';
+            }
         }
     </script>
 </body>
