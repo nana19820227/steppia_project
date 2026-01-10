@@ -15,75 +15,73 @@
             background-color: var(--bg); margin: 0;
             font-family: 'Zen Maru Gothic', sans-serif; color: var(--brown);
             display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-            /* 全体の余白をさらに詰める */
-            padding: 10px 8px 140px; 
+            /* 上下の余白を極限までカット */
+            padding: 5px 6px 120px; 
             box-sizing: border-box;
         }
 
-        /* ヘッダー：さらにコンパクトに */
-        .header-visual { text-align: center; margin-top: 15px; }
-        .app-title-img { width: 110px; height: auto; margin-bottom: 0px; }
-        h1 { font-size: 20px; font-weight: 900; margin: 5px 0 15px; color: var(--brown); letter-spacing: 0.05em; }
+        /* ヘッダー：極小化 */
+        .header-visual { text-align: center; margin-top: 10px; }
+        .app-title-img { width: 90px; height: auto; margin-bottom: 0px; }
+        h1 { font-size: 18px; font-weight: 900; margin: 3px 0 12px; color: var(--brown); }
 
-        /* 入力フォーム：全体的に縮小 */
+        /* 入力フォーム：パディングとフォントを最小に */
         .schedule-form {
-            background: var(--white); border-radius: 25px; padding: 20px 15px;
-            width: 100%; max-width: 400px; margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04); box-sizing: border-box;
+            background: var(--white); border-radius: 20px; padding: 15px 12px;
+            width: 100%; max-width: 380px; margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.03); box-sizing: border-box;
         }
-        .form-group { margin-bottom: 12px; text-align: left; }
-        .form-group label { display: block; font-weight: 900; margin-bottom: 4px; font-size: 12px; opacity: 0.8; }
+        .form-group { margin-bottom: 8px; text-align: left; }
+        .form-group label { display: block; font-weight: 900; margin-bottom: 2px; font-size: 11px; opacity: 0.7; }
         .form-group input {
-            width: 100%; padding: 10px; border: 2px solid #f0f0f0; border-radius: 12px;
-            font-family: inherit; font-size: 14px; font-weight: 700;
+            width: 100%; padding: 8px; border: 1.5px solid #f0f0f0; border-radius: 10px;
+            font-family: inherit; font-size: 13px; font-weight: 700;
             color: var(--brown); background-color: #f8f8f8;
             box-sizing: border-box; display: block; outline: none;
-            -webkit-appearance: none; appearance: none; transition: 0.2s;
+            -webkit-appearance: none; appearance: none;
         }
         .form-group input[type="text"] { background-color: #fff; border-color: #eee; }
-        .form-group input:focus { border-color: var(--ok-green); background-color: #fff; }
 
         .add-btn {
-            background: var(--ok-green); color: white; border: none; padding: 12px;
-            width: 100%; border-radius: 15px; font-weight: 900; font-size: 15px;
+            background: var(--ok-green); color: white; border: none; padding: 10px;
+            width: 100%; border-radius: 12px; font-weight: 900; font-size: 14px;
             cursor: pointer; transition: transform 0.1s; margin-top: 5px;
-            box-shadow: 0 3px 0 #66BB6A;
+            box-shadow: 0 2px 0 #66BB6A;
         }
-        .add-btn:active { transform: translateY(2px); box-shadow: none; }
+        .add-btn:active { transform: translateY(1px); box-shadow: none; }
 
-        /* リスト：カードと文字を小さく */
-        .schedule-list { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 8px; }
+        /* リスト：カードの厚みを薄く */
+        .schedule-list { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 6px; }
         .schedule-card {
-            background: var(--white); border-radius: 18px; padding: 10px 14px;
-            display: flex; align-items: center; gap: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            background: var(--white); border-radius: 15px; padding: 8px 12px;
+            display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.02);
         }
-        .date-box { text-align: center; min-width: 50px; border-right: 2px solid #f9f9f9; padding-right: 8px; }
-        .date-day { font-size: 13px; font-weight: 900; color: var(--brown); }
-        .date-time { font-size: 9px; opacity: 0.5; font-weight: 700; }
-        .detail-text { font-size: 13px; font-weight: 900; color: #333; flex: 1; }
+        .date-box { text-align: center; min-width: 45px; border-right: 1.5px solid #f9f9f9; padding-right: 6px; }
+        .date-day { font-size: 12px; font-weight: 900; color: var(--brown); }
+        .date-time { font-size: 8px; opacity: 0.5; font-weight: 700; }
+        .detail-text { font-size: 12px; font-weight: 900; color: #333; flex: 1; }
 
-        /* 折りたたみボタン：スリム化 */
+        /* 折りたたみボタン：さらにタイトに */
         .history-toggle-btn {
-            background: rgba(255, 255, 255, 0.5); border: 1.5px solid var(--brown); color: var(--brown);
-            padding: 8px; border-radius: 15px; font-weight: 900; font-size: 12px;
-            cursor: pointer; margin: 10px 0 5px; transition: 0.2s; width: 100%;
+            background: rgba(255, 255, 255, 0.4); border: 1px solid var(--brown); color: var(--brown);
+            padding: 6px; border-radius: 12px; font-weight: 900; font-size: 11px;
+            cursor: pointer; margin: 8px 0 3px; width: 100%;
         }
         .history-toggle-btn.active { background: var(--brown); color: white; }
-        #history-content { display: none; flex-direction: column; gap: 8px; width: 100%; }
+        #history-content { display: none; flex-direction: column; gap: 6px; width: 100%; }
 
-        /* 戻るボタン：さらに小さく(65px) */
-        .bottom-nav { position: fixed; bottom: 15px; left: 10px; z-index: 1000; pointer-events: none; }
+        /* 戻るボタン：最小サイズ(55px) */
+        .bottom-nav { position: fixed; bottom: 12px; left: 10px; z-index: 1000; pointer-events: none; }
         .star-link-btn {
             position: relative; display: flex; align-items: center; justify-content: center;
-            width: 65px; height: 65px; text-decoration: none; pointer-events: auto;
+            width: 55px; height: 55px; text-decoration: none; pointer-events: auto;
         }
-        .star-icon { font-size: 65px; color: var(--star-yellow); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1)); }
+        .star-icon { font-size: 55px; color: var(--star-yellow); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
         .star-text {
-            position: absolute; font-size: 12px; font-weight: 900; color: var(--text-black);
-            top: 50%; left: 50%; transform: translate(-50%, -45%); transition: 0.15s;
+            position: absolute; font-size: 11px; font-weight: 900; color: var(--text-black);
+            top: 50%; left: 50%; transform: translate(-50%, -45%);
         }
-        .star-link-btn:active .star-text { transform: translate(-40%, -60%) rotate(15deg); }
         .star-link-btn:active { transform: scale(0.92); }
 
         @media (min-width: 768px) {
@@ -148,7 +146,7 @@
                 </div> {% endif %}
 
         {% empty %}
-            <p style="text-align: center; opacity: 0.5; font-size: 13px;">予定はまだありません 🐑</p>
+            <p style="text-align: center; opacity: 0.5; font-size: 11px;">予定はまだありません 🐑</p>
         {% endfor %}
     </div>
 
