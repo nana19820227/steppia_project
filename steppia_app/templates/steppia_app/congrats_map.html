@@ -3,7 +3,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>おめでとう！ - ステッピア</title>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
     <style>
@@ -25,57 +25,77 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            min-height: 100dvh; /* 🆕 スマホのブラウザ枠に合わせる */
             text-align: center;
             overflow: hidden;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
-        /* 🆕 桜の花びらのスタイル */
+        /* 🆕 桜の花びらのスタイル（サイズを少し小さく調整） */
         .sakura-petal {
             position: absolute;
-            background-color: #FFC0CB; /* ピンク色 */
-            border-radius: 150% 0 150% 0; /* 花びらの形 */
+            background-color: #FFC0CB;
+            border-radius: 150% 0 150% 0;
             animation: fall-sway 6s linear infinite;
             z-index: 1;
         }
-        /* 🆕 ひらひらと舞い落ちるアニメーション */
         @keyframes fall-sway {
             0% { opacity: 0; transform: translate(0, -10vh) rotateZ(0deg); }
             20% { opacity: 1; }
-            100% { opacity: 0.2; transform: translate(100px, 110vh) rotateZ(360deg); }
+            100% { opacity: 0.2; transform: translate(80px, 110vh) rotateZ(360deg); }
         }
 
         .congrats-card {
-            background: rgba(255, 255, 255, 0.92); 
-            padding: 50px 30px;
-            border-radius: 50px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-            max-width: 500px;
-            width: 90%;
-            border: 8px solid #FFE082;
+            background: rgba(255, 255, 255, 0.94); 
+            padding: 30px 20px; /* 🆕 パディングを縮小 */
+            border-radius: 35px; /* 🆕 角丸を少しスリムに */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+            max-width: 400px;
+            width: 100%;
+            border: 6px solid #FFE082;
             position: relative;
             z-index: 10;
+            box-sizing: border-box;
         }
 
-        h1 { font-size: 32px; color: #E65100; margin-bottom: 10px; }
-        p { font-size: 18px; color: var(--brown); font-weight: 700; line-height: 1.6; }
+        /* 🆕 文字サイズを「2回り」コンパクトに */
+        h1 { font-size: 24px; color: #E65100; margin: 0 0 10px; }
+        p { font-size: 15px; color: var(--brown); font-weight: 700; line-height: 1.5; margin: 0; }
 
+        /* 🆕 戻るボタン：他ページと統一した極小サイズ(65px) */
         .bottom-nav { 
-            position: fixed !important; 
+            position: fixed; 
             bottom: 20px; 
-            left: 20px; 
+            left: 15px; 
             z-index: 9999; 
-            width: 120px; 
-            height: 120px; 
+            pointer-events: none;
         }
         .star-link-btn {
             position: relative; display: flex; align-items: center; justify-content: center;
-            width: 100%; height: 100%; text-decoration: none; cursor: pointer;
+            width: 65px; height: 65px; text-decoration: none; cursor: pointer;
+            pointer-events: auto;
+            transition: transform 0.2s;
         }
-        .star-icon { font-size: 120px; color: var(--star-yellow); filter: drop-shadow(0 6px 12px rgba(0,0,0,0.1)); line-height: 1; }
+        .star-icon { font-size: 65px; color: var(--star-yellow); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); line-height: 1; }
         .star-text {
-            position: absolute; font-size: 22px; font-weight: 900; color: var(--text-black);
+            position: absolute; font-size: 13px; font-weight: 900; color: var(--text-black);
             top: 50%; left: 50%; transform: translate(-50%, -45%); white-space: nowrap;
+            transition: transform 0.15s ease-out;
+        }
+
+        /* 🆕 押し心地を他ページと同期 */
+        .star-link-btn:active .star-text { transform: translate(-40%, -60%) rotate(15deg); }
+        .star-link-btn:active { transform: scale(0.92); }
+
+        @media (min-width: 768px) {
+            h1 { font-size: 32px; }
+            p { font-size: 18px; }
+            .congrats-card { padding: 50px 30px; }
+            .bottom-nav { left: 50%; transform: translateX(-380px); }
+            .star-link-btn { width: 100px; height: 100px; }
+            .star-icon { font-size: 100px; }
+            .star-text { font-size: 20px; }
         }
     </style>
 </head>
@@ -83,9 +103,9 @@
     <div id="confetti-container"></div>
 
     <div class="congrats-card">
-        <div style="font-size: 60px; margin-bottom: 20px;">🎊</div>
+        <div style="font-size: 45px; margin-bottom: 15px;">🎊</div>
         <h1>ついにゴール！</h1>
-        <p>{{ user_name|default:"那奈" }}さん、30ステップ完走<br>本当におめでとうございます！<br>新しい冒険の始まりですね🌸</p>
+        <p>{{ user_name|default:"那奈" }}さん、30ステップ完走<br>努力が報われましたね！<br>就職おめでとうございます</p>
     </div>
 
     <div class="bottom-nav">
@@ -98,16 +118,14 @@
     <script>
         function createSakura() {
             const container = document.getElementById('confetti-container');
-            // 花びらを30枚生成
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 25; i++) {
                 const petal = document.createElement('div');
                 petal.className = 'sakura-petal';
-                // ランダムな位置、大きさ、アニメーション時間を設定
                 petal.style.left = Math.random() * 100 + 'vw';
-                const size = Math.random() * 15 + 10; // 10px〜25px
+                const size = Math.random() * 10 + 8; // 8px〜18px（少し小さく）
                 petal.style.width = size + 'px';
                 petal.style.height = size + 'px';
-                petal.style.animationDuration = (Math.random() * 4 + 4) + 's'; // 4〜8秒
+                petal.style.animationDuration = (Math.random() * 4 + 4) + 's';
                 petal.style.animationDelay = Math.random() * 5 + 's';
                 container.appendChild(petal);
             }
