@@ -37,10 +37,9 @@
             box-sizing: border-box; 
             margin: auto;
             z-index: 1; 
-            padding-bottom: 120px; /* 戻るボタン用の余白 */
+            padding-bottom: 120px; 
         }
 
-        /* --- ヘッダーパネル：折りたたみ機能を削除 --- */
         .header-panel { 
             position: fixed; top: 10px; left: 50%; transform: translateX(-50%); 
             width: 92%; max-width: 800px; 
@@ -60,23 +59,15 @@
         .btn-mini { padding: 6px 10px; border-radius: 10px; border: none; font-weight: 900; font-size: 11px; color: white; cursor: pointer; }
         .btn-add { background: #81C784; } .btn-warp { background: #F48FB1; } .btn-del { background: #e57373; }
 
-        /* --- 戻るボタン：枠内左下に配置 --- */
-        .bottom-nav { 
-            position: absolute; 
-            bottom: 25px; 
-            left: 25px; 
-            z-index: 4000; 
-        }
+        .bottom-nav { position: absolute; bottom: 25px; left: 25px; z-index: 4000; }
         .star-link-btn { 
             position: relative; display: flex; align-items: center; justify-content: center; 
-            width: 85px; height: 85px; text-decoration: none; 
-            transition: transform 0.2s;
+            width: 85px; height: 85px; text-decoration: none; transition: transform 0.2s;
         }
         .star-link-btn:active { transform: scale(0.9); }
         .star-icon { font-size: 85px; color: var(--star-yellow); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
         .star-text { position: absolute; font-size: 17px; font-weight: 900; color: var(--text-black); top: 50%; left: 50%; transform: translate(-50%, -45%); }
 
-        /* --- マップタイル --- */
         .step-tile { 
             position: absolute; width: 140px; height: 70px; background: #FFFFFF; 
             border: 2px solid var(--wood); border-radius: 15px; 
@@ -89,23 +80,20 @@
         .deco-item { position: absolute; pointer-events: none; z-index: 5; }
         .splash { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; pointer-events: none; }
 
-        /* デコレーション基本サイズ制御（PCでの巨大化防止） */
-        .tree-deco, .buranko-deco { width: 180px; height: auto; }
+        /* 🆕 PCでのデコレーションサイズを調整（一回り小さく） */
+        .tree-deco, .buranko-deco { width: 130px; height: auto; }
         .magic-pond { width: 220px; height: 140px; background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; }
         .funsui-area { width: 140px; }
         .tobibako-deco { width: 120px; }
 
-        /* --- モバイル対応修正 --- */
         @media (max-width: 768px) {
             .dollhouse-frame { width: 100vw; border-width: 8px; padding-bottom: 100px; }
             .header-panel { width: 95%; padding: 10px; }
             .header-panel h2 { font-size: 12px !important; }
-            
             .bottom-nav { bottom: 20px; left: 15px; }
             .star-link-btn { width: 60px; height: 60px; }
             .star-icon { font-size: 60px; }
             .star-text { font-size: 13px; }
-
             .tree-deco, .buranko-deco { width: 85px !important; }
             .magic-pond { width: 180px !important; height: 120px !important; }
             .funsui-area { width: 110px !important; }
@@ -174,9 +162,10 @@
             const cols = isMobile ? 2 : 6;
             const frameWidth = frame.clientWidth;
             
-            const gapX = isMobile ? (frameWidth / 2.3) : 190;
+            const gapX = isMobile ? (frameWidth / 2.3) : 185;
             const gapY = isMobile ? 110 : 140; 
-            const startX = isMobile ? (frameWidth - (gapX * (cols-1) + (isMobile ? 115 : 140))) / 2 : 150;
+            // 🆕 PCでの開始位置を右にずらしてブランコとの重なりを防止
+            const startX = isMobile ? (frameWidth - (gapX * (cols-1) + (isMobile ? 115 : 140))) / 2 : 200;
             const startY = isMobile ? 180 : 220;
 
             for (let i = 1; i <= 30; i++) {
@@ -218,8 +207,9 @@
             pond.style.left = "50%"; pond.style.transform = "translateX(-50%)";
 
             if (!isMobile) {
-                tree.style.top = "100px"; tree.style.left = (frameWidth - 220) + "px";
-                buranko.style.top = "140px"; buranko.style.left = "80px";
+                // 🆕 ブランコをさらに左端に寄せ、サイズも微調整
+                tree.style.top = "100px"; tree.style.left = (frameWidth - 180) + "px";
+                buranko.style.top = "140px"; buranko.style.left = "30px";
             } else {
                 tree.style.top = "110px"; tree.style.left = "10px";
                 buranko.style.top = "110px"; buranko.style.right = "10px"; buranko.style.left = "auto";
