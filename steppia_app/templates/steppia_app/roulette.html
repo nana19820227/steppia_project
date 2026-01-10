@@ -7,33 +7,140 @@
     <title>運だめし！ - ステッピア</title>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <style>
-        :root { --bg: #DCECCF; --white: #FFFFFF; --brown: #5D4037; --star-yellow: #FFF2AF; --text-black: #000000; }
-        body { background-color: var(--bg); margin: 0; font-family: 'Zen Maru Gothic', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-        h2 { font-size: 28px; font-weight: 900; color: var(--brown); margin-bottom: 20px; }
-        .roulette-container { position: relative; width: 320px; height: 320px; }
-        .pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #FF5722; z-index: 100; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
-        canvas { width: 320px; height: 320px; border-radius: 50%; border: 8px solid var(--white); box-shadow: 0 10px 30px rgba(0,0,0,0.15); transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
+    
+</head>
+<style>
+        :root { 
+            --bg: #DCECCF; 
+            --white: #FFFFFF; 
+            --brown: #5D4037; 
+            --star-yellow: #FFF2AF; 
+            --text-black: #000000; 
+        }
+
+        body { 
+            background-color: var(--bg); 
+            margin: 0; 
+            font-family: 'Zen Maru Gothic', sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            /* 100vhではなく100dvhを使用 */
+            height: 100dvh; 
+            overflow: hidden; 
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        h2 { 
+            font-size: 22px; /* 少し小さく */
+            font-weight: 900; 
+            color: var(--brown); 
+            margin: 10px 0; 
+            flex-shrink: 0;
+        }
+
+        /* 🆕 ルーレットのサイズを画面に合わせてレスポンシブに */
+        .roulette-container { 
+            position: relative; 
+            width: min(75vw, 280px); /* 画面の75%か最大280px */
+            height: min(75vw, 280px);
+            flex-shrink: 0;
+        }
+
+        .pointer { 
+            position: absolute; 
+            top: -10px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 0; 
+            height: 0; 
+            border-left: 12px solid transparent; 
+            border-right: 12px solid transparent; 
+            border-top: 20px solid #FF5722; 
+            z-index: 100; 
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); 
+        }
+
+        canvas { 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 50%; 
+            border: 6px solid var(--white); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); 
+            background-color: white;
+        }
         
-        /* 🆕 高速回転アニメーション */
         @keyframes fast-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .spinning { animation: fast-spin 0.3s linear infinite; }
 
-        .status-msg { margin-top: 25px; font-size: 20px; font-weight: 900; color: var(--brown); height: 30px; }
-        .controls { margin-top: 30px; display: flex; gap: 15px; }
-        .btn { padding: 12px 35px; border: none; border-radius: 50px; font-size: 18px; font-weight: 900; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 0 rgba(0,0,0,0.1); }
-        .btn:active { transform: translateY(3px); box-shadow: none; }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+        .status-msg { 
+            margin-top: 15px; 
+            font-size: 16px; 
+            font-weight: 900; 
+            color: var(--brown); 
+            height: 24px; 
+            flex-shrink: 0;
+        }
+
+        .controls { 
+            margin-top: 15px; 
+            display: flex; 
+            gap: 12px; 
+            flex-shrink: 0;
+        }
+
+        .btn { 
+            padding: 10px 25px; 
+            border: none; 
+            border-radius: 50px; 
+            font-size: 16px; 
+            font-weight: 900; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1); 
+        }
+
+        .btn:active { transform: translateY(2px); box-shadow: none; }
+        .btn:disabled { opacity: 0.4; }
         
         .start-btn { background: #FFA726; color: white; }
         .stop-btn { background: #F48FB1; color: white; }
 
-        .bottom-nav { position: fixed; bottom: 20px; left: 20px; z-index: 1000; }
-        .star-link-btn { position: relative; display: flex; align-items: center; justify-content: center; width: 100px; height: 100px; text-decoration: none; }
-        .star-icon { font-size: 100px; color: var(--star-yellow); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
-        .star-text { position: absolute; font-size: 20px; font-weight: 900; color: var(--text-black); top: 50%; left: 50%; transform: translate(-50%, -45%); }
+        /* 🆕 戻るボタンをコンパクトにして右下に配置 */
+        .bottom-nav { 
+            margin-top: auto; 
+            align-self: flex-start; /* 左側に寄せる */
+            padding-bottom: 5px;
+        }
+
+        .star-link-btn { 
+            position: relative; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            width: 70px; /* 100pxから70pxへ */
+            height: 70px; 
+            text-decoration: none; 
+        }
+
+        .star-icon { 
+            font-size: 70px; 
+            color: var(--star-yellow); 
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); 
+        }
+
+        .star-text { 
+            position: absolute; 
+            font-size: 14px; 
+            font-weight: 900; 
+            color: var(--text-black); 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -45%); 
+        }
     </style>
-</head>
 <body>
     <h2>🎁 運だめしルーレット</h2>
 
