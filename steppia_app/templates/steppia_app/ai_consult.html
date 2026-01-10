@@ -28,119 +28,142 @@
 
         .main-wrapper {
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
             display: flex;
             flex-direction: column;
-            padding: 15px 12px 160px; /* 下部ナビ用の余白 */
+            padding: 15px 12px 180px; /* 下部ナビ用に余白を広げました */
             box-sizing: border-box;
         }
 
-        /* --- ヘッダー：極小化 --- */
+        /* --- ヘッダー --- */
         .header-area {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
         }
-        .header-logo { width: 80px; height: auto; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.06)); }
+        .header-logo { width: 75px; height: auto; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.06)); }
         h1 { font-size: 18px; font-weight: 900; margin: 0; letter-spacing: 0.05em; }
 
-        /* --- チャットエリア --- */
-        .chat-container { width: 100%; display: flex; flex-direction: column; gap: 20px; }
+        /* --- チャットエリア：吹き出しデザイン --- */
+        .chat-container { width: 100%; display: flex; flex-direction: column; gap: 30px; }
 
-        .ai-row { display: flex; align-items: flex-end; gap: 8px; width: 100%; }
+        .ai-row { display: flex; align-items: flex-start; gap: 10px; width: 100%; position: relative; }
         .avatar { 
-            width: 50px; height: 50px; border-radius: 50%; 
+            width: 55px; height: 55px; border-radius: 50%; 
             background: white; padding: 2px; flex-shrink: 0;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.05); object-fit: contain;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.08); object-fit: contain;
         }
+        
+        /* 🆕 AIの吹き出し：しっぽ付きデザイン */
         .ai-bubble {
-            flex: 1; background: var(--bubble-ai); padding: 10px 15px;
-            border-radius: 18px; border-bottom-left-radius: 2px;
-            box-shadow: 0 3px 0 #E0DBC5; line-height: 1.5; font-weight: 700;
-            font-size: 13px; position: relative;
+            flex: 1; background: var(--bubble-ai); padding: 12px 18px;
+            border-radius: 20px; border-bottom-left-radius: 4px;
+            box-shadow: 0 4px 0 #E0DBC5; line-height: 1.6; font-weight: 700;
+            font-size: 14px; position: relative;
+            margin-top: 10px;
+        }
+        /* 吹き出しのしっぽ部分 */
+        .ai-bubble::before {
+            content: ""; position: absolute; left: -10px; bottom: 0;
+            border-style: solid; border-width: 10px 10px 0 0;
+            border-color: transparent var(--bubble-ai) transparent transparent;
         }
 
         .user-row { display: flex; justify-content: flex-end; align-items: flex-end; gap: 8px; width: 100%; }
         .user-bubble {
-            max-width: 75%; background: var(--bubble-user); padding: 10px 15px;
-            border-radius: 18px; border-bottom-right-radius: 2px;
-            box-shadow: 0 3px 0 #D0D0D0; line-height: 1.5; font-weight: 700;
-            font-size: 13px;
+            max-width: 75%; background: var(--bubble-user); padding: 12px 18px;
+            border-radius: 20px; border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 0 #D0D0D0; line-height: 1.6; font-weight: 700;
+            font-size: 14px;
         }
 
         /* --- 入力エリア --- */
         .input-section {
-            position: fixed; bottom: 95px;
-            width: 94%; max-width: 580px;
+            position: fixed; bottom: 100px;
+            width: 94%; max-width: 600px;
             z-index: 2000;
         }
         .input-card {
-            background: var(--bubble-ai); border-radius: 35px; padding: 8px 10px;
+            background: var(--bubble-ai); border-radius: 40px; padding: 8px 12px;
             box-shadow: 0 5px 0 #E0DBC5; display: flex; align-items: center; gap: 8px;
+            position: relative;
         }
         textarea {
             flex: 1; border: 1px solid #f0f0f0; outline: none; background: white;
-            border-radius: 20px; padding: 10px 12px; font-family: inherit;
-            font-size: 13px; font-weight: 700; resize: none; height: 42px;
+            border-radius: 20px; padding: 10px 15px; font-family: inherit;
+            font-size: 14px; font-weight: 700; resize: none; height: 42px;
             color: var(--text-brown); box-sizing: border-box;
         }
 
-        /* 相談ハートボタン：PCサイズ対応のパス */
+        /* 🆕 ハート相談ボタン：崩れない黄金比パス */
         .heart-btn {
-            background: var(--heart-pink); width: 70px; height: 70px;
+            background: var(--heart-pink); width: 75px; height: 75px;
             display: flex; align-items: center; justify-content: center;
             border: none; cursor: pointer; flex-shrink: 0;
-            font-weight: 900; color: var(--text-brown); font-size: 14px;
-            /* スマホ用の形状 */
-            clip-path: path('M35 64c-2 0-3-1-4-2L10 40C5 35 3 29 3 23c0-11 9-20 20-20 5 0 10 3 12 6 2-4 7-6 12-6 11 0 20 9 20 20 0 6-2 12-7 17L37 62c-1 1-1 2-2 2z');
+            font-weight: 900; color: var(--text-brown); font-size: 15px;
+            clip-path: path('M37 68c-2 0-3-1-4-2L11 43C5 38 3 31 3 25c0-12 9-21 21-21 5 0 11 3 13 6 3-4 8-6 13-6 12 0 21 9 21 21 0 6-2 13-7 18L39 66c-1 1-1 2-2 2z');
             transition: 0.2s; padding-bottom: 5px;
+            position: relative; z-index: 10;
         }
         .heart-btn:active { transform: scale(1.1) rotate(5deg); }
 
-        /* --- 下部ナビゲーション --- */
+        /* ひょっこりイラスト */
+        .onna-illust {
+            position: absolute; right: -5px; bottom: -15px;
+            width: 85px; height: auto; z-index: 5;
+            pointer-events: none; opacity: 0.9;
+        }
+
+        /* --- 🆕 下部ナビゲーション：左右の両端配置 --- */
         .bottom-nav {
-            position: fixed; bottom: 10px; left: 0; width: 100%; 
-            display: flex; justify-content: center; gap: 40px;
-            padding: 0 15px; box-sizing: border-box; z-index: 3000;
+            position: fixed; bottom: 15px; left: 0; width: 100%; 
+            display: flex; 
+            justify-content: space-between; /* 左右の両端に配置 */
+            padding: 0 15px; 
+            box-sizing: border-box; z-index: 3000;
             pointer-events: none;
         }
         
         .star-nav-btn {
             text-decoration: none; position: relative; display: flex; 
             align-items: center; justify-content: center;
-            width: 70px; height: 70px;
+            width: 80px; height: 80px;
             pointer-events: auto; 
             transition: transform 0.2s;
         }
-        .star-icon { font-size: 70px; color: var(--star-yellow); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1)); }
+        .star-icon { font-size: 80px; color: var(--star-yellow); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.12)); }
+        
         .star-label {
             position: absolute; top: 50%; left: 50%; 
             transform: translate(-50%, -45%);
-            font-size: 12px; font-weight: 900; color: #000; white-space: nowrap;
+            font-size: 14px; font-weight: 900; color: #000; white-space: nowrap;
         }
+        .star-nav-btn:active { transform: scale(0.9); }
 
         /* PC向け調整 */
         @media (min-width: 768px) {
             h1 { font-size: 26px; }
             .avatar { width: 75px; height: 75px; }
             .ai-bubble, .user-bubble { font-size: 16px; }
-            .input-section { bottom: 130px; }
+            .input-section { bottom: 140px; }
             .input-card { padding: 12px 20px; }
             textarea { height: 55px; font-size: 16px; }
             
-            /* PC用の大きなハートに合わせたパス */
+            /* PC用の大きなハートに合わせた崩れないパス */
             .heart-btn { 
-                width: 100px; height: 100px; font-size: 18px; 
-                clip-path: path('M50 90c-2 0-4-1-5-2L14 58C7 51 4 42 4 33 4 16 16 4 32 4c7 0 14 4 18 9 4-5 11-9 18-9 16 0 28 12 28 29 0 9-3 18-9 25L53 88c-1 1-2 2-3 2z');
+                width: 105px; height: 105px; font-size: 19px; 
+                clip-path: path('M52 94c-2 0-4-1-5-2L14 60C7 53 4 44 4 34 4 17 17 4 33 4c7 0 14 4 19 10 5-6 12-10 19-10 16 0 29 13 29 30 0 10-3 19-10 26L55 92c-1 1-2 2-3 2z');
                 padding-bottom: 8px;
             }
+            .onna-illust { width: 110px; right: -15px; }
             
-            .star-nav-btn { width: 100px; height: 100px; }
-            .star-icon { font-size: 100px; }
-            .star-label { font-size: 18px; }
-            .bottom-nav { left: 50%; transform: translateX(-50%); max-width: 800px; bottom: 20px; }
+            .star-nav-btn { width: 115px; height: 115px; }
+            .star-icon { font-size: 115px; }
+            .star-label { font-size: 20px; }
+            /* PCではボタンが離れすぎないように中央寄りに幅を制限 */
+            .bottom-nav { left: 50%; transform: translateX(-50%); max-width: 900px; bottom: 25px; }
         }
     </style>
 </head>
@@ -159,7 +182,7 @@
                     {% if ai_answer %}
                         {{ ai_answer|linebreaksbr }}
                     {% else %}
-                        こんにちは！何かお悩みはありますか？<br>私に何でも話してくださいね。
+                        こんにちは！就活やお仕事の悩み、何でも聞かせてくださいね。
                     {% endif %}
                 </div>
             </div>
@@ -178,6 +201,7 @@
                     <textarea name="user_input" placeholder="お悩みを入力してね..." required></textarea>
                     <button type="submit" class="heart-btn">相談</button>
                 </form>
+                <img src="{% static 'images/onna.png' %}" class="onna-illust">
             </div>
         </div>
     </div>
@@ -185,7 +209,7 @@
     <div class="bottom-nav">
         <a href="{% url 'menu' %}" class="star-nav-btn">
             <span class="star-icon">★</span>
-            <span class="star-label">ホーム</span>
+            <span class="star-label">戻る</span>
         </a>
         <a href="{% url 'mypage' %}" class="star-nav-btn">
             <span class="star-icon">★</span>
