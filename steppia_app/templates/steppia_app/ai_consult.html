@@ -28,139 +28,119 @@
 
         .main-wrapper {
             width: 100%;
-            max-width: 650px;
+            max-width: 600px;
             display: flex;
             flex-direction: column;
-            padding: 30px 15px 150px; /* 下部のナビと入力欄のための余白 */
+            padding: 15px 12px 160px; /* 下部ナビ用の余白 */
             box-sizing: border-box;
         }
 
-        /* --- ヘッダー --- */
+        /* --- ヘッダー：極小化 --- */
         .header-area {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 4px;
         }
-        .header-logo { 
-            width: 100px;
-            height: auto; 
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-        }
-        h1 { font-size: 24px; font-weight: 900; margin: 0; letter-spacing: 0.1em; }
+        .header-logo { width: 80px; height: auto; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.06)); }
+        h1 { font-size: 18px; font-weight: 900; margin: 0; letter-spacing: 0.05em; }
 
         /* --- チャットエリア --- */
-        .chat-container {
-            width: 100%;
-            display: flex; flex-direction: column; gap: 35px;
-            margin-bottom: 20px;
-        }
+        .chat-container { width: 100%; display: flex; flex-direction: column; gap: 20px; }
 
-        .ai-row { display: flex; align-items: flex-end; gap: 10px; width: 100%; }
-        .avatar-ai { 
-            width: 60px; height: 60px; border-radius: 50%; 
+        .ai-row { display: flex; align-items: flex-end; gap: 8px; width: 100%; }
+        .avatar { 
+            width: 50px; height: 50px; border-radius: 50%; 
             background: white; padding: 2px; flex-shrink: 0;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.08);
-            object-fit: contain;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.05); object-fit: contain;
         }
         .ai-bubble {
-            flex: 1; background: var(--bubble-ai); padding: 15px 20px;
-            border-radius: 20px; border-bottom-left-radius: 2px;
-            box-shadow: 0 4px 0 #E0DBC5; line-height: 1.6; font-weight: 700;
-            font-size: 15px; position: relative;
+            flex: 1; background: var(--bubble-ai); padding: 10px 15px;
+            border-radius: 18px; border-bottom-left-radius: 2px;
+            box-shadow: 0 3px 0 #E0DBC5; line-height: 1.5; font-weight: 700;
+            font-size: 13px; position: relative;
         }
 
-        .user-row { display: flex; justify-content: flex-end; align-items: flex-end; gap: 10px; width: 100%; }
+        .user-row { display: flex; justify-content: flex-end; align-items: flex-end; gap: 8px; width: 100%; }
         .user-bubble {
-            max-width: 70%; background: var(--bubble-user); padding: 15px 20px;
-            border-radius: 20px; border-bottom-right-radius: 2px;
-            box-shadow: 0 4px 0 #D0D0D0; line-height: 1.6; font-weight: 700;
-            font-size: 15px;
-        }
-        .avatar-user { 
-            width: 65px; height: auto; flex-shrink: 0; object-fit: contain;
+            max-width: 75%; background: var(--bubble-user); padding: 10px 15px;
+            border-radius: 18px; border-bottom-right-radius: 2px;
+            box-shadow: 0 3px 0 #D0D0D0; line-height: 1.5; font-weight: 700;
+            font-size: 13px;
         }
 
         /* --- 入力エリア --- */
         .input-section {
-            position: sticky; bottom: 100px; /* ナビボタンの上に配置 */
-            width: 100%; max-width: 650px;
-            margin-top: 40px;
-            z-index: 100;
+            position: fixed; bottom: 95px;
+            width: 94%; max-width: 580px;
+            z-index: 2000;
         }
         .input-card {
-            background: var(--bubble-ai); border-radius: 40px; padding: 10px 15px;
-            box-shadow: 0 6px 0 #E0DBC5; display: flex; align-items: center; gap: 10px;
+            background: var(--bubble-ai); border-radius: 35px; padding: 8px 10px;
+            box-shadow: 0 5px 0 #E0DBC5; display: flex; align-items: center; gap: 8px;
         }
         textarea {
-            flex: 1; border: none; outline: none; background: white;
-            border-radius: 25px; padding: 12px 15px; font-family: inherit;
-            font-size: 15px; font-weight: 700; resize: none; height: 45px;
-            color: var(--text-brown);
+            flex: 1; border: 1px solid #f0f0f0; outline: none; background: white;
+            border-radius: 20px; padding: 10px 12px; font-family: inherit;
+            font-size: 13px; font-weight: 700; resize: none; height: 42px;
+            color: var(--text-brown); box-sizing: border-box;
         }
 
+        /* 相談ハートボタン：PCサイズ対応のパス */
         .heart-btn {
             background: var(--heart-pink); width: 70px; height: 70px;
             display: flex; align-items: center; justify-content: center;
             border: none; cursor: pointer; flex-shrink: 0;
-            font-weight: 900; color: var(--text-brown); font-size: 15px;
-            clip-path: path('M35 60C-7 28-7 10 14 3.5 24.5 0 35 10 35 10s10.5-10 21-6.5C77 10 77 28 35 60Z');
-            transition: 0.2s; padding-bottom: 8px;
+            font-weight: 900; color: var(--text-brown); font-size: 14px;
+            /* スマホ用の形状 */
+            clip-path: path('M35 64c-2 0-3-1-4-2L10 40C5 35 3 29 3 23c0-11 9-20 20-20 5 0 10 3 12 6 2-4 7-6 12-6 11 0 20 9 20 20 0 6-2 12-7 17L37 62c-1 1-1 2-2 2z');
+            transition: 0.2s; padding-bottom: 5px;
         }
-        .heart-btn:active { transform: scale(0.9); }
+        .heart-btn:active { transform: scale(1.1) rotate(5deg); }
 
         /* --- 下部ナビゲーション --- */
         .bottom-nav {
-            position: fixed; bottom: 5px; left: 0; width: 100%; 
-            display: flex; justify-content: space-between; 
-            padding: 0 5px; box-sizing: border-box; z-index: 1000;
+            position: fixed; bottom: 10px; left: 0; width: 100%; 
+            display: flex; justify-content: center; gap: 40px;
+            padding: 0 15px; box-sizing: border-box; z-index: 3000;
             pointer-events: none;
         }
         
-        .star-btn {
+        .star-nav-btn {
             text-decoration: none; position: relative; display: flex; 
             align-items: center; justify-content: center;
-            width: 90px; height: 90px;
+            width: 70px; height: 70px;
             pointer-events: auto; 
-            transition: transform 0.2s ease-out;
+            transition: transform 0.2s;
         }
-
-        .star-icon { 
-            font-size: 90px; color: var(--star-yellow); 
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); line-height: 1;
+        .star-icon { font-size: 70px; color: var(--star-yellow); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1)); }
+        .star-label {
+            position: absolute; top: 50%; left: 50%; 
+            transform: translate(-50%, -45%);
+            font-size: 12px; font-weight: 900; color: #000; white-space: nowrap;
         }
-
-        .star-text {
-            position: absolute; 
-            top: 50%; left: 50%; 
-            transform: translate(-50%, -45%) rotate(0deg);
-            font-size: 16px; font-weight: 900; 
-            color: #000; 
-            white-space: nowrap;
-            transition: transform 0.15s ease-out;
-        }
-
-        .star-btn:active .star-text {
-            transform: translate(-40%, -65%) rotate(15deg);
-        }
-
-        .star-btn:active { transform: scale(0.95); }
 
         /* PC向け調整 */
         @media (min-width: 768px) {
-            h1 { font-size: 30px; }
-            .avatar-ai { width: 100px; height: 100px; }
-            .avatar-user { width: 105px; }
-            .ai-bubble, .user-bubble { font-size: 18px; }
-            .input-section { bottom: 140px; }
-            .input-card { padding: 15px 30px; }
-            textarea { height: 60px; font-size: 18px; }
-            .heart-btn { width: 100px; height: 100px; font-size: 20px; }
-            .star-btn { width: 130px; height: 130px; }
-            .star-icon { font-size: 130px; }
-            .star-text { font-size: 22px; }
-            .bottom-nav { left: 50%; transform: translateX(-50%); max-width: 800px; padding: 0 30px; bottom: 10px; }
+            h1 { font-size: 26px; }
+            .avatar { width: 75px; height: 75px; }
+            .ai-bubble, .user-bubble { font-size: 16px; }
+            .input-section { bottom: 130px; }
+            .input-card { padding: 12px 20px; }
+            textarea { height: 55px; font-size: 16px; }
+            
+            /* PC用の大きなハートに合わせたパス */
+            .heart-btn { 
+                width: 100px; height: 100px; font-size: 18px; 
+                clip-path: path('M50 90c-2 0-4-1-5-2L14 58C7 51 4 42 4 33 4 16 16 4 32 4c7 0 14 4 18 9 4-5 11-9 18-9 16 0 28 12 28 29 0 9-3 18-9 25L53 88c-1 1-2 2-3 2z');
+                padding-bottom: 8px;
+            }
+            
+            .star-nav-btn { width: 100px; height: 100px; }
+            .star-icon { font-size: 100px; }
+            .star-label { font-size: 18px; }
+            .bottom-nav { left: 50%; transform: translateX(-50%); max-width: 800px; bottom: 20px; }
         }
     </style>
 </head>
@@ -173,23 +153,22 @@
         </div>
 
         <div class="chat-container">
-            {% if user_q %}
-            <div class="user-row">
-                <div class="user-bubble">{{ user_q }}</div>
-                <img src="{% static 'images/onna.png' %}" class="avatar-user">
-            </div>
-            {% endif %}
-
             <div class="ai-row">
-                <img src="{% static 'images/otoko.png' %}" class="avatar-ai">
+                <img src="{% static 'images/otoko.png' %}" class="avatar">
                 <div class="ai-bubble">
                     {% if ai_answer %}
                         {{ ai_answer|linebreaksbr }}
                     {% else %}
-                        こんにちは！就活やお仕事の悩み、何でも聞かせてくださいね。
+                        こんにちは！何かお悩みはありますか？<br>私に何でも話してくださいね。
                     {% endif %}
                 </div>
             </div>
+
+            {% if user_q %}
+            <div class="user-row">
+                <div class="user-bubble">{{ user_q }}</div>
+            </div>
+            {% endif %}
         </div>
 
         <div class="input-section">
@@ -204,13 +183,13 @@
     </div>
 
     <div class="bottom-nav">
-        <a href="{% url 'menu' %}" class="star-btn">
+        <a href="{% url 'menu' %}" class="star-nav-btn">
             <span class="star-icon">★</span>
-            <span class="star-text">戻る</span>
+            <span class="star-label">ホーム</span>
         </a>
-        <a href="{% url 'mypage' %}" class="star-btn">
+        <a href="{% url 'mypage' %}" class="star-nav-btn">
             <span class="star-icon">★</span>
-            <span class="star-text">履歴</span>
+            <span class="star-label">履歴</span>
         </a>
     </div>
 
