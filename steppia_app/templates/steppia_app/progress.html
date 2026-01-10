@@ -29,14 +29,16 @@
         }
 
         .dollhouse-frame { 
-            position: relative; 
+            position: relative; /* 子要素の基準点 */
             width: 1300px; 
             min-height: 1250px; 
             background: var(--grass); 
             border: 15px solid var(--wood); 
             box-sizing: border-box; 
             margin: auto;
-            z-index: 1; 
+            z-index: 1;
+            /* 下部にボタン用の余白を確保 */
+            padding-bottom: 100px;
         }
 
         /* --- ヘッダーパネル --- */
@@ -46,8 +48,11 @@
             background: rgba(255, 255, 255, 0.98); border: 3px solid var(--wood); 
             border-radius: 20px; padding: 10px 15px; z-index: 3000; 
             display: flex; flex-direction: column; align-items: center; gap: 5px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            max-height: 45px; overflow: hidden; transition: max-height 0.3s ease-out;
         }
+        .header-panel.open { max-height: 200px; }
+        .toggle-handle { font-size: 10px; color: var(--wood); font-weight: 900; cursor: pointer; padding: 2px; margin-bottom: 5px; }
 
         .header-top { display: flex; align-items: center; justify-content: space-between; width: 100%; }
         .company-controls { 
@@ -55,28 +60,25 @@
             padding-top: 5px; border-top: 1px dashed rgba(109, 76, 65, 0.2);
         }
 
-        select {
-            flex-grow: 1; padding: 5px; border-radius: 8px;
-            border: 2px solid var(--wood); font-family: inherit;
-            font-weight: 900; font-size: 12px; color: var(--wood);
-            background: white;
-        }
-
+        select { flex-grow: 1; padding: 5px; border-radius: 8px; border: 2px solid var(--wood); font-family: inherit; font-weight: 900; font-size: 12px; color: var(--wood); background: white; }
         .btn-mini { padding: 5px 10px; border-radius: 10px; border: none; font-weight: 900; font-size: 11px; color: white; cursor: pointer; }
-        .btn-add { background: #81C784; }
-        .btn-warp { background: #F48FB1; }
-        .btn-del { background: #e57373; }
+        .btn-add { background: #81C784; } .btn-warp { background: #F48FB1; } .btn-del { background: #e57373; }
 
-        /* --- 戻るボタン (PC基本) --- */
-        .bottom-nav { position: fixed; bottom: 20px; left: 15px; z-index: 4000; }
+        /* --- 🆕 戻るボタン (枠内配置に変更) --- */
+        .bottom-nav { 
+            position: absolute; /* 枠内での絶対配置 */
+            bottom: 20px; 
+            left: 20px; 
+            z-index: 4000; 
+        }
         .star-link-btn { 
             position: relative; display: flex; align-items: center; justify-content: center; 
-            width: 65px; height: 65px; text-decoration: none; 
+            width: 90px; height: 90px; text-decoration: none; /* PC基準サイズ */
             transition: transform 0.2s;
         }
         .star-link-btn:active { transform: scale(0.9); }
-        .star-icon { font-size: 65px; color: var(--star-yellow); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
-        .star-text { position: absolute; font-size: 14px; font-weight: 900; color: var(--text-black); top: 50%; left: 50%; transform: translate(-50%, -45%); }
+        .star-icon { font-size: 90px; color: var(--star-yellow); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
+        .star-text { position: absolute; font-size: 18px; font-weight: 900; color: var(--text-black); top: 50%; left: 50%; transform: translate(-50%, -45%); }
 
         /* --- マップタイル --- */
         .step-tile { 
@@ -91,22 +93,24 @@
         .deco-item { position: absolute; pointer-events: none; z-index: 5; }
         .splash { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; pointer-events: none; }
 
+        /* PCでのデコレーション基本サイズ */
+        .tree-deco, .buranko-deco { width: 180px; height: auto; }
         .magic-pond { width: 220px; height: 140px; background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; }
         .funsui-area { width: 140px; }
         .tobibako-deco { width: 120px; }
 
         /* --- モバイル対応修正 --- */
         @media (max-width: 768px) {
-            .dollhouse-frame { width: 100vw; border-width: 8px; }
+            .dollhouse-frame { width: 100vw; border-width: 8px; padding-bottom: 80px; }
             .header-panel { width: 95%; padding: 8px; }
-            .header-panel h2 { font-size: 12px !important; }
             
-            /* 🆕 戻るボタンをモバイル向けに縮小 */
+            /* モバイルでの戻るボタン縮小 */
             .bottom-nav { bottom: 15px; left: 10px; }
             .star-link-btn { width: 50px; height: 50px; }
             .star-icon { font-size: 50px; }
             .star-text { font-size: 11px; }
 
+            /* モバイルでのデコレーション強制縮小 */
             .tree-deco { width: 80px !important; }
             .buranko-deco { width: 80px !important; }
             .magic-pond { width: 180px !important; height: 120px !important; }
@@ -121,7 +125,8 @@
             <path id="path-line" fill="none" stroke="rgba(109, 76, 65, 0.15)" stroke-width="5" stroke-dasharray="10,10" />
         </svg>
 
-        <div class="header-panel">
+        <div class="header-panel" id="header-panel">
+            <div class="toggle-handle" onclick="document.getElementById('header-panel').classList.toggle('open')">▲ 設定メニューを開閉 ▲</div>
             <div class="header-top">
                 <h2 style="font-size: 14px; margin: 0; color: var(--wood);">BEINGを叶える冒険航路</h2>
                 <div style="display:flex; align-items:center; gap:5px;">
@@ -176,10 +181,11 @@
             const cols = isMobile ? 2 : 6;
             const frameWidth = frame.clientWidth;
             
+            // PCでの余白調整
             const gapX = isMobile ? (frameWidth / 2.3) : 190;
             const gapY = isMobile ? 110 : 140; 
-            const startX = isMobile ? (frameWidth - (gapX * (cols-1) + (isMobile ? 115 : 140))) / 2 : 120;
-            const startY = isMobile ? 220 : 200;
+            const startX = isMobile ? (frameWidth - (gapX * (cols-1) + (isMobile ? 115 : 140))) / 2 : 150; // PCでの開始位置を少し右へ
+            const startY = isMobile ? 220 : 250; // PCでの開始位置を少し下へ
 
             for (let i = 1; i <= 30; i++) {
                 const row = Math.floor((i - 1) / cols);
@@ -211,29 +217,31 @@
             const buranko = document.getElementById('buranko-deco');
 
             // イラスト配置調整
-            const tobibakoTop = lastPoint.y + (isMobile ? 120 : 140);
+            const tobibakoTop = lastPoint.y + (isMobile ? 120 : 160);
             tobibako.style.top = tobibakoTop + 'px';
             tobibako.style.left = "50%";
             tobibako.style.transform = "translateX(-50%)";
 
-            const funsuiTop = tobibakoTop + (isMobile ? 180 : 220);
+            const funsuiTop = tobibakoTop + (isMobile ? 180 : 240);
             funsui.style.top = funsuiTop + 'px';
             funsui.style.left = "50%";
             funsui.style.transform = "translateX(-50%)";
 
-            pond.style.top = (funsuiTop + (isMobile ? 130 : 150)) + 'px';
+            pond.style.top = (funsuiTop + (isMobile ? 130 : 180)) + 'px';
             pond.style.left = "50%";
             pond.style.transform = "translateX(-50%)";
 
             if (!isMobile) {
-                tree.style.top = "80px"; tree.style.left = (frameWidth - 180) + "px";
-                buranko.style.top = "120px"; buranko.style.left = "60px";
+                // PCでの配置微調整
+                tree.style.top = "100px"; tree.style.left = (frameWidth - 220) + "px";
+                buranko.style.top = "140px"; buranko.style.left = "80px";
             } else {
                 tree.style.top = "130px"; tree.style.left = "10px";
                 buranko.style.top = "130px"; buranko.style.right = "10px"; buranko.style.left = "auto";
             }
 
-            frame.style.height = (funsuiTop + (isMobile ? 450 : 550)) + 'px';
+            // フレームの高さを確保（戻るボタンのスペース含む）
+            frame.style.height = (funsuiTop + (isMobile ? 500 : 650)) + 'px';
             drawPath(); updateView();
         }
 
