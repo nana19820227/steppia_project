@@ -19,38 +19,57 @@
             background-color: var(--bg); margin: 0;
             font-family: 'Zen Maru Gothic', sans-serif; color: var(--brown);
             display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-            /* 下部ボタンと重ならないための余白 */
             padding: 20px 15px 150px; 
             box-sizing: border-box;
         }
 
-        /* ロゴと見出しのサイズ調整 */
-        .app-logo { margin-top: 20px; width: 180px; height: auto; }
-        h1 { font-size: 26px; font-weight: 900; margin: 15px 0 25px; }
+        /* 🆕 イラストエリア（スクリーンショットに合わせました） */
+        .header-visual { text-align: center; margin-top: 20px; position: relative; }
+        .visual-img { width: 180px; height: auto; display: block; margin: 0 auto; }
+        .app-title-img { width: 120px; margin-bottom: 10px; }
+        
+        h1 { font-size: 28px; font-weight: 900; margin: 10px 0 20px; color: var(--brown); }
 
-        /* 入力フォーム：スマホでスリムに */
+        /* 入力フォーム：はみ出し防止を強化 */
         .schedule-form {
-            background: var(--white); border-radius: 30px; padding: 20px;
+            background: var(--white); border-radius: 30px; padding: 25px 20px;
             width: 100%; max-width: 450px; margin-bottom: 30px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            box-sizing: border-box;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+            box-sizing: border-box; /* 必須：パディングを幅に含める */
         }
-        .form-group { margin-bottom: 12px; text-align: left; }
-        .form-group label { display: block; font-weight: 900; margin-bottom: 4px; font-size: 13px; }
+        .form-group { margin-bottom: 18px; text-align: left; }
+        .form-group label { display: block; font-weight: 900; margin-bottom: 6px; font-size: 14px; }
+        
+        /* 🆕 inputの横幅問題を解決する修正 */
         .form-group input {
-            width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px;
-            font-family: inherit; font-size: 16px; box-sizing: border-box;
-            outline: none; transition: 0.2s;
+            width: 100%; 
+            padding: 14px; 
+            border: 2px solid #eee; 
+            border-radius: 15px;
+            font-family: inherit; 
+            font-size: 16px; 
+            font-weight: 700;
+            color: var(--brown);
+            background-color: #f2f2f2; /* スクショに近い色 */
+            box-sizing: border-box; /* 重要：枠線が外に飛び出さないようにする */
+            display: block;
+            outline: none;
+            -webkit-appearance: none; /* iOS Safariのデフォルトスタイルをリセット */
+            appearance: none;
         }
-        .form-group input:focus { border-color: var(--ok-green); }
+        
+        /* テキスト入力だけは白背景にしたい場合はこちら */
+        .form-group input[type="text"] { background-color: #fff; border-color: #eee; }
+
+        .form-group input:focus { border-color: var(--ok-green); background-color: #fff; }
 
         .add-btn {
-            background: var(--ok-green); color: white; border: none; padding: 15px;
-            width: 100%; border-radius: 18px; font-weight: 900; font-size: 17px;
-            cursor: pointer; transition: transform 0.1s; margin-top: 5px;
+            background: var(--ok-green); color: white; border: none; padding: 16px;
+            width: 100%; border-radius: 20px; font-weight: 900; font-size: 18px;
+            cursor: pointer; transition: 0.2s; margin-top: 5px;
             box-shadow: 0 4px 0 #66BB6A;
         }
-        .add-btn:active { transform: translateY(2px); box-shadow: none; }
+        .add-btn:active { transform: translateY(3px); box-shadow: none; }
 
         /* スケジュールリスト */
         .schedule-list { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 12px; }
@@ -59,55 +78,50 @@
             display: flex; align-items: center; gap: 15px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
-        .date-box { text-align: center; min-width: 65px; border-right: 2px solid #f5f5f5; padding-right: 10px; }
+        .date-box { text-align: center; min-width: 70px; border-right: 2px solid #f5f5f5; padding-right: 10px; }
         .date-day { font-size: 16px; font-weight: 900; color: var(--brown); }
         .date-time { font-size: 11px; opacity: 0.6; font-weight: 700; }
         .detail-text { font-size: 16px; font-weight: 900; color: #000; flex: 1; }
 
-        /* ⭐️左下の戻るボタン（スマホサイズに最適化） */
+        /* ⭐️左下の戻るボタン（位置とサイズ調整） */
         .bottom-nav { position: fixed; bottom: 20px; left: 15px; z-index: 1000; }
         .star-link-btn {
             position: relative; display: flex; align-items: center; justify-content: center;
-            width: 85px; height: 85px; text-decoration: none;
+            width: 80px; height: 80px; text-decoration: none;
         }
         .star-icon {
-            font-size: 85px; color: var(--star-yellow);
+            font-size: 80px; color: var(--star-yellow);
             filter: drop-shadow(0 4px 10px rgba(0,0,0,0.12));
         }
         .star-text {
-            position: absolute; font-size: 16px; font-weight: 900; color: var(--text-black);
+            position: absolute; font-size: 15px; font-weight: 900; color: var(--text-black);
             top: 50%; left: 50%; transform: translate(-50%, -45%);
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: 0.2s;
         }
+        .star-link-btn:active { transform: scale(0.9); }
 
-        .star-link-btn:active .star-text {
-            transform: translate(-40%, -60%) rotate(15deg);
-        }
-        .star-link-btn:active { transform: scale(0.95); }
-
-        /* タブレット・PC向けの調整 */
         @media (min-width: 768px) {
-            h1 { font-size: 32px; }
-            .app-logo { width: 220px; }
-            .schedule-form { padding: 30px; }
-            .star-link-btn { width: 110px; height: 110px; }
-            .star-icon { font-size: 110px; }
-            .star-text { font-size: 20px; }
-            .bottom-nav { left: 50%; transform: translateX(-350px); }
+            .header-visual { margin-top: 40px; }
+            .visual-img { width: 220px; }
+            .schedule-form { padding: 35px; }
+            .bottom-nav { left: 50%; transform: translateX(-400px); }
         }
     </style>
 </head>
 <body>
 
-    <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" alt="ロゴ" class="app-logo">
-    <h1>スケジュール</h1>
+    <div class="header-visual">
+        <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" class="app-title-img" alt="ステッピア">
+        <img src="{% static 'images/schedule_top.png' %}" class="visual-img" alt="スケジュールイラスト">
+        <h1>スケジュール</h1>
+    </div>
 
     <div class="schedule-form">
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
                 <label>📅 日付</label>
-                <input type="date" name="date" required>
+                <input type="date" name="date" value="{{ today|date:'Y-m-d' }}" required>
             </div>
             <div class="form-group">
                 <label>⏰ 時間</label>
