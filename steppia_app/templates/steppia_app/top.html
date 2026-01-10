@@ -7,115 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ステッピア - TOP</title>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-green: #DCECCF;
-            --card-beige: #F2EFE5;
-            --text-brown: #5D4037;
-            --btn-white: rgba(255, 255, 255, 0.8);
-        }
-
-        body {
-            background-color: var(--bg-green);
-            font-family: 'Zen Maru Gothic', sans-serif;
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--text-brown);
-        }
-
-        .container {
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* --- アイコンのサイズを大きく調整しました --- */
-        .top-logo {
-            width: 180px; /* 120pxから180pxへ拡大 */
-            height: auto;
-            margin-bottom: 5px; /* タイトルとの距離を少し詰めました */
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12)); /* 大きさに合わせて影も少し強調 */
-        }
-
-        h1 {
-            font-size: 28px;
-            font-weight: 900;
-            margin: 0 0 30px 0;
-            letter-spacing: 0.1em;
-        }
-
-        /* --- 今日の一言カード --- */
-        .daily-card {
-            background-color: var(--card-beige);
-            border-radius: 25px;
-            padding: 30px;
-            margin-bottom: 40px;
-            text-align: left;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .card-title {
-            font-size: 16px;
-            font-weight: 900;
-            margin: 0 0 15px 0;
-        }
-
-        .card-message {
-            font-size: 18px;
-            font-weight: 700;
-            line-height: 1.6;
-            margin: 0;
-            min-height: 3em;
-        }
-
-        /* --- メニューリスト --- */
-        .menu-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-        }
-
-        .menu-link {
-            display: block;
-            background-color: var(--btn-white);
-            padding: 20px;
-            border-radius: 15px;
-            text-decoration: none;
-            color: var(--text-brown);
-            font-size: 18px;
-            font-weight: 900;
-            transition: all 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-
-        .menu-link:active {
-            transform: scale(0.98);
-            background-color: #fff;
-        }
-
-        /* ログアウト等 */
-        .footer-links {
-            margin-top: 40px;
-            font-size: 12px;
-        }
-        .footer-links form { display: inline; }
-        .footer-links button, .footer-links a {
-            color: #888;
-            background: none;
-            border: none;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-    </style>
+    
 </head>
 <body>
 
@@ -123,7 +15,129 @@
         <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" alt="ステッピア ロゴ" class="top-logo">
         
         <h1>ステッピア</h1>
+<style>
+    :root {
+        --bg-green: #DCECCF;
+        --card-beige: #F2EFE5;
+        --text-brown: #5D4037;
+        --btn-white: rgba(255, 255, 255, 0.8);
+    }
 
+    body {
+        background-color: var(--bg-green);
+        font-family: 'Zen Maru Gothic', sans-serif;
+        margin: 0;
+        /* 画面の高さ100%に固定し、はみ出しを隠す */
+        height: 100dvh;
+        overflow: hidden; 
+        display: flex;
+        flex-direction: column;
+        color: var(--text-brown);
+        box-sizing: border-box;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 15px; /* 全体の余白を少し詰める */
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-sizing: border-box;
+    }
+
+    /* ロゴをコンパクトに調整 */
+    .top-logo {
+        width: 80px; /* 180pxから大幅に縮小 */
+        height: auto;
+        margin-bottom: 5px;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+    }
+
+    h1 {
+        font-size: 20px; /* タイトルも少し小さく */
+        font-weight: 900;
+        margin: 0 0 15px 0;
+        letter-spacing: 0.1em;
+        flex-shrink: 0;
+    }
+
+    /* 今日の一言カード：高さを抑える */
+    .daily-card {
+        background-color: var(--card-beige);
+        border-radius: 20px;
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        text-align: left;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        width: 100%;
+        box-sizing: border-box;
+        flex-shrink: 0; /* 潰れないように固定 */
+    }
+
+    .card-title {
+        font-size: 13px;
+        font-weight: 900;
+        margin: 0 0 5px 0;
+    }
+
+    .card-message {
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.4;
+        margin: 0;
+    }
+
+    /* メニューリスト：画面の高さに合わせて自動調整 */
+    .menu-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px; /* 間隔を狭める */
+        width: 100%;
+        flex: 1; /* 余ったスペースを埋める */
+        overflow-y: auto; /* 万が一入り切らない場合だけここをスクロール */
+        padding-bottom: 10px;
+    }
+
+    .menu-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--btn-white);
+        padding: 12px; /* ボタンの高さを抑える */
+        border-radius: 12px;
+        text-decoration: none;
+        color: var(--text-brown);
+        font-size: 15px; /* 文字サイズを調整 */
+        font-weight: 900;
+        transition: all 0.2s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        min-height: 44px; /* タップしやすい最小サイズ */
+    }
+
+    .menu-link:active {
+        transform: scale(0.98);
+        background-color: #fff;
+    }
+
+    /* ログアウト等：最下部に固定 */
+    .footer-links {
+        margin-top: auto;
+        padding-top: 10px;
+        font-size: 11px;
+        flex-shrink: 0;
+    }
+    .footer-links form { display: inline; }
+    .footer-links button, .footer-links a {
+        color: #888;
+        background: none;
+        border: none;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+</style>
         <div class="daily-card">
             <p class="card-title">今日の一言カード</p>
             <p class="card-message" id="daily-quote">
