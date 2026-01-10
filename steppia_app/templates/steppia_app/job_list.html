@@ -3,12 +3,11 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>求人一覧 - ステッピア</title>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* 🆕 マイページと同じ淡いグリーンに設定 */
             --bg: #DCECCF; 
             --white: #FFFFFF;
             --brown: #5D4037;
@@ -16,59 +15,105 @@
             --star-yellow: #FFF2AF;
         }
         body {
-            background-color: var(--bg); /* 背景を緑に */
+            background-color: var(--bg);
             margin: 0; 
             font-family: 'Zen Maru Gothic', sans-serif; color: var(--brown);
-            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-            padding-bottom: 180px;
+            display: flex; flex-direction: column; align-items: center; min-height: 100dvh;
+            /* 下部ボタンと重ならないよう、余白を調整 */
+            padding: 15px 10px 100px; 
+            box-sizing: border-box;
         }
         
-        /* 🆕 ロゴ画像の配置 */
+        /* ロゴ：140pxに小型化 */
         .app-logo {
-            margin-top: 50px;
-            width: 280px;
+            margin-top: 15px;
+            width: 100%;
+            max-width: 140px;
             height: auto;
             filter: drop-shadow(0 4px 10px rgba(0,0,0,0.05));
         }
 
-        h1 { font-size: 38px; font-weight: 900; margin: 20px 0 60px; letter-spacing: 1px; text-align: center; }
+        /* 見出し：22pxにサイズダウン */
+        h1 { 
+            font-size: 22px; font-weight: 900; margin: 15px 0 25px; 
+            letter-spacing: 0.05em; text-align: center; 
+        }
 
-        .job-list { display: flex; flex-direction: column; gap: 20px; width: 95%; max-width: 700px; }
+        .job-list { 
+            display: flex; flex-direction: column; gap: 12px; 
+            width: 100%; max-width: 450px; 
+        }
         
-        /* 🆕 白い角丸カードのデザイン */
+        /* 求人カード：角丸と余白をスマホ用にスリム化 */
         .job-card {
-            background: var(--white); border-radius: 40px; padding: 25px 35px;
+            background: var(--white); border-radius: 20px; padding: 12px 18px;
             display: flex; align-items: center; justify-content: space-between;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             text-decoration: none; color: inherit;
+            border: 1.5px solid rgba(255,255,255,0.8);
             transition: transform 0.2s;
         }
         .job-card:active { transform: scale(0.98); }
 
-        .job-info { text-align: left; }
-        .job-title { font-size: 24px; font-weight: 900; color: #000; margin-bottom: 8px; }
-        .job-desc { font-size: 14px; font-weight: 700; opacity: 0.8; line-height: 1.6; }
+        .job-info { text-align: left; flex: 1; min-width: 0; padding-right: 10px; }
         
-        /* 詳細ボタン（星型） */
+        /* 求人タイトル：16pxに調整 */
+        .job-title { 
+            font-size: 16px; font-weight: 900; color: #000; margin-bottom: 4px; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        
+        /* 求人詳細テキスト：12pxに調整 */
+        .job-desc { font-size: 12px; font-weight: 700; opacity: 0.7; line-height: 1.5; }
+        
+        /* 詳細ボタン（星型）：55pxに小型化 */
         .detail-btn-star {
             position: relative; display: flex; align-items: center; justify-content: center;
-            width: 80px; height: 80px;
+            width: 55px; height: 55px; flex-shrink: 0;
         }
-        .star-shape { font-size: 80px; color: #FFD54F; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
-        .star-text { position: absolute; font-size: 16px; font-weight: 900; color: #000; top: 50%; left: 50%; transform: translate(-50%, -45%); }
+        .star-shape { font-size: 55px; color: #FFD54F; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1)); }
+        .star-text { 
+            position: absolute; font-size: 12px; font-weight: 900; color: #000; 
+            top: 50%; left: 50%; transform: translate(-50%, -45%); 
+        }
 
-        /* 左下の特大「戻る」星ボタン */
-        .bottom-nav { position: fixed; bottom: 30px; left: 30px; z-index: 1000; }
+        /* 左下の特大「戻る」星ボタン：他のページと統一して65pxに設定 */
+        .bottom-nav { position: fixed; bottom: 12px; left: 12px; z-index: 1000; }
+        
         .star-link-btn {
             position: relative; display: flex; align-items: center; justify-content: center;
-            width: 140px; height: 140px; text-decoration: none;
+            width: 65px; height: 65px; text-decoration: none;
+            transition: transform 0.2s;
         }
-        .star-icon { font-size: 140px; color: var(--star-yellow); filter: drop-shadow(0 8px 20px rgba(0,0,0,0.15)); }
+        .star-link-btn:active { transform: scale(0.95); }
+        
+        .star-icon { 
+            font-size: 65px; color: var(--star-yellow); 
+            filter: drop-shadow(0 3px 8px rgba(0,0,0,0.1)); 
+        }
+        
         .back-text {
-            position: absolute; font-size: 28px; font-weight: 900; color: var(--text-black);
+            position: absolute; font-size: 14px; font-weight: 900; color: var(--text-black);
             top: 50%; left: 50%; transform: translate(-50%, -45%);
+            transition: transform 0.15s ease-out;
         }
-        .star-link-btn:hover .back-text { transform: translate(-50%, -45%) rotate(15deg); }
+        
+        .star-link-btn:active .back-text { transform: translate(-40%, -60%) rotate(15deg); }
+
+        /* タブレット・PC向けの調整 */
+        @media (min-width: 768px) {
+            h1 { font-size: 28px; }
+            .job-card { padding: 20px 25px; }
+            .job-title { font-size: 20px; }
+            .job-desc { font-size: 14px; }
+            .detail-btn-star { width: 70px; height: 70px; }
+            .star-shape { font-size: 70px; }
+            .star-text { font-size: 14px; }
+            .star-link-btn { width: 100px; height: 100px; }
+            .star-icon { font-size: 100px; }
+            .back-text { font-size: 20px; }
+            .bottom-nav { left: 50%; transform: translateX(-350px); bottom: 25px; }
+        }
     </style>
 </head>
 <body>
@@ -92,7 +137,9 @@
             </div>
         </a>
         {% empty %}
-            <p style="text-align: center; font-weight: 900; opacity: 0.6;">現在、募集中の求人はありません 🐑</p>
+            <p style="text-align: center; font-weight: 900; opacity: 0.6; font-size: 14px; margin-top: 30px;">
+                現在、募集中の求人はありません 🐑
+            </p>
         {% endfor %}
     </div>
 
