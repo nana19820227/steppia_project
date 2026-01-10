@@ -19,77 +19,77 @@
             background-color: var(--grass); 
             font-family: 'Zen Maru Gothic', sans-serif; 
             margin: 0; 
-            /* 下部ボタンと重ならないよう余白を調整 */
-            padding: 15px 10px 120px; 
+            /* 下部ボタンと重ならないよう余白をスリムに */
+            padding: 12px 10px 100px; 
             display: flex; 
             flex-direction: column;
             align-items: center; 
             min-height: 100dvh; 
         }
 
-        .container { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; }
 
-        /* ロゴ：140pxに小型化 */
+        /* ロゴ：110pxに小型化 */
         .top-logo { 
             width: 100%;
-            max-width: 140px; 
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.05)); 
-            margin-bottom: 15px; 
+            max-width: 110px; 
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.05)); 
+            margin-bottom: 12px; 
         }
 
-        /* 詳細カード：余白をスマホ用にスリム化 (50px -> 20px) */
+        /* 詳細カード：パディングを凝縮 (20px -> 15px) */
         .detail-card {
             background: white; 
-            padding: 20px; 
-            border-radius: 30px; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08); 
-            border: 2px solid #fff;
+            padding: 15px; 
+            border-radius: 25px; 
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06); 
+            border: 1.5px solid #fff;
             width: 100%; 
             box-sizing: border-box;
             text-align: left;
         }
 
-        /* 求人タイトル：22pxにサイズダウン */
+        /* 求人タイトル：18pxにサイズダウン */
         .job-title { 
-            font-size: 22px; 
+            font-size: 18px; 
             color: #2E7D32; 
             font-weight: 900; 
-            margin: 0 0 10px 0; 
-            border-left: 6px solid #2E7D32; 
-            padding-left: 12px; 
+            margin: 0 0 8px 0; 
+            border-left: 5px solid #2E7D32; 
+            padding-left: 10px; 
             line-height: 1.3;
         }
 
-        /* 会社名：16pxに調整 */
+        /* 会社名：14pxに調整 */
         .company-name { 
-            font-size: 16px; 
+            font-size: 14px; 
             font-weight: 900; 
-            color: #555; 
-            margin-bottom: 20px; 
+            color: #666; 
+            margin-bottom: 15px; 
             border-bottom: 1.5px dashed var(--grass); 
-            padding-bottom: 10px; 
+            padding-bottom: 8px; 
         }
 
         /* タグセクション */
-        .info-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 25px; }
+        .info-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
         .tag { 
             background: var(--beige); 
-            padding: 8px 15px; 
-            border-radius: 12px; 
+            padding: 6px 12px; 
+            border-radius: 10px; 
             font-weight: 900; 
             color: var(--wood); 
-            font-size: 14px; 
+            font-size: 13px; 
             display: flex; 
             align-items: center; 
-            gap: 8px; 
+            gap: 6px; 
             width: fit-content;
         }
 
         /* 内容ボックス */
         .description-box { 
             background: #fdfdfd; 
-            padding: 15px; 
-            border-radius: 20px; 
+            padding: 12px; 
+            border-radius: 15px; 
             border: 1.5px solid #f0f0f0; 
             margin-top: 5px;
         }
@@ -97,18 +97,18 @@
         .section-label { 
             color: #2E7D32; 
             font-weight: 900; 
-            font-size: 16px; 
-            margin-bottom: 12px; 
-            border-bottom: 2px solid #B9D9A0; 
+            font-size: 14px; 
+            margin-bottom: 10px; 
+            border-bottom: 1.5px solid #B9D9A0; 
             display: inline-block; 
         }
 
-        /* 説明テキスト：15pxに調整し読みやすく */
+        /* 説明テキスト：14pxに調整 */
         .description-text { 
-            line-height: 1.6; 
+            line-height: 1.5; 
             color: #333; 
             font-weight: 700; 
-            font-size: 15px; 
+            font-size: 14px; 
             text-align: left; 
             white-space: pre-wrap; 
             display: block;
@@ -116,46 +116,44 @@
 
         /* 応募セクション */
         .apply-section {
-            margin-top: 30px;
+            margin-top: 20px;
             text-align: center;
-            border-top: 2px dashed #DCECCF;
-            padding-top: 25px;
+            border-top: 1.5px dashed #DCECCF;
+            padding-top: 20px;
         }
         .apply-message {
             font-weight: 900;
             color: var(--wood);
-            margin-bottom: 15px;
-            font-size: 16px;
+            margin-bottom: 12px;
+            font-size: 14px;
         }
         
-        /* ハートボタン：100pxに小型化 */
+        /* ハートボタン：85pxに小型化 */
         .apply-heart-btn {
-            width: 100px; height: 100px;
+            width: 85px; height: 85px;
             background-color: var(--apply-pink);
             border: none;
-            clip-path: path('M50 90c-2 0-3-1-4-2L15 57C8 50 5 41 5 33c0-15 12-27 27-27 7 0 14 3 18 8 4-5 11-8 18-8 15 0 27 12 27 27 0 8-3 17-9 24l-31 30c-1 1-2 2-4 2z');
+            /* 85px用に調整したクリップパス */
+            clip-path: path('M42 75c-2 0-3-1-4-2L12 48C6 42 4 35 4 28c0-13 10-23 23-23 6 0 12 3 15 7 3-4 9-7 15-7 13 0 23 10 23 23 0 7-2 14-8 20l-27 25c-1 1-2 2-3 2z');
             display: inline-flex;
             align-items: center; 
             justify-content: center;
             text-decoration: none; 
             color: #333; 
             font-weight: 900; 
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer; 
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+            transition: 0.2s;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
         }
-        .apply-heart-btn:active {
-            transform: scale(1.1) rotate(5deg);
-            background-color: #ffbaba;
-        }
-        .heart-text { margin-top: -10px; }
+        .apply-heart-btn:active { transform: scale(1.1) rotate(5deg); }
+        .heart-text { margin-top: -8px; }
 
-        /* 左下の「戻る」星ボタン：他のページと統一して75pxに設定 */
-        .footer-nav { position: fixed; bottom: 15px; left: 15px; z-index: 1000; }
+        /* 左下の「戻る」星ボタン：65pxに設定 */
+        .footer-nav { position: fixed; bottom: 12px; left: 12px; z-index: 1000; }
         .star-back-btn {
-            width: 75px; 
-            height: 75px; 
+            width: 65px; 
+            height: 65px; 
             background-color: var(--star-yellow);
             clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
             display: flex; 
@@ -164,22 +162,22 @@
             text-decoration: none; 
             color: #333; 
             font-weight: 900; 
-            font-size: 15px;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); 
+            font-size: 14px;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1)); 
             transition: 0.2s;
             position: relative;
         }
-        .star-back-btn:active { transform: scale(0.9) rotate(-10deg); background-color: #ffe066; }
+        .star-back-btn:active { transform: scale(0.9) rotate(-10deg); }
         .nav-text { position: absolute; top: 52%; left: 50%; transform: translate(-50%, -50%); white-space: nowrap; }
 
         /* タブレット・PC向け調整 */
         @media (min-width: 768px) {
-            .detail-card { padding: 40px; }
-            .job-title { font-size: 28px; }
-            .description-text { font-size: 17px; }
-            .apply-heart-btn { width: 130px; height: 130px; font-size: 20px; }
-            .star-back-btn { width: 110px; height: 110px; font-size: 20px; }
-            .footer-nav { left: 50%; transform: translateX(-350px); bottom: 30px; }
+            .detail-card { padding: 30px; }
+            .job-title { font-size: 24px; }
+            .description-text { font-size: 16px; }
+            .apply-heart-btn { width: 110px; height: 110px; font-size: 18px; }
+            .star-back-btn { width: 90px; height: 90px; font-size: 18px; }
+            .footer-nav { left: 50%; transform: translateX(-350px); bottom: 25px; }
         }
     </style>
 </head>
@@ -202,9 +200,9 @@
             </div>
 
             <div class="apply-section">
-                <p class="apply-message">このお仕事、やってみたいかも？</p>
+                <p class="apply-message">やってみたいかも？</p>
                 <a href="{% url 'apply_to_job' job.pk %}" class="apply-heart-btn">
-                    <span class="heart-text">応募する！</span>
+                    <span class="heart-text">応募！</span>
                 </a>
             </div>
         </div>
