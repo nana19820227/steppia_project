@@ -59,6 +59,7 @@
             flex-grow: 1; padding: 5px; border-radius: 8px;
             border: 2px solid var(--wood); font-family: inherit;
             font-weight: 900; font-size: 12px; color: var(--wood);
+            background: white;
         }
 
         .btn-mini { padding: 5px 10px; border-radius: 10px; border: none; font-weight: 900; font-size: 11px; color: white; cursor: pointer; }
@@ -87,35 +88,26 @@
         .step-tile.completed { background: var(--completed); border-color: #FFA000; }
         .player-pawn { position: absolute; width: 60px; z-index: 200; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; }
 
-        .deco-item { position: absolute; pointer-events: none; z-index: 10; }
+        .deco-item { position: absolute; pointer-events: none; z-index: 5; } /* タイル(50)より下に配置 */
         .splash { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; pointer-events: none; }
 
-        /* --- 🆕 デコレーション（JSで位置を決めるため、CSSでは基本サイズのみ指定） --- */
-        .tree-deco { left: 1100px; width: 130px; }
-        .buranko-deco { left: 60px; width: 130px; }
+        /* --- イラストサイズ --- */
         .magic-pond { 
             width: 220px; height: 140px; background: #81D4FA; 
             border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; 
             overflow: hidden; 
-            left: 50%; transform: translateX(-50%); /* 常に中央寄せ */
         }
-        .funsui-area { 
-            width: 140px; 
-            left: 50%; transform: translateX(-50%); /* 常に中央寄せ */
-        }
+        .funsui-area { width: 140px; }
         .tobibako-deco { width: 120px; }
 
-        /* --- モバイル対応レイアウト --- */
+        /* --- モバイル対応修正 --- */
         @media (max-width: 768px) {
-            .dollhouse-frame { 
-                width: 100vw; 
-                border: 8px solid var(--wood);
-            }
-            .header-panel h2 { font-size: 13px !important; }
-
-            .tree-deco { left: 10px !important; width: 80px !important; }
-            .buranko-deco { right: 10px !important; left: auto !important; width: 80px !important; }
-
+            .dollhouse-frame { width: 100vw; border-width: 8px; }
+            .header-panel { width: 95%; padding: 8px; }
+            .header-panel h2 { font-size: 12px !important; }
+            
+            .tree-deco { width: 80px !important; }
+            .buranko-deco { width: 80px !important; }
             .magic-pond { width: 180px !important; height: 120px !important; }
             .funsui-area { width: 110px !important; }
             .tobibako-deco { width: 90px !important; }
@@ -183,10 +175,12 @@
             const isMobile = window.innerWidth < 768;
             const cols = isMobile ? 2 : 6;
             const frameWidth = frame.clientWidth;
-            const gapX = isMobile ? (frameWidth / 2.4) : 190;
-            const gapY = isMobile ? 130 : 140;
-            const startX = isMobile ? 25 : 120;
-            const startY = isMobile ? 250 : 200;
+            
+            // モバイル時の間隔調整
+            const gapX = isMobile ? (frameWidth / 2.3) : 190;
+            const gapY = isMobile ? 110 : 140; 
+            const startX = isMobile ? (frameWidth - (gapX * (cols-1) + (isMobile ? 115 : 140))) / 2 : 120;
+            const startY = isMobile ? 220 : 200; // ヘッダーとの被りを避ける
 
             for (let i = 1; i <= 30; i++) {
                 const row = Math.floor((i - 1) / cols);
@@ -201,59 +195,68 @@
                 tile.style.left = x + 'px'; 
                 tile.style.top = y + 'px';
                 if(isMobile) {
-                    tile.style.width = '115px';
-                    tile.style.height = '65px';
+                    tile.style.width = '110px';
+                    tile.style.height = '60px';
                 }
 
-                tile.innerHTML = `<div style="font-size:8px; opacity:0.6; font-weight:900;">STEP ${i}</div><div style="width:100%; text-align:center; font-weight:900; font-size:10px; color:var(--wood);">${missionNames[i-1]}</div>`;
+                tile.innerHTML = `<div style="font-size:8px; opacity:0.6; font-weight:900;">STEP ${i}</div><div style="width:100%; text-align:center; font-weight:900; font-size:10px; color:var(--wood); line-height:1.1;">${missionNames[i-1]}</div>`;
                 root.appendChild(tile);
-                nodePoints.push({x: x + (isMobile ? 57 : 70), y: y + (isMobile ? 32 : 35)});
+                nodePoints.push({x: x + (isMobile ? 55 : 70), y: y + (isMobile ? 30 : 35)});
             }
 
-            const lastPoint = nodePoints[nodePoints.length - 1];
+            const lastPoint = nodePoints[nodePoints.length - 1]; // STEP 30の座標
+            // 🆕 STEP 29の座標を取得（配列のインデックスは28）
+            const step29Point = nodePoints[28];
 
-            // 🆕 イラスト要素の取得
+            // イラスト要素の配置
             const pond = document.getElementById('pond-deco');
             const funsui = document.getElementById('funsui-deco');
             const tobibako = document.getElementById('tobibako-deco');
             const tree = document.getElementById('tree-deco');
             const buranko = document.getElementById('buranko-deco');
 
-            // 🆕 画面サイズに関わらず、最後のマスの下にイラストをバランスよく配置
-            const baseTop = lastPoint.y;
-            
-            // 跳び箱をゴールから80px下に
-            tobibako.style.top = (baseTop + 80) + 'px'; 
-            tobibako.style.left = "50%";
-            tobibako.style.transform = "translateX(-50%)";
+            // 🆕 跳び箱をSTEP 29のあたりに配置
+            if (step29Point) {
+                // タイルと重なりすぎないよう、少しずらすオフセット
+                const offsetX = isMobile ? 20 : 40;
+                const offsetY = isMobile ? 20 : 30;
 
-            // 噴水を跳び箱から少し空けて配置
-            funsui.style.top = (baseTop + 200) + 'px';
+                tobibako.style.top = (step29Point.y + offsetY) + 'px';
+                // 左寄せ基準で配置し、タイルの少し右側に来るように調整
+                tobibako.style.left = (step29Point.x + offsetX) + 'px';
+                tobibako.style.transform = "none"; // 中央寄せの解除
+            }
+
+            // ゴール後（STEP 30以降）のイラスト配置（噴水と池）
+            // 基準はそのまま lastPoint (STEP 30) を使う
+            const offsetBase = isMobile ? 100 : 120;
+
+            funsui.style.top = (lastPoint.y + offsetBase) + 'px';
             funsui.style.left = "50%";
             funsui.style.transform = "translateX(-50%)";
 
-            // 池を噴水のすぐ下に
-            pond.style.top = (baseTop + 280) + 'px';
+            pond.style.top = (lastPoint.y + offsetBase + (isMobile ? 100 : 130)) + 'px';
             pond.style.left = "50%";
             pond.style.transform = "translateX(-50%)";
 
-            // 木とブランコの上部配置
+            // 上部の木とブランコの配置調整
             if (!isMobile) {
                 tree.style.top = "80px";
                 tree.style.left = (frameWidth - 180) + "px";
                 buranko.style.top = "120px";
                 buranko.style.left = "60px";
             } else {
+                // モバイル時はヘッダーの下、かつタイルと重なりにくい端に配置
                 tree.style.top = "130px";
-                tree.style.left = "20px";
+                tree.style.left = "10px";
                 buranko.style.top = "130px";
-                buranko.style.right = "20px";
+                buranko.style.right = "10px";
                 buranko.style.left = "auto";
             }
 
-            // フレームの高さをイラストが収まるように調整
-            const buffer = isMobile ? 600 : 500; 
-            document.getElementById('main-frame').style.height = (lastPoint.y + buffer) + 'px';
+            // フレーム全体の高さを計算
+            const finalHeight = lastPoint.y + (isMobile ? 450 : 500);
+            frame.style.height = finalHeight + 'px';
 
             drawPath(); updateView();
         }
@@ -261,6 +264,9 @@
         function updateView() {
             const pawn = document.getElementById('pawn');
             const select = document.getElementById('company-select');
+            const currentOptions = Array.from(select.options).map(o => o.value);
+            
+            // セレクトボックスの同期
             select.innerHTML = '<option value="">企業を選択</option>';
             for (const id in companies) {
                 const opt = document.createElement('option');
@@ -268,6 +274,7 @@
                 if (id === currentCompanyId) opt.selected = true;
                 select.appendChild(opt);
             }
+
             if (!currentCompanyId || !companies[currentCompanyId]) {
                 currentCompanyId = ''; if(pawn) pawn.style.display = 'none';
                 document.querySelectorAll('.step-tile').forEach(t => t.classList.remove('completed'));
@@ -290,7 +297,14 @@
         function addCompany() { const name = prompt("企業名を入力"); if (name) { const id = 'c' + Date.now(); companies[id] = { name: name, step: 1 }; currentCompanyId = id; updateView(); } }
         function deleteCurrentCompany() { if (!currentCompanyId) return; if (confirm(`削除しますか？`)) { delete companies[currentCompanyId]; currentCompanyId = ''; updateView(); } }
         function warp() { if(!currentCompanyId) return; const v = parseInt(document.getElementById('warp-val').value); companies[currentCompanyId].step = v; updateView(); }
-        function drawPath() { const line = document.getElementById('path-line'); if(nodePoints.length === 0) return; let d = `M ${nodePoints[0].x} ${nodePoints[0].y}`; for (let i = 1; i < nodePoints.length; i++) { d += ` L ${nodePoints[i].x} ${nodePoints[i].y}`; } line.setAttribute('d', d); }
+        
+        function drawPath() { 
+            const line = document.getElementById('path-line'); 
+            if(nodePoints.length === 0) return; 
+            let d = `M ${nodePoints[0].x} ${nodePoints[0].y}`; 
+            for (let i = 1; i < nodePoints.length; i++) { d += ` L ${nodePoints[i].x} ${nodePoints[i].y}`; } 
+            line.setAttribute('d', d); 
+        }
 
         function createSplash() { 
             const container = document.getElementById('splash-container'); 
