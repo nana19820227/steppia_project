@@ -19,7 +19,6 @@
             background-color: var(--grass); 
             font-family: 'Zen Maru Gothic', sans-serif; 
             margin: 0; 
-            /* 下部ボタンと重ならないよう余白をスリムに */
             padding: 12px 10px 100px; 
             display: flex; 
             flex-direction: column;
@@ -27,9 +26,8 @@
             min-height: 100dvh; 
         }
 
-        .container { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 550px; display: flex; flex-direction: column; align-items: center; }
 
-        /* ロゴ：110pxに小型化 */
         .top-logo { 
             width: 100%;
             max-width: 110px; 
@@ -37,7 +35,6 @@
             margin-bottom: 12px; 
         }
 
-        /* 詳細カード：パディングを凝縮 (20px -> 15px) */
         .detail-card {
             background: white; 
             padding: 15px; 
@@ -49,7 +46,6 @@
             text-align: left;
         }
 
-        /* 求人タイトル：18pxにサイズダウン */
         .job-title { 
             font-size: 18px; 
             color: #2E7D32; 
@@ -60,7 +56,6 @@
             line-height: 1.3;
         }
 
-        /* 会社名：14pxに調整 */
         .company-name { 
             font-size: 14px; 
             font-weight: 900; 
@@ -70,7 +65,6 @@
             padding-bottom: 8px; 
         }
 
-        /* タグセクション */
         .info-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
         .tag { 
             background: var(--beige); 
@@ -85,7 +79,6 @@
             width: fit-content;
         }
 
-        /* 内容ボックス */
         .description-box { 
             background: #fdfdfd; 
             padding: 12px; 
@@ -103,7 +96,6 @@
             display: inline-block; 
         }
 
-        /* 説明テキスト：14pxに調整 */
         .description-text { 
             line-height: 1.5; 
             color: #333; 
@@ -114,7 +106,6 @@
             display: block;
         }
 
-        /* 応募セクション */
         .apply-section {
             margin-top: 20px;
             text-align: center;
@@ -128,12 +119,11 @@
             font-size: 14px;
         }
         
-        /* ハートボタン：85pxに小型化 */
         .apply-heart-btn {
             width: 85px; height: 85px;
             background-color: var(--apply-pink);
             border: none;
-            /* 85px用に調整したクリップパス */
+            /* スマホ用のハート */
             clip-path: path('M42 75c-2 0-3-1-4-2L12 48C6 42 4 35 4 28c0-13 10-23 23-23 6 0 12 3 15 7 3-4 9-7 15-7 13 0 23 10 23 23 0 7-2 14-8 20l-27 25c-1 1-2 2-3 2z');
             display: inline-flex;
             align-items: center; 
@@ -149,7 +139,6 @@
         .apply-heart-btn:active { transform: scale(1.1) rotate(5deg); }
         .heart-text { margin-top: -8px; }
 
-        /* 左下の「戻る」星ボタン：65pxに設定 */
         .footer-nav { position: fixed; bottom: 12px; left: 12px; z-index: 1000; }
         .star-back-btn {
             width: 65px; 
@@ -170,14 +159,25 @@
         .star-back-btn:active { transform: scale(0.9) rotate(-10deg); }
         .nav-text { position: absolute; top: 52%; left: 50%; transform: translate(-50%, -50%); white-space: nowrap; }
 
-        /* タブレット・PC向け調整 */
+        /* --- タブレット・PC向け調整 --- */
         @media (min-width: 768px) {
-            .detail-card { padding: 30px; }
-            .job-title { font-size: 24px; }
+            .container { max-width: 650px; } /* PCでは少し幅を持たせる */
+            .detail-card { padding: 30px; border-radius: 40px; }
+            .job-title { font-size: 24px; padding-left: 15px; }
+            .company-name { font-size: 16px; }
             .description-text { font-size: 16px; }
-            .apply-heart-btn { width: 110px; height: 110px; font-size: 18px; }
+            
+            /* 🆕 PC用のハート：サイズに合わせてパスの数値を再計算 */
+            .apply-heart-btn { 
+                width: 110px; 
+                height: 110px; 
+                font-size: 18px; 
+                clip-path: path('M55 100c-3 0-5-1-6-3L15 65C8 57 5 48 5 38 5 20 18 6 35 6c8 0 15 4 20 10 5-6 12-10 20-10 17 0 30 14 30 32 0 10-3 19-10 27l-34 32c-2 2-4 3-6 3z');
+            }
+            
+            /* 星ボタンもPCサイズで中央寄せ気味に */
             .star-back-btn { width: 90px; height: 90px; font-size: 18px; }
-            .footer-nav { left: 50%; transform: translateX(-350px); bottom: 25px; }
+            .footer-nav { left: 50%; transform: translateX(-400px); bottom: 25px; }
         }
     </style>
 </head>
@@ -187,7 +187,7 @@
         
         <div class="detail-card">
             <h1 class="job-title">{{ job.title }}</h1>
-            <p class="company-name">🏢 {{ job.company }}</p>
+            <p class="company-name">🏢 {{ job.company_name }}</p>
             
             <div class="info-row">
                 <span class="tag">📍 勤務地：{{ job.location }}</span>
