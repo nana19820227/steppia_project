@@ -28,9 +28,9 @@
             overflow-x: hidden; 
         }
 
-        /* 🆕 基準となるフレーム */
+        /* 基準となるフレーム */
         .dollhouse-frame { 
-            position: relative; /* 子要素（星ボタンなど）の基準になります */
+            position: relative;
             width: 1300px; 
             min-height: 1250px; 
             background: var(--grass); 
@@ -61,7 +61,7 @@
         .btn-mini { padding: 6px 10px; border-radius: 10px; border: none; font-weight: 900; font-size: 11px; color: white; cursor: pointer; }
         .btn-add { background: #81C784; } .btn-warp { background: #F48FB1; } .btn-del { background: #e57373; }
 
-        /* 🆕 戻るボタン：画面全体ではなく「茶色の枠（frame）」の左下に固定 */
+        /* 戻るボタン：茶色の枠の左下に固定 */
         .bottom-nav { 
             position: absolute; 
             bottom: 25px; 
@@ -90,13 +90,13 @@
         .deco-item { position: absolute; pointer-events: none; z-index: 5; }
         .splash { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; pointer-events: none; }
 
-        /* 🆕 PCでのデコレーション：さらにスリムに */
+        /* PCでのデコレーションサイズ */
         .tree-deco, .buranko-deco { width: 140px; height: auto; }
         .magic-pond { width: 220px; height: 140px; background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; }
         .funsui-area { width: 140px; }
         .tobibako-deco { width: 120px; }
 
-        /* --- モバイル対応修正 --- */
+        /* --- モバイル対応 --- */
         @media (max-width: 768px) {
             .dollhouse-frame { width: 100vw; border-width: 8px; padding-bottom: 100px; margin: 0; }
             .header-panel { width: 95%; padding: 10px; }
@@ -174,9 +174,8 @@
             const gapX = isMobile ? (frameWidth / 2.3) : 175;
             const gapY = isMobile ? 110 : 140; 
             
-            // 🆕 PCでのタイル開始位置（startX）を大幅に右へ（250px）
-            // これにより左側にブランコを置くための十分なスペースが生まれます
-            const startX = isMobile ? (frameWidth - (gapX * (cols-1) + (isMobile ? 115 : 140))) / 2 : 250;
+            // 🆕 PCでのタイル開始位置（startX）を160pxに変更し、全体を左寄せにする
+            const startX = isMobile ? (frameWidth - (gapX * (cols-1) + (isMobile ? 115 : 140))) / 2 : 160;
             const startY = isMobile ? 180 : 250;
 
             for (let i = 1; i <= 30; i++) {
@@ -218,9 +217,10 @@
             pond.style.left = "50%"; pond.style.transform = "translateX(-50%)";
 
             if (!isMobile) {
-                // 🆕 PCでのブランコを「左端（40px）」に固定。サイズも最適化。
-                tree.style.top = "150px"; tree.style.left = (frameWidth - 160) + "px";
-                buranko.style.top = "180px"; buranko.style.left = "40px";
+                // 木の位置（右側）
+                tree.style.top = "120px"; tree.style.left = (frameWidth - 180) + "px";
+                // 🆕 ブランコの位置（左上、STEP1の上あたり）
+                buranko.style.top = "100px"; buranko.style.left = "100px";
             } else {
                 tree.style.top = "110px"; tree.style.left = "10px";
                 buranko.style.top = "110px"; buranko.style.right = "10px"; buranko.style.left = "auto";
