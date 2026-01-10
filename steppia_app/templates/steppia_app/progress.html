@@ -30,9 +30,8 @@
 
         .dollhouse-frame { 
             position: relative; 
-            width: 100%; 
-            max-width: 1300px; 
-            min-height: 100dvh; 
+            width: 1300px; 
+            min-height: 1250px; 
             background: var(--grass); 
             border: 15px solid var(--wood); 
             box-sizing: border-box; 
@@ -91,23 +90,35 @@
         .deco-item { position: absolute; pointer-events: none; z-index: 10; }
         .splash { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; pointer-events: none; }
 
-        /* --- デコレーションスタイル --- */
-        .tree-deco { width: 130px; z-index: 10; }
-        .buranko-deco { width: 130px; z-index: 10; }
+        /* --- 🆕 デコレーション（JSで位置を決めるため、CSSでは基本サイズのみ指定） --- */
+        .tree-deco { left: 1100px; width: 130px; }
+        .buranko-deco { left: 60px; width: 130px; }
         .magic-pond { 
             width: 220px; height: 140px; background: #81D4FA; 
             border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; 
-            overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); 
+            overflow: hidden; 
+            left: 50%; transform: translateX(-50%); /* 常に中央寄せ */
         }
-        .funsui-area { width: 130px; }
-        .tobibako-deco { width: 110px; }
+        .funsui-area { 
+            width: 140px; 
+            left: 50%; transform: translateX(-50%); /* 常に中央寄せ */
+        }
+        .tobibako-deco { width: 120px; }
 
+        /* --- モバイル対応レイアウト --- */
         @media (max-width: 768px) {
-            .dollhouse-frame { border: 8px solid var(--wood); }
+            .dollhouse-frame { 
+                width: 100vw; 
+                border: 8px solid var(--wood);
+            }
             .header-panel h2 { font-size: 13px !important; }
-            .tree-deco, .buranko-deco { width: 90px !important; }
+
+            .tree-deco { left: 10px !important; width: 80px !important; }
+            .buranko-deco { right: 10px !important; left: auto !important; width: 80px !important; }
+
             .magic-pond { width: 180px !important; height: 120px !important; }
-            .funsui-area { width: 100px !important; }
+            .funsui-area { width: 110px !important; }
+            .tobibako-deco { width: 90px !important; }
         }
     </style>
 </head>
@@ -141,6 +152,7 @@
             <img src="{% static 'images/funsui.png' %}" style="width:100%; display:block;">
             <div id="splash-container" style="position:absolute; top:20px; left:50%; width:40px; height:20px;"></div>
         </div>
+        
         <img id="tree-deco" src="{% static 'images/midorinoki.png' %}" class="deco-item tree-deco">
         <img id="buranko-deco" src="{% static 'images/buranko.png' %}" class="deco-item buranko-deco">
         <img id="tobibako-deco" src="{% static 'images/tobibako.png' %}" class="deco-item tobibako-deco">
@@ -171,10 +183,10 @@
             const isMobile = window.innerWidth < 768;
             const cols = isMobile ? 2 : 6;
             const frameWidth = frame.clientWidth;
-            const gapX = isMobile ? (frameWidth / 2.5) : 190;
+            const gapX = isMobile ? (frameWidth / 2.4) : 190;
             const gapY = isMobile ? 130 : 140;
-            const startX = isMobile ? (frameWidth - (gapX * (cols - 1)) - 120) / 2 : 120;
-            const startY = isMobile ? 240 : 200;
+            const startX = isMobile ? 25 : 120;
+            const startY = isMobile ? 250 : 200;
 
             for (let i = 1; i <= 30; i++) {
                 const row = Math.floor((i - 1) / cols);
@@ -188,46 +200,60 @@
                 tile.className = 'step-tile'; 
                 tile.style.left = x + 'px'; 
                 tile.style.top = y + 'px';
-                if(isMobile) { tile.style.width = '120px'; tile.style.height = '65px'; }
+                if(isMobile) {
+                    tile.style.width = '115px';
+                    tile.style.height = '65px';
+                }
 
                 tile.innerHTML = `<div style="font-size:8px; opacity:0.6; font-weight:900;">STEP ${i}</div><div style="width:100%; text-align:center; font-weight:900; font-size:10px; color:var(--wood);">${missionNames[i-1]}</div>`;
                 root.appendChild(tile);
-                nodePoints.push({x: x + (isMobile ? 60 : 70), y: y + (isMobile ? 32 : 35)});
+                nodePoints.push({x: x + (isMobile ? 57 : 70), y: y + (isMobile ? 32 : 35)});
             }
 
             const lastPoint = nodePoints[nodePoints.length - 1];
+
+            // 🆕 イラスト要素の取得
             const pond = document.getElementById('pond-deco');
             const funsui = document.getElementById('funsui-deco');
             const tobibako = document.getElementById('tobibako-deco');
             const tree = document.getElementById('tree-deco');
             const buranko = document.getElementById('buranko-deco');
 
-            // --- 🆕 デコレーションの配置（全デバイス共通・ゴールの下に整列） ---
-            const goalAreaY = lastPoint.y + 150; 
-            const centerX = frameWidth / 2;
+            // 🆕 画面サイズに関わらず、最後のマスの下にイラストをバランスよく配置
+            const baseTop = lastPoint.y;
+            
+            // 跳び箱をゴールから80px下に
+            tobibako.style.top = (baseTop + 80) + 'px'; 
+            tobibako.style.left = "50%";
+            tobibako.style.transform = "translateX(-50%)";
 
-            // 1. 上部装飾
+            // 噴水を跳び箱から少し空けて配置
+            funsui.style.top = (baseTop + 200) + 'px';
+            funsui.style.left = "50%";
+            funsui.style.transform = "translateX(-50%)";
+
+            // 池を噴水のすぐ下に
+            pond.style.top = (baseTop + 280) + 'px';
+            pond.style.left = "50%";
+            pond.style.transform = "translateX(-50%)";
+
+            // 木とブランコの上部配置
             if (!isMobile) {
-                tree.style.top = "80px"; tree.style.left = (frameWidth - 180) + "px";
-                buranko.style.top = "120px"; buranko.style.left = "60px";
+                tree.style.top = "80px";
+                tree.style.left = (frameWidth - 180) + "px";
+                buranko.style.top = "120px";
+                buranko.style.left = "60px";
             } else {
-                tree.style.top = "140px"; tree.style.left = "20px";
-                buranko.style.top = "140px"; buranko.style.right = "20px"; tree.style.left = "auto";
+                tree.style.top = "130px";
+                tree.style.left = "20px";
+                buranko.style.top = "130px";
+                buranko.style.right = "20px";
+                buranko.style.left = "auto";
             }
 
-            // 2. ゴール下（跳び箱、噴水、池を縦に並べる）
-            tobibako.style.top = goalAreaY + "px";
-            tobibako.style.left = (centerX - (isMobile ? 40 : 55)) + "px";
-
-            funsui.style.top = (goalAreaY + 120) + "px";
-            funsui.style.left = (centerX - (isMobile ? 50 : 65)) + "px";
-
-            pond.style.top = (goalAreaY + 180) + "px";
-            pond.style.left = (centerX - (isMobile ? 90 : 110)) + "px";
-
-            // フレーム高さを動的に調整
+            // フレームの高さをイラストが収まるように調整
             const buffer = isMobile ? 600 : 500; 
-            frame.style.minHeight = (lastPoint.y + buffer) + 'px';
+            document.getElementById('main-frame').style.height = (lastPoint.y + buffer) + 'px';
 
             drawPath(); updateView();
         }
@@ -254,7 +280,7 @@
                     pawn.style.left = (p.x - 30) + 'px'; pawn.style.top = (p.y - 75) + 'px';
                 }
                 document.querySelectorAll('.step-tile').forEach((t, idx) => { t.classList.toggle('completed', idx < step); });
-                if (step === 30) { setTimeout(() => { window.location.href = "{% url 'congrats_map' %}"; }, 1300); }
+                if (step === 30) { setTimeout(() => { window.location.href = "{% url 'congrats_map' %}"; }, 1500); }
             }
             localStorage.setItem('steppia_companies', JSON.stringify(companies));
             localStorage.setItem('steppia_current_id', currentCompanyId);
