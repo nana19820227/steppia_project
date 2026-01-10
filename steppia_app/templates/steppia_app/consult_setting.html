@@ -15,75 +15,101 @@
             --star-yellow: #FFF2AF;
             --btn-star: #FFD54F;
         }
+
         body {
             background-color: var(--bg); margin: 0; 
             font-family: 'Zen Maru Gothic', sans-serif; color: var(--brown);
             display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-            /* 下部の固定ボタンと重ならないよう余白を確保 */
-            padding: 20px 15px 160px; 
+            /* 下部の固定ボタンとの重なりを防ぐ余白 */
+            padding: 20px 15px 140px; 
             box-sizing: border-box;
         }
         
-        /* 🆕 ロゴと見出しの余白をスマホ用にスリム化 */
-        .app-logo { margin-top: 30px; width: 220px; height: auto; }
-        h1 { font-size: 32px; font-weight: 900; margin: 15px 0 40px; text-align: center; }
+        /* ロゴのサイズをスマホに最適化 */
+        .app-logo { margin-top: 20px; width: 100%; max-width: 180px; height: auto; }
+        
+        h1 { 
+            font-size: 26px; font-weight: 900; margin: 20px 0 30px; 
+            text-align: center; letter-spacing: 0.05em;
+        }
 
-        .consultant-list { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 600px; }
+        .consultant-list { 
+            display: flex; flex-direction: column; gap: 16px; 
+            width: 100%; max-width: 500px; 
+        }
         
         .consultant-card {
-            background: var(--white); border-radius: 40px; padding: 20px;
+            background: var(--white); border-radius: 30px; padding: 15px 20px;
             display: flex; align-items: center; justify-content: space-between;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
-            border: 2px solid rgba(255,255,255,0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 2px solid rgba(255,255,255,0.8);
+            transition: transform 0.2s;
         }
+
+        .consultant-card:active { transform: scale(0.98); }
 
         .consultant-info { display: flex; align-items: center; gap: 15px; flex: 1; min-width: 0; }
         
         .consultant-img {
-            width: 85px; height: 85px; border-radius: 50%;
-            object-fit: contain; background: var(--white);
-            border: 3px solid #f9f9f9; flex-shrink: 0;
+            width: 70px; height: 70px; border-radius: 50%;
+            object-fit: contain; background: #fdfdfd;
+            border: 2px solid #f0f0f0; flex-shrink: 0;
         }
         
         .consultant-details { text-align: left; min-width: 0; flex: 1; }
 
         .consultant-name { 
-            font-size: 22px; font-weight: 900; color: #000; 
+            font-size: 18px; font-weight: 900; color: #000; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+
+        .consultant-career { 
+            font-size: 12px; font-weight: 700; opacity: 0.5; margin-top: 2px;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
-        .consultant-career { font-size: 13px; font-weight: 700; opacity: 0.6; margin-top: 4px; }
-
-        /* 🆕 登録ボタンのサイズをスマホで押しやすく微調整 */
+        /* 登録スターボタン */
         .register-btn {
             position: relative; display: flex; align-items: center; justify-content: center;
-            width: 75px; height: 75px; background: none; border: none; cursor: pointer;
-            transition: transform 0.2s; padding: 0; margin-left: 10px; flex-shrink: 0;
+            width: 65px; height: 65px; background: none; border: none; cursor: pointer;
+            padding: 0; margin-left: 10px; flex-shrink: 0;
+            transition: transform 0.2s ease-out;
         }
-        .register-btn:active { transform: scale(0.9); }
-        .register-star { font-size: 75px; color: var(--btn-star); filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
-        .register-text { position: absolute; font-size: 15px; font-weight: 900; color: #000; top: 50%; left: 50%; transform: translate(-50%, -45%); }
+        .register-btn:active { transform: scale(1.2) rotate(10deg); } /* クリック時に少し大きく傾く */
+        
+        .register-star { font-size: 65px; color: var(--btn-star); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1)); }
+        
+        .register-text { 
+            position: absolute; font-size: 14px; font-weight: 900; color: #000; 
+            top: 50%; left: 50%; transform: translate(-50%, -45%); 
+        }
 
-        /* 🆕 戻るボタンをスマホで邪魔にならないサイズに */
-        .bottom-nav { position: fixed; bottom: 25px; left: 20px; z-index: 1000; }
+        /* 戻るボタンの固定位置調整 */
+        .bottom-nav { position: fixed; bottom: 25px; left: 15px; z-index: 1000; }
+        
         .star-link-btn {
             position: relative; display: flex; align-items: center; justify-content: center;
-            width: 100px; height: 100px; text-decoration: none;
+            width: 90px; height: 90px; text-decoration: none;
+            transition: transform 0.2s;
         }
-        .star-icon { font-size: 100px; color: var(--star-yellow); filter: drop-shadow(0 6px 15px rgba(0,0,0,0.12)); }
+        .star-link-btn:active { transform: scale(0.9); }
+        
+        .star-icon { font-size: 90px; color: var(--star-yellow); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
+        
         .star-text {
-            position: absolute; font-size: 20px; font-weight: 900; color: var(--text-black);
+            position: absolute; font-size: 18px; font-weight: 900; color: var(--text-black);
             top: 50%; left: 50%; transform: translate(-50%, -45%);
         }
 
-        /* 超小型スマホ向けの最終微調整 */
-        @media (max-width: 380px) {
-            h1 { font-size: 26px; }
-            .consultant-img { width: 70px; height: 70px; }
-            .consultant-name { font-size: 18px; }
-            .register-btn { width: 65px; height: 65px; }
-            .register-star { font-size: 65px; }
-            .register-text { font-size: 13px; }
+        /* タブレット・PC向けの調整 */
+        @media (min-width: 768px) {
+            h1 { font-size: 32px; }
+            .consultant-img { width: 85px; height: 85px; }
+            .consultant-name { font-size: 22px; }
+            .register-btn { width: 75px; height: 75px; }
+            .register-star { font-size: 75px; }
+            .bottom-nav { left: 50%; transform: translateX(-400px); } /* PC時は中央寄せの左側 */
         }
     </style>
 </head>
