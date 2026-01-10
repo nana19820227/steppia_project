@@ -11,7 +11,8 @@
         @keyframes splash-anim {
             0% { transform: translate(-50%, 0) scale(0.3); opacity: 0; }
             20% { opacity: 1; }
-            100% { transform: translate(-50%, -100px) scale(1.5); opacity: 0; }
+            /* 水飛沫の高さを少し抑える調整 (-80px) */
+            100% { transform: translate(-50%, -80px) scale(1.2); opacity: 0; }
         }
         @keyframes swim-no-flip { 0% { transform: translateX(0); } 50% { transform: translateX(60px); } 100% { transform: translateX(0); } }
 
@@ -203,7 +204,6 @@
                 nodePoints.push({x: x + (isMobile ? 55 : 70), y: y + (isMobile ? 30 : 35)});
             }
 
-            // --- 🆕 イラストのバランス配置ロジック ---
             const lastPoint = nodePoints[nodePoints.length - 1]; // STEP 30
             const pond = document.getElementById('pond-deco');
             const funsui = document.getElementById('funsui-deco');
@@ -211,21 +211,22 @@
             const tree = document.getElementById('tree-deco');
             const buranko = document.getElementById('buranko-deco');
 
-            // ゴール後のイラストエリアの開始高さ
-            const gardenBaseY = lastPoint.y + (isMobile ? 110 : 130);
-
-            // 1. 跳び箱：中央配置
-            tobibako.style.top = gardenBaseY + 'px';
+            // --- イラスト配置のバランス調整 ---
+            // 1. 跳び箱：STEP 30から少し離して中央
+            const tobibakoTop = lastPoint.y + (isMobile ? 120 : 140);
+            tobibako.style.top = tobibakoTop + 'px';
             tobibako.style.left = "50%";
             tobibako.style.transform = "translateX(-50%)";
 
-            // 2. 噴水：跳び箱のさらに下に配置
-            funsui.style.top = (gardenBaseY + (isMobile ? 130 : 160)) + 'px';
+            // 2. 噴水：跳び箱からさらに離す (水飛沫が当たらない距離に)
+            // モバイルなら200px、デスクトップなら240pxほど間隔を開ける
+            const funsuiTop = tobibakoTop + (isMobile ? 180 : 220);
+            funsui.style.top = funsuiTop + 'px';
             funsui.style.left = "50%";
             funsui.style.transform = "translateX(-50%)";
 
-            // 3. 池：噴水のさらに下に配置
-            pond.style.top = (gardenBaseY + (isMobile ? 270 : 340)) + 'px';
+            // 3. 池：噴水のすぐ下
+            pond.style.top = (funsuiTop + (isMobile ? 130 : 150)) + 'px';
             pond.style.left = "50%";
             pond.style.transform = "translateX(-50%)";
 
@@ -243,8 +244,8 @@
                 buranko.style.left = "auto";
             }
 
-            // フレーム全体の高さを調整（池の後に十分な余白を作る）
-            const finalHeight = gardenBaseY + (isMobile ? 500 : 600);
+            // 全体の高さを池の下までしっかり確保
+            const finalHeight = funsuiTop + (isMobile ? 450 : 550);
             frame.style.height = finalHeight + 'px';
 
             drawPath(); updateView();
