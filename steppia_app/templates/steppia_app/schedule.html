@@ -8,37 +8,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #DCECCF;
-            --white: #FFFFFF;
-            --brown: #5D4037;
-            --star-yellow: #FFF2AF;
-            --text-black: #000000;
-            --ok-green: #81C784;
+            --bg: #DCECCF; --white: #FFFFFF; --brown: #5D4037;
+            --star-yellow: #FFF2AF; --text-black: #000000; --ok-green: #81C784;
         }
         body {
             background-color: var(--bg); margin: 0;
             font-family: 'Zen Maru Gothic', sans-serif; color: var(--brown);
             display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-            /* 下部の戻るボタンと重ならないよう余白を多めに確保 */
-            padding: 20px 15px 160px; 
-            box-sizing: border-box;
+            padding: 20px 15px 160px; box-sizing: border-box;
         }
 
-        /* 🆕 ヘッダーエリアの整理 */
+        /* ヘッダー */
         .header-visual { text-align: center; margin-top: 30px; }
         .app-title-img { width: 150px; height: auto; margin-bottom: 5px; }
         h1 { font-size: 26px; font-weight: 900; margin: 10px 0 25px; color: var(--brown); }
 
-        /* 入力フォームカード */
+        /* 入力フォーム */
         .schedule-form {
             background: var(--white); border-radius: 30px; padding: 25px 20px;
             width: 100%; max-width: 450px; margin-bottom: 30px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
-            box-sizing: border-box;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05); box-sizing: border-box;
         }
         .form-group { margin-bottom: 18px; text-align: left; }
         .form-group label { display: block; font-weight: 900; margin-bottom: 6px; font-size: 14px; }
-        
         .form-group input {
             width: 100%; padding: 14px; border: 2px solid #eee; border-radius: 15px;
             font-family: inherit; font-size: 16px; font-weight: 700;
@@ -46,10 +38,7 @@
             box-sizing: border-box; display: block; outline: none;
             -webkit-appearance: none; appearance: none;
         }
-        
         .form-group input[type="text"] { background-color: #fff; border-color: #eee; }
-        .form-group input:focus { border-color: var(--ok-green); background-color: #fff; }
-
         .add-btn {
             background: var(--ok-green); color: white; border: none; padding: 16px;
             width: 100%; border-radius: 20px; font-weight: 900; font-size: 18px;
@@ -58,7 +47,7 @@
         }
         .add-btn:active { transform: translateY(3px); box-shadow: none; }
 
-        /* スケジュールリスト */
+        /* 🆕 履歴リストとアコーディオン */
         .schedule-list { width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 12px; }
         .schedule-card {
             background: var(--white); border-radius: 20px; padding: 15px 20px;
@@ -70,27 +59,33 @@
         .date-time { font-size: 11px; opacity: 0.6; font-weight: 700; }
         .detail-text { font-size: 16px; font-weight: 900; color: #000; flex: 1; }
 
-        /* ⭐️左下の戻るボタン（位置とアニメーションを他ページと統一） */
+        /* 🆕 折りたたみ部分のスタイル */
+        #history-content { 
+            display: none; /* 最初は隠す */
+            flex-direction: column; gap: 12px; width: 100%;
+        }
+        .history-toggle-btn {
+            background: none; border: 2px solid var(--brown); color: var(--brown);
+            padding: 10px; border-radius: 15px; font-weight: 900; font-size: 14px;
+            cursor: pointer; margin: 10px 0; transition: 0.3s; width: 100%;
+        }
+        .history-toggle-btn.active { background: var(--brown); color: white; }
+
+        /* 戻るボタン */
         .bottom-nav { position: fixed; bottom: 25px; left: 15px; z-index: 1000; pointer-events: none; }
         .star-link-btn {
             position: relative; display: flex; align-items: center; justify-content: center;
             width: 85px; height: 85px; text-decoration: none; pointer-events: auto;
         }
-        .star-icon {
-            font-size: 85px; color: var(--star-yellow);
-            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.12));
-        }
+        .star-icon { font-size: 85px; color: var(--star-yellow); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.12)); }
         .star-text {
             position: absolute; font-size: 16px; font-weight: 900; color: var(--text-black);
-            top: 50%; left: 50%; transform: translate(-50%, -45%);
-            transition: transform 0.15s ease-out;
+            top: 50%; left: 50%; transform: translate(-50%, -45%); transition: 0.15s ease-out;
         }
         .star-link-btn:active .star-text { transform: translate(-40%, -60%) rotate(15deg); }
         .star-link-btn:active { transform: scale(0.95); }
 
         @media (min-width: 768px) {
-            .header-visual { margin-top: 40px; }
-            .schedule-form { padding: 35px; }
             .bottom-nav { left: 50%; transform: translateX(-400px); }
         }
     </style>
@@ -123,15 +118,36 @@
 
     <div class="schedule-list">
         {% for s in schedules %}
-        <div class="schedule-card">
-            <div class="date-box">
-                <div class="date-day">{{ s.date|date:"m/d" }}</div>
-                <div class="date-time">{{ s.time|time:"H:i" }}</div>
-            </div>
-            <div class="detail-text">{{ s.detail }}</div>
-        </div>
+            {% if forloop.counter <= 3 %}
+                <div class="schedule-card">
+                    <div class="date-box">
+                        <div class="date-day">{{ s.date|date:"m/d" }}</div>
+                        <div class="date-time">{{ s.time|time:"H:i" }}</div>
+                    </div>
+                    <div class="detail-text">{{ s.detail }}</div>
+                </div>
+            {% endif %}
+
+            {% if forloop.counter == 4 %}
+                <button type="button" class="history-toggle-btn" id="history-btn">▼ 過去の履歴を表示する</button>
+                <div id="history-content">
+            {% endif %}
+
+            {% if forloop.counter >= 4 %}
+                <div class="schedule-card">
+                    <div class="date-box">
+                        <div class="date-day">{{ s.date|date:"m/d" }}</div>
+                        <div class="date-time">{{ s.time|time:"H:i" }}</div>
+                    </div>
+                    <div class="detail-text">{{ s.detail }}</div>
+                </div>
+            {% endif %}
+
+            {% if forloop.last and forloop.counter >= 4 %}
+                </div> {% endif %}
+
         {% empty %}
-        <p style="text-align: center; opacity: 0.5; font-size: 14px;">予定はまだありません 🐑</p>
+            <p style="text-align: center; opacity: 0.5; font-size: 14px;">予定はまだありません 🐑</p>
         {% endfor %}
     </div>
 
@@ -140,6 +156,21 @@
             <span class="star-icon">★</span><span class="star-text">戻る</span>
         </a>
     </div>
+
+    <script>
+        // 🆕 折りたたみ制御用のJavaScript
+        const btn = document.getElementById('history-btn');
+        const content = document.getElementById('history-content');
+
+        if (btn) {
+            btn.addEventListener('click', () => {
+                const isOpen = content.style.display === 'flex';
+                content.style.display = isOpen ? 'none' : 'flex';
+                btn.classList.toggle('active');
+                btn.innerText = isOpen ? '▼ 過去の履歴を表示する' : '▲ 履歴を閉じる';
+            });
+        }
+    </script>
 
 </body>
 </html>
