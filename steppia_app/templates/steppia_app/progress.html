@@ -30,7 +30,8 @@
 
         .dollhouse-frame { 
             position: relative; 
-            width: 1300px; 
+            width: 100%; /* スマホ対応のため100%に変更 */
+            max-width: 1300px; 
             min-height: 1250px; 
             background: var(--grass); 
             border: 15px solid var(--wood); 
@@ -39,7 +40,7 @@
             z-index: 1; 
         }
 
-        /* --- ヘッダーパネル --- */
+        /* --- ヘッダー --- */
         .header-panel { 
             position: fixed; top: 10px; left: 50%; transform: translateX(-50%); 
             width: 92%; max-width: 800px; 
@@ -57,7 +58,7 @@
 
         select {
             flex-grow: 1; padding: 5px; border-radius: 8px;
-            border: 2px solid var(--wood); font-family: 'Zen Maru Gothic', sans-serif;
+            border: 2px solid var(--wood); font-family: inherit;
             font-weight: 900; font-size: 12px; color: var(--wood);
         }
 
@@ -70,11 +71,11 @@
         .bottom-nav { position: fixed; bottom: 20px; left: 15px; z-index: 4000; }
         .star-link-btn { 
             position: relative; display: flex; align-items: center; justify-content: center; 
-            width: 65px; height: 65px; text-decoration: none; 
+            width: 70px; height: 70px; text-decoration: none; 
             transition: transform 0.2s;
         }
         .star-link-btn:active { transform: scale(0.9); }
-        .star-icon { font-size: 65px; color: var(--star-yellow); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
+        .star-icon { font-size: 70px; color: var(--star-yellow); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
         .star-text { position: absolute; font-size: 14px; font-weight: 900; color: var(--text-black); top: 50%; left: 50%; transform: translate(-50%, -45%); }
 
         /* --- マップタイル --- */
@@ -90,44 +91,35 @@
         .deco-item { position: absolute; pointer-events: none; z-index: 10; }
         .splash { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; pointer-events: none; }
 
-        /* --- デコレーション（PCデフォルト） --- */
-        .tree-deco { top: 50px; left: 1100px; width: 130px; }
-        .buranko-deco { top: 120px; left: 60px; width: 130px; }
-        .magic-pond { top: 1040px; left: 280px; width: 220px; height: 140px; background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; }
-        .funsui-area { top: 1080px; left: 1120px; width: 140px; }
-        .tobibako-deco { top: 1050px; left: 750px; width: 120px; }
+        /* --- デコレーション配置（PCデフォルト） --- */
+        .tree-deco { top: 80px; left: 1100px; width: 120px; }
+        .buranko-deco { top: 80px; left: 60px; width: 130px; }
+        
+        /* 🆕 PC/スマホ共通：池と噴水は「bottom」基準で配置 */
+        .magic-pond { 
+            bottom: 50px; left: 50%; transform: translateX(-50%);
+            width: 250px; height: 160px; background: #81D4FA; 
+            border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; 
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.1); 
+        }
+        .funsui-area { 
+            bottom: 120px; left: 50%; transform: translateX(-10%);
+            width: 140px; 
+        }
+        .tobibako-deco { bottom: 300px; right: 80px; width: 120px; }
 
         /* --- モバイル対応レイアウト --- */
         @media (max-width: 768px) {
-            .dollhouse-frame { 
-                width: 100vw; 
-                border: 8px solid var(--wood);
-            }
+            .dollhouse-frame { width: 100vw; border: 8px solid var(--wood); }
             .header-panel h2 { font-size: 13px !important; }
 
-            .tree-deco { top: 130px !important; left: 10px !important; width: 80px !important; }
-            .buranko-deco { top: 130px !important; right: 10px !important; left: auto !important; width: 80px !important; }
+            .tree-deco { top: 120px !important; left: 10px !important; width: 80px !important; }
+            .buranko-deco { top: 120px !important; right: 10px !important; left: auto !important; width: 80px !important; }
 
-            /* 🆕 噴水と池をマップの一番下（STEP 30の後）へ移動 */
-            .funsui-area { 
-                top: 2200px !important; /* マップの終点付近 */
-                left: 50% !important; 
-                transform: translateX(-50%) !important;
-                width: 120px !important; 
-            }
-            .magic-pond { 
-                top: 2250px !important; 
-                left: 50% !important; 
-                transform: translateX(-50%) !important;
-                width: 180px !important; height: 120px !important; 
-            }
-            /* 跳び箱は中盤に移動して重なりを回避 */
-            .tobibako-deco { 
-                top: 1500px !important; 
-                right: 15px !important; 
-                left: auto !important;
-                width: 80px !important; 
-            }
+            /* 🆕 スマホ専用：池と噴水をコンパクトに */
+            .magic-pond { width: 180px !important; height: 120px !important; bottom: 40px !important; }
+            .funsui-area { width: 100px !important; bottom: 100px !important; }
+            .tobibako-deco { bottom: 280px !important; right: 15px !important; width: 80px !important; }
         }
     </style>
 </head>
@@ -141,7 +133,7 @@
             <div class="header-top">
                 <h2 style="font-size: 14px; margin: 0; color: var(--wood);">BEINGを叶える冒険航路</h2>
                 <div style="display:flex; align-items:center; gap:5px;">
-                    <input type="number" id="warp-val" value="1" min="1" max="30" style="width:35px; border-radius:8px; border:2px solid var(--wood); text-align:center; font-weight:900; font-size:12px;">
+                    <input type="number" id="warp-val" value="1" min="1" max="30" style="width:35px; border-radius:8px; border:2px solid var(--wood); text-align:center; font-weight:900;">
                     <button onclick="warp()" class="btn-mini btn-warp">移動</button>
                 </div>
             </div>
@@ -180,7 +172,8 @@
     <script>
         let companies = JSON.parse(localStorage.getItem('steppia_companies')) || {};
         let currentCompanyId = localStorage.getItem('steppia_current_id') || '';
-        const missionNames = ["経験スキルの棚卸し", "コンサル面談①", "価値観の言語化", "強みの明確化", "転職軸確定", "市場調査", "ターゲット選定", "経歴書作成", "コンサル面談②", "志望動機の最適化", "チャネル選定", "応募計画", "エントリー開始", "面談実践", "コンサル面談③", "求人応募", "適性検査対策", "回答案作成", "コンサル面談④", "1次面接挑戦", "書類整理", "🌟お試しインターン挑戦", "コンサル面談⑤", "2次面接挑戦", "企業研究の更なる深掘り", "逆質問・事前準備", "最終面接挑戦", "コンサル面談⑥", "最終面接結果待ち", "🎉内定GET！"];
+        
+        const missionNames = ["経験・スキルの棚卸し", "コンサル面談①：診断", "価値観の言語化", "強み・武器の明確化", "転職軸とBEING確定", "業界・職種の市場調査", "ターゲット企業選定", "職務経歴書ドラフト作成", "コンサル面談②：書類添削", "志望動機・PRの最適化", "応募チャネル選定・登録", "応募計画の策定", "エントリー開始！", "面談の実践", "コンサル面談③：振り返り", "求人応募", "適性検査・SPI対策", "面接回答案の作成", "コンサル面談④：模擬面接", "1次面接挑戦", "面接と書類整理と改善", "🌟お試しインターン挑戦", "コンサル面談⑤：最終対策", "2次面接挑戦", "企業研究の更なる深掘り", "逆質問・事前準備", "最終面接挑戦", "コンサル面談⑥：相談", "最終面接結果待ち", "🎉内定GET！"];
         let nodePoints = [];
 
         function renderMap() {
@@ -192,7 +185,7 @@
             const gapX = isMobile ? (window.innerWidth / 2.4) : 190;
             const gapY = isMobile ? 130 : 140;
             const startX = isMobile ? 25 : 120;
-            const startY = isMobile ? 250 : 200;
+            const startY = isMobile ? 240 : 200;
 
             for (let i = 1; i <= 30; i++) {
                 const row = Math.floor((i - 1) / cols);
@@ -216,9 +209,9 @@
                 nodePoints.push({x: x + (isMobile ? 57 : 70), y: y + (isMobile ? 32 : 35)});
             }
 
-            // 🆕 スマホで池と噴水が収まるように高さを十分に確保
+            // 🆕 イラストの余白を含めて高さを計算
             const lastPoint = nodePoints[nodePoints.length - 1];
-            const buffer = isMobile ? 550 : 200; 
+            const buffer = isMobile ? 450 : 250; 
             document.getElementById('main-frame').style.height = (lastPoint.y + buffer) + 'px';
 
             drawPath(); updateView();
