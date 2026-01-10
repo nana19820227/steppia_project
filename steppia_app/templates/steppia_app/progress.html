@@ -8,11 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
     <style>
         /* --- アニメーション --- */
-        @keyframes splash-anim {
-            0% { transform: translate(-50%, 0) scale(0.3); opacity: 0; }
-            20% { opacity: 1; }
-            100% { transform: translate(-50%, -100px) scale(1.5); opacity: 0; }
-        }
         @keyframes swim-no-flip { 0% { transform: translateX(0); } 50% { transform: translateX(60px); } 100% { transform: translateX(0); } }
 
         :root { 
@@ -28,54 +23,57 @@
             overflow-x: hidden; 
         }
 
-        /* 🆕 PC/スマホで幅を可変にする */
+        /* 🆕 修正：幅を100%にしてPC/スマホ両方に対応 */
         .dollhouse-frame { 
             position: relative; 
-            width: 1300px; /* デフォルトPC幅 */
-            min-height: 1250px; 
+            width: 100%; 
+            max-width: 1300px; /* パソコンでの最大幅 */
+            min-height: 100dvh; 
             background: var(--grass); 
             border: 15px solid var(--wood); 
             box-sizing: border-box; 
-            margin: auto;
+            margin: 0 auto;
             z-index: 1; 
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         /* --- ヘッダーパネル（スマホ対応） --- */
         .header-panel { 
             position: fixed; top: 10px; left: 50%; transform: translateX(-50%); 
-            width: 92%; max-width: 800px; 
+            width: 95%; max-width: 800px; 
             background: rgba(255, 255, 255, 0.98); border: 3px solid var(--wood); 
-            border-radius: 20px; padding: 10px 15px; z-index: 3000; 
+            border-radius: 20px; padding: 10px; z-index: 3000; 
             display: flex; flex-direction: column; align-items: center; gap: 5px; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
         }
 
         .header-top { display: flex; align-items: center; justify-content: space-between; width: 100%; }
         .company-controls { 
-            display: flex; align-items: center; gap: 8px; width: 100%; 
+            display: flex; align-items: center; gap: 5px; width: 100%; 
             padding-top: 5px; border-top: 1px dashed rgba(109, 76, 65, 0.2);
         }
 
         select {
             flex-grow: 1; padding: 5px; border-radius: 8px;
-            border: 2px solid var(--wood); font-family: 'Zen Maru Gothic', sans-serif;
-            font-weight: 900; font-size: 12px; color: var(--wood);
+            border: 2px solid var(--wood); font-family: inherit;
+            font-weight: 900; font-size: 11px; color: var(--wood);
+            max-width: 150px;
         }
 
-        .btn-mini { padding: 5px 10px; border-radius: 10px; border: none; font-weight: 900; font-size: 11px; color: white; cursor: pointer; }
+        .btn-mini { padding: 6px 8px; border-radius: 10px; border: none; font-weight: 900; font-size: 10px; color: white; cursor: pointer; }
         .btn-add { background: #81C784; }
         .btn-warp { background: #F48FB1; }
         .btn-del { background: #e57373; }
 
-        /* --- 戻るボタン（スマホでは固定） --- */
-        .bottom-nav { position: fixed; bottom: 20px; left: 15px; z-index: 4000; }
+        /* --- 戻るボタン（那奈さん指定の星デザイン） --- */
+        .bottom-nav { position: fixed; bottom: 15px; left: 10px; z-index: 4000; pointer-events: none; }
         .star-link-btn { 
             position: relative; display: flex; align-items: center; justify-content: center; 
-            width: 70px; height: 70px; text-decoration: none; 
+            width: 80px; height: 80px; text-decoration: none; pointer-events: auto;
         }
-        .star-icon { font-size: 70px; color: var(--star-yellow); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
-        .star-text { position: absolute; font-size: 14px; font-weight: 900; color: var(--text-black); top: 50%; left: 50%; transform: translate(-50%, -45%); }
+        .star-icon { font-size: 80px; color: var(--star-yellow); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.15)); }
+        .star-text { position: absolute; font-size: 16px; font-weight: 900; color: var(--text-black); top: 50%; left: 50%; transform: translate(-50%, -45%); }
 
         /* --- マップ要素 --- */
         .step-tile { 
@@ -86,30 +84,36 @@
             transition: all 0.3s;
         }
         .step-tile.completed { background: var(--completed); border-color: #FFA000; }
-        .player-pawn { position: absolute; width: 60px; z-index: 200; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; }
+        
+        /* 🆕 プレイヤー（那奈さん画像）のサイズ微調整 */
+        .player-pawn { 
+            position: absolute; width: 50px; z-index: 200; 
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            pointer-events: none; 
+        }
 
         .deco-item { position: absolute; pointer-events: none; z-index: 10; }
 
-        /* 🆕 モバイル用レイアウト (レスポンシブ) */
+        /* 🆕 モバイル専用のCSS調整 */
         @media (max-width: 768px) {
-            .dollhouse-frame { 
-                width: 100vw; /* 画面幅いっぱいに */
-                min-height: 2500px; /* 縦に長くする */
-                border: 8px solid var(--wood);
+            .dollhouse-frame { border-width: 8px; }
+            .tree-deco, .buranko-deco { display: none; } /* スマホでは装飾を隠して見やすく */
+            .magic-pond { 
+                width: 120px !important; height: 80px !important; 
+                bottom: 20px !important; left: 20px !important; top: auto !important; 
             }
-            .header-panel h2 { font-size: 13px !important; }
-            .tree-deco, .buranko-deco, .tobibako-deco { display: none; } /* スマホでは装飾を減らしてスッキリ */
-            .magic-pond { left: 20px !important; bottom: 100px !important; top: auto !important; }
         }
     </style>
 </head>
 <body>
     <div class="dollhouse-frame" id="main-frame">
-        <svg id="path-svg" style="position:absolute; width:100%; height:100%; pointer-events:none; z-index:10;"><path id="path-line" fill="none" stroke="rgba(109, 76, 65, 0.15)" stroke-width="5" stroke-dasharray="10,10" /></svg>
+        <svg id="path-svg" style="position:absolute; width:100%; height:100%; pointer-events:none; z-index:10;">
+            <path id="path-line" fill="none" stroke="rgba(109, 76, 65, 0.12)" stroke-width="4" stroke-dasharray="8,8" />
+        </svg>
 
         <div class="header-panel">
             <div class="header-top">
-                <h2 style="font-size: 14px; margin: 0; color: var(--wood);">BEINGを叶える冒険航路</h2>
+                <h2 style="font-size: 13px; margin: 0; color: var(--wood);">BEINGを叶える冒険航路</h2>
                 <div style="display:flex; align-items:center; gap:5px;">
                     <input type="number" id="warp-val" value="1" min="1" max="30" style="width:35px; border-radius:8px; border:2px solid var(--wood); text-align:center; font-weight:900; font-size:12px;">
                     <button onclick="warp()" class="btn-mini btn-warp">移動</button>
@@ -125,8 +129,11 @@
             </div>
         </div>
 
-        <div class="deco-item magic-pond" style="top:1040px; left:280px; width:220px; height:140px; background:#81D4FA; border:6px solid #FFF; border-radius:50%;"><img src="{% static 'images/fish.png' %}" style="position:absolute; top:35%; width:40px; animation: swim-no-flip 10s linear infinite;"></div>
-        <img src="{% static 'images/midorinoki.png' %}" class="deco-item tree-deco" style="top:100px; left:1100px; width:120px;">
+        <div class="deco-item magic-pond" style="top:1100px; left:280px; width:220px; height:140px; background:#81D4FA; border:6px solid #FFF; border-radius:50%;">
+            <img src="{% static 'images/fish.png' %}" style="position:absolute; top:35%; width:30px; animation: swim-no-flip 8s linear infinite;">
+        </div>
+        <img src="{% static 'images/midorinoki.png' %}" class="deco-item tree-deco" style="top:120px; right:30px; width:100px;">
+        
         <img src="{% static 'images/onna.png' %}" class="player-pawn" id="pawn" style="display:none;">
         
         <div id="grid-root"></div>
@@ -147,46 +154,55 @@
 
         function renderMap() {
             const root = document.getElementById('grid-root'); 
+            const frame = document.getElementById('main-frame');
             root.innerHTML = ''; nodePoints = [];
             
-            // 🆕 スマホ判定
+            const frameWidth = frame.clientWidth;
             const isMobile = window.innerWidth < 768;
-            const cols = isMobile ? 2 : 6; // スマホは2列、PCは6列
-            const gapX = isMobile ? (window.innerWidth / 2.5) : 190;
-            const gapY = isMobile ? 120 : 140;
-            const startX = isMobile ? 30 : 120;
-            const startY = 180;
+            
+            // 🆕 配置ロジックの最適化
+            const cols = isMobile ? 2 : 6; 
+            const paddingSide = isMobile ? 20 : 100;
+            const gapX = (frameWidth - (paddingSide * 2)) / (cols - 1);
+            const gapY = isMobile ? 110 : 140;
+            const startY = 160;
 
             for (let i = 1; i <= 30; i++) {
                 const row = Math.floor((i - 1) / cols);
                 const col = (i - 1) % cols;
-                const isRev = row % 2 !== 0;
+                const isRev = row % 2 !== 0; // 蛇行（ジグザグ）
                 
-                const x = isRev ? (cols - 1 - col) * gapX + startX : col * gapX + startX; 
+                const x = isRev ? (cols - 1 - col) * gapX + paddingSide : col * gapX + paddingSide; 
                 const y = row * gapY + startY;
 
                 const tile = document.createElement('div'); 
                 tile.className = 'step-tile'; 
-                tile.style.left = x + 'px'; 
+                
+                // 🆕 スマホでのサイズ調整
+                const tWidth = isMobile ? (frameWidth * 0.42) : 140;
+                tile.style.width = tWidth + 'px';
+                tile.style.left = (x - (tWidth / 2)) + 'px'; 
                 tile.style.top = y + 'px';
+                
                 if(isMobile) {
-                    tile.style.width = '120px';
-                    tile.style.height = '60px';
+                    tile.style.height = '55px';
+                    tile.style.borderRadius = '12px';
                 }
 
                 tile.innerHTML = `<div style="font-size:8px; opacity:0.6; font-weight:900;">STEP ${i}</div><div style="width:100%; text-align:center; font-weight:900; font-size:10px; color:var(--wood);">${missionNames[i-1]}</div>`;
                 root.appendChild(tile);
-                nodePoints.push({x: x + (isMobile ? 60 : 80), y: y + (isMobile ? 30 : 42.5)});
+                
+                // パス接続用の中心点
+                nodePoints.push({x: x, y: y + (isMobile ? 27 : 35)});
             }
 
-            // 🆕 フレームの高さを自動調整
-            const lastPoint = nodePoints[nodePoints.length - 1];
-            document.getElementById('main-frame').style.height = (lastPoint.y + 200) + 'px';
+            // フレームの高さをコンテンツに合わせる
+            frame.style.height = (nodePoints[nodePoints.length - 1].y + 150) + 'px';
 
             drawPath(); updateView();
         }
 
-        // --- 以下、既存のロジックを流用 ---
+        // --- Django 連携ロジック ---
         function updateView() {
             const pawn = document.getElementById('pawn');
             const select = document.getElementById('company-select');
@@ -206,7 +222,7 @@
                 const p = nodePoints[step - 1];
                 if(pawn && p) {
                     pawn.style.display = 'block';
-                    pawn.style.left = (p.x - 30) + 'px'; pawn.style.top = (p.y - 70) + 'px';
+                    pawn.style.left = (p.x - 25) + 'px'; pawn.style.top = (p.y - 65) + 'px';
                 }
                 document.querySelectorAll('.step-tile').forEach((t, idx) => { t.classList.toggle('completed', idx < step); });
             }
@@ -215,13 +231,13 @@
         }
 
         function changeCompany(id) { currentCompanyId = id; updateView(); }
-        function addCompany() { const name = prompt("企業名を入力"); if (name) { const id = 'c' + Date.now(); companies[id] = { name: name, step: 1 }; currentCompanyId = id; updateView(); } }
-        function deleteCurrentCompany() { if (!currentCompanyId) return; if (confirm(`削除しますか？`)) { delete companies[currentCompanyId]; currentCompanyId = ''; updateView(); } }
-        function warp() { if(!currentCompanyId) return; const v = parseInt(document.getElementById('warp-val').value); companies[currentCompanyId].step = v; updateView(); }
+        function addCompany() { const name = prompt("企業名を入力してください"); if (name) { const id = 'c' + Date.now(); companies[id] = { name: name, step: 1 }; currentCompanyId = id; updateView(); } }
+        function deleteCurrentCompany() { if (!currentCompanyId) return; if (confirm(`「${companies[currentCompanyId].name}」のデータを削除しますか？`)) { delete companies[currentCompanyId]; currentCompanyId = ''; updateView(); } }
+        function warp() { if(!currentCompanyId) return; const v = parseInt(document.getElementById('warp-val').value); if(v >= 1 && v <= 30) { companies[currentCompanyId].step = v; updateView(); } }
         function drawPath() { const line = document.getElementById('path-line'); let d = `M ${nodePoints[0].x} ${nodePoints[0].y}`; for (let i = 1; i < nodePoints.length; i++) { d += ` L ${nodePoints[i].x} ${nodePoints[i].y}`; } line.setAttribute('d', d); }
 
         window.onload = renderMap;
-        window.onresize = renderMap; // 画面サイズが変わったら再配置
+        window.onresize = renderMap;
     </script>
 </body>
 </html>
