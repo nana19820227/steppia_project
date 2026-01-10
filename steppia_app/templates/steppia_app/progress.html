@@ -30,7 +30,7 @@
 
         .dollhouse-frame { 
             position: relative; 
-            width: 1300px; /* PC用基準幅 */
+            width: 1300px; 
             min-height: 1250px; 
             background: var(--grass); 
             border: 15px solid var(--wood); 
@@ -105,36 +105,28 @@
             }
             .header-panel h2 { font-size: 13px !important; }
 
-            /* 🆕 スマホ用の装飾配置調整 */
-            .tree-deco { 
-                top: 130px !important; /* ヘッダーの下、タイルより上 */
-                left: 10px !important; 
-                width: 80px !important; 
-            }
-            .buranko-deco { 
-                top: 130px !important; 
-                right: 10px !important; 
-                left: auto !important;
-                width: 80px !important; 
-            }
-            /* 噴水を中盤（STEP15付近）へ */
+            .tree-deco { top: 130px !important; left: 10px !important; width: 80px !important; }
+            .buranko-deco { top: 130px !important; right: 10px !important; left: auto !important; width: 80px !important; }
+
+            /* 🆕 噴水と池をマップの一番下（STEP 30の後）へ移動 */
             .funsui-area { 
-                top: 1100px !important; 
-                left: 20px !important; 
-                width: 100px !important; 
+                top: 2200px !important; /* マップの終点付近 */
+                left: 50% !important; 
+                transform: translateX(-50%) !important;
+                width: 120px !important; 
             }
-            /* 池を噴水の近くへ */
             .magic-pond { 
-                top: 1150px !important; 
-                left: 80px !important; 
-                width: 160px !important; height: 100px !important; 
+                top: 2250px !important; 
+                left: 50% !important; 
+                transform: translateX(-50%) !important;
+                width: 180px !important; height: 120px !important; 
             }
-            /* 跳び箱をゴール付近へ */
+            /* 跳び箱は中盤に移動して重なりを回避 */
             .tobibako-deco { 
-                top: 1950px !important; 
-                right: 20px !important; 
+                top: 1500px !important; 
+                right: 15px !important; 
                 left: auto !important;
-                width: 90px !important; 
+                width: 80px !important; 
             }
         }
     </style>
@@ -188,7 +180,7 @@
     <script>
         let companies = JSON.parse(localStorage.getItem('steppia_companies')) || {};
         let currentCompanyId = localStorage.getItem('steppia_current_id') || '';
-        const missionNames = ["経験スキルの棚卸し", "コンサル面談①", "価値観の言語化", "強みの明確化", "転職軸確定", "市場調査", "ターゲット選定", "経歴書作成", "コンサル面談②", "志望動機の最適化", "チャネル選定", "応募計画", "エントリー開始", "面談実践", "コンサル面談③", "求人応募", "適性検査対策", "回答案作成", "コンサル面談④", "1次面接挑戦", "書類整理", "🌟インターン", "コンサル面談⑤", "2次面接挑戦", "企業研究深掘り", "逆質問準備", "最終面接挑戦", "コンサル面談⑥", "結果待ち", "🎉内定GET！"];
+        const missionNames = ["経験スキルの棚卸し", "コンサル面談①", "価値観の言語化", "強みの明確化", "転職軸確定", "市場調査", "ターゲット選定", "経歴書作成", "コンサル面談②", "志望動機の最適化", "チャネル選定", "応募計画", "エントリー開始", "面談実践", "コンサル面談③", "求人応募", "適性検査対策", "回答案作成", "コンサル面談④", "1次面接挑戦", "書類整理", "🌟お試しインターン挑戦", "コンサル面談⑤", "2次面接挑戦", "企業研究の更なる深掘り", "逆質問・事前準備", "最終面接挑戦", "コンサル面談⑥", "最終面接結果待ち", "🎉内定GET！"];
         let nodePoints = [];
 
         function renderMap() {
@@ -200,7 +192,7 @@
             const gapX = isMobile ? (window.innerWidth / 2.4) : 190;
             const gapY = isMobile ? 130 : 140;
             const startX = isMobile ? 25 : 120;
-            const startY = isMobile ? 250 : 200; // 🆕 モバイルでは木のために開始位置を下げる
+            const startY = isMobile ? 250 : 200;
 
             for (let i = 1; i <= 30; i++) {
                 const row = Math.floor((i - 1) / cols);
@@ -224,9 +216,10 @@
                 nodePoints.push({x: x + (isMobile ? 57 : 70), y: y + (isMobile ? 32 : 35)});
             }
 
-            // フレームの高さをコンテンツに合わせる
+            // 🆕 スマホで池と噴水が収まるように高さを十分に確保
             const lastPoint = nodePoints[nodePoints.length - 1];
-            document.getElementById('main-frame').style.height = (lastPoint.y + 200) + 'px';
+            const buffer = isMobile ? 550 : 200; 
+            document.getElementById('main-frame').style.height = (lastPoint.y + buffer) + 'px';
 
             drawPath(); updateView();
         }
