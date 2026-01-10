@@ -30,8 +30,7 @@
 
         .dollhouse-frame { 
             position: relative; 
-            width: 100%; 
-            max-width: 1300px; 
+            width: 1300px; 
             min-height: 1250px; 
             background: var(--grass); 
             border: 15px solid var(--wood); 
@@ -40,7 +39,7 @@
             z-index: 1; 
         }
 
-        /* --- ヘッダー --- */
+        /* --- ヘッダーパネル --- */
         .header-panel { 
             position: fixed; top: 10px; left: 50%; transform: translateX(-50%); 
             width: 92%; max-width: 800px; 
@@ -58,7 +57,7 @@
 
         select {
             flex-grow: 1; padding: 5px; border-radius: 8px;
-            border: 2px solid var(--wood); font-family: inherit;
+            border: 2px solid var(--wood); font-family: 'Zen Maru Gothic', sans-serif;
             font-weight: 900; font-size: 12px; color: var(--wood);
         }
 
@@ -71,11 +70,11 @@
         .bottom-nav { position: fixed; bottom: 20px; left: 15px; z-index: 4000; }
         .star-link-btn { 
             position: relative; display: flex; align-items: center; justify-content: center; 
-            width: 70px; height: 70px; text-decoration: none; 
+            width: 65px; height: 65px; text-decoration: none; 
             transition: transform 0.2s;
         }
         .star-link-btn:active { transform: scale(0.9); }
-        .star-icon { font-size: 70px; color: var(--star-yellow); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
+        .star-icon { font-size: 65px; color: var(--star-yellow); filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
         .star-text { position: absolute; font-size: 14px; font-weight: 900; color: var(--text-black); top: 50%; left: 50%; transform: translate(-50%, -45%); }
 
         /* --- マップタイル --- */
@@ -91,29 +90,40 @@
         .deco-item { position: absolute; pointer-events: none; z-index: 10; }
         .splash { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; pointer-events: none; }
 
-        /* --- デコレーション配置（デフォルト） --- */
-        .tree-deco { top: 80px; left: 1100px; width: 120px; }
-        .buranko-deco { top: 80px; left: 60px; width: 130px; }
-        
-        .magic-pond { 
-            top: 1040px; left: 280px; width: 250px; height: 160px; 
-            background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; 
-            overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); 
-        }
+        /* --- デコレーション（PCデフォルト） --- */
+        .tree-deco { top: 50px; left: 1100px; width: 130px; }
+        .buranko-deco { top: 120px; left: 60px; width: 130px; }
+        .magic-pond { top: 1040px; left: 280px; width: 220px; height: 140px; background: #81D4FA; border: 6px solid #FFF; border-radius: 50% 40% 60% 30%; overflow: hidden; }
         .funsui-area { top: 1080px; left: 1120px; width: 140px; }
         .tobibako-deco { top: 1050px; left: 750px; width: 120px; }
 
         /* --- モバイル対応レイアウト --- */
         @media (max-width: 768px) {
-            .dollhouse-frame { width: 100vw; border: 8px solid var(--wood); }
+            .dollhouse-frame { 
+                width: 100vw; 
+                border: 8px solid var(--wood);
+            }
             .header-panel h2 { font-size: 13px !important; }
-            .tree-deco { top: 120px !important; left: 10px !important; width: 80px !important; }
-            .buranko-deco { top: 120px !important; right: 10px !important; left: auto !important; width: 80px !important; }
-            
-            /* スマホ時のみの池・噴水デザイン調整 */
-            .magic-pond { width: 200px !important; height: 130px !important; }
-            .funsui-area { width: 110px !important; }
-            .tobibako-deco { right: 20px !important; left: auto !important; width: 90px !important; }
+
+            .tree-deco { top: 130px !important; left: 10px !important; width: 80px !important; }
+            .buranko-deco { top: 130px !important; right: 10px !important; left: auto !important; width: 80px !important; }
+
+            /* 🆕 CSSでの固定位置を削除し、JSで制御する */
+            .funsui-area { 
+                left: 50% !important; 
+                transform: translateX(-50%) !important;
+                width: 120px !important; 
+            }
+            .magic-pond { 
+                left: 50% !important; 
+                transform: translateX(-50%) !important;
+                width: 180px !important; height: 120px !important; 
+            }
+            .tobibako-deco { 
+                right: 20px !important; 
+                left: auto !important;
+                width: 90px !important; 
+            }
         }
     </style>
 </head>
@@ -147,7 +157,6 @@
             <img src="{% static 'images/funsui.png' %}" style="width:100%; display:block;">
             <div id="splash-container" style="position:absolute; top:20px; left:50%; width:40px; height:20px;"></div>
         </div>
-        
         <img src="{% static 'images/midorinoki.png' %}" class="deco-item tree-deco">
         <img src="{% static 'images/buranko.png' %}" class="deco-item buranko-deco">
         <img id="tobibako-deco" src="{% static 'images/tobibako.png' %}" class="deco-item tobibako-deco">
@@ -167,8 +176,7 @@
     <script>
         let companies = JSON.parse(localStorage.getItem('steppia_companies')) || {};
         let currentCompanyId = localStorage.getItem('steppia_current_id') || '';
-        
-        const missionNames = ["経験・スキルの棚卸し", "コンサル面談①：診断", "価値観の言語化", "強み・武器の明確化", "転職軸とBEING確定", "業界・職種の市場調査", "ターゲット企業選定", "職務経歴書ドラフト作成", "コンサル面談②：書類添削", "志望動機・PRの最適化", "応募チャネル選定・登録", "応募計画の策定", "エントリー開始！", "面談の実践", "コンサル面談③：振り返り", "求人応募", "適性検査・SPI対策", "面接回答案の作成", "コンサル面談④：模擬面接", "1次面接挑戦", "面接と書類整理と改善", "🌟お試しインターン挑戦", "コンサル面談⑤：最終対策", "2次面接挑戦", "企業研究の更なる深掘り", "逆質問・事前準備", "最終面接挑戦", "コンサル面談⑥：相談", "最終面接結果待ち", "🎉内定GET！"];
+        const missionNames = ["経験スキルの棚卸し", "コンサル面談①", "価値観の言語化", "強みの明確化", "転職軸確定", "市場調査", "ターゲット選定", "経歴書作成", "コンサル面談②", "志望動機の最適化", "チャネル選定", "応募計画", "エントリー開始", "面談実践", "コンサル面談③", "求人応募", "適性検査対策", "回答案作成", "コンサル面談④", "1次面接挑戦", "書類整理", "🌟お試しインターン挑戦", "コンサル面談⑤", "2次面接挑戦", "企業研究深掘り", "逆質問準備", "最終面接挑戦", "コンサル面談⑥", "結果待ち", "🎉内定GET！"];
         let nodePoints = [];
 
         function renderMap() {
@@ -177,11 +185,10 @@
             
             const isMobile = window.innerWidth < 768;
             const cols = isMobile ? 2 : 6;
-            const frameWidth = document.getElementById('main-frame').clientWidth;
-            const gapX = isMobile ? (frameWidth / 2.4) : 190;
+            const gapX = isMobile ? (window.innerWidth / 2.4) : 190;
             const gapY = isMobile ? 130 : 140;
             const startX = isMobile ? 25 : 120;
-            const startY = isMobile ? 240 : 200;
+            const startY = isMobile ? 250 : 200;
 
             for (let i = 1; i <= 30; i++) {
                 const row = Math.floor((i - 1) / cols);
@@ -205,29 +212,25 @@
                 nodePoints.push({x: x + (isMobile ? 57 : 70), y: y + (isMobile ? 32 : 35)});
             }
 
-            // 🆕 最後のステップ（STEP 30）の座標を取得
-            const lastY = nodePoints[29].y;
+            const lastPoint = nodePoints[nodePoints.length - 1];
 
-            // 🆕 モバイル時：池、噴水、跳び箱をSTEP 30の下に配置
+            // 🆕 モバイル時、最後のマスの下にイラストを配置する
             if (isMobile) {
                 const pond = document.getElementById('pond-deco');
                 const funsui = document.getElementById('funsui-deco');
                 const tobibako = document.getElementById('tobibako-deco');
 
-                pond.style.top = (lastY + 130) + 'px';
-                pond.style.left = '50%';
-                pond.style.transform = 'translateX(-50%)';
+                // 最後のマスのY座標を基準に配置
+                const baseTop = lastPoint.y;
 
-                funsui.style.top = (lastY + 110) + 'px';
-                funsui.style.left = '50%';
-                funsui.style.transform = 'translateX(10%)'; // 池の横に少しずらす
-
-                tobibako.style.top = (lastY - 50) + 'px'; // 跳び箱はゴールのすぐ横
+                tobibako.style.top = (baseTop + 60) + 'px'; // 跳び箱をすぐ下に
+                funsui.style.top = (baseTop + 150) + 'px';   // その下に噴水
+                pond.style.top = (baseTop + 180) + 'px';     // 最後に池
             }
 
-            // 🆕 最後の要素が収まるように高さを計算
-            const buffer = isMobile ? 350 : 250; 
-            document.getElementById('main-frame').style.height = (lastY + buffer) + 'px';
+            // フレームの高さをイラストが収まるように調整
+            const buffer = isMobile ? 400 : 250; 
+            document.getElementById('main-frame').style.height = (lastPoint.y + buffer) + 'px';
 
             drawPath(); updateView();
         }
