@@ -91,7 +91,7 @@
         .deco-item { position: absolute; pointer-events: none; z-index: 10; }
         .splash { position: absolute; width: 8px; height: 8px; background: white; border-radius: 50%; pointer-events: none; }
 
-        /* --- 🆕 デコレーション（JSで制御するためCSSは基本スタイルのみ） --- */
+        /* --- デコレーションスタイル --- */
         .tree-deco { width: 120px; z-index: 10; }
         .buranko-deco { width: 120px; z-index: 10; }
         .magic-pond { 
@@ -219,25 +219,27 @@
                 buranko.style.top = "130px"; buranko.style.right = "20px";
             }
 
-            // 2. 🆕 池と噴水（ゴール下：左右に分ける）
-            const goalBaseY = lastPoint.y + 100;
+            // 2. 🆕 池と噴水（ゴール下：リクエストに合わせてさらに下に配置）
+            // baseTopを +100px から +280px (+180px追加) に変更
+            const goalBaseY = lastPoint.y + 280; 
             
             // 池：左側に配置
             pond.style.top = (goalBaseY + 40) + "px";
             pond.style.left = isMobile ? "10%" : "20%";
             pond.style.transform = "none";
 
-            // 噴水：右側に配置（池と重ならないように）
+            // 噴水：右側に配置
             funsui.style.top = goalBaseY + "px";
             funsui.style.left = isMobile ? "60%" : "65%";
             funsui.style.transform = "none";
 
             // 3. 跳び箱
-            tobibako.style.top = (goalBaseY - 60) + "px";
+            tobibako.style.top = (goalBaseY - 100) + "px";
             tobibako.style.left = isMobile ? "50%" : "45%";
             tobibako.style.transform = "translateX(-50%)";
 
-            const buffer = isMobile ? 450 : 350; 
+            // 🆕 イラストを下げた分、バッファ（下の余白）を増やしてはみ出し防止
+            const buffer = isMobile ? 650 : 550; 
             document.getElementById('main-frame').style.height = (lastPoint.y + buffer) + 'px';
 
             drawPath(); updateView();
@@ -265,7 +267,7 @@
                     pawn.style.left = (p.x - 30) + 'px'; pawn.style.top = (p.y - 75) + 'px';
                 }
                 document.querySelectorAll('.step-tile').forEach((t, idx) => { t.classList.toggle('completed', idx < step); });
-                if (step === 30) { setTimeout(() => { window.location.href = "{% url 'congrats_map' %}"; }, 1500); }
+                if (step === 30) { setTimeout(() => { window.location.href = "{% url 'congrats_map' %}"; }, 1300); }
             }
             localStorage.setItem('steppia_companies', JSON.stringify(companies));
             localStorage.setItem('steppia_current_id', currentCompanyId);
