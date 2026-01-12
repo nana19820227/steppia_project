@@ -17,10 +17,12 @@ from .models import (
 
 # --- 1. 基本・メニュー ---
 def top(request):
+    """トップ画面"""
     return render(request, 'steppia_app/top.html')
 
 # --- 2. 会員登録フロー ---
 def signup(request):
+    """ステップ1: アカウント作成"""
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
@@ -33,9 +35,11 @@ def signup(request):
 
 @login_required
 def signup_profile(request):
+    """ステップ2: 詳細入力"""
     return render(request, 'steppia_app/signup_profile.html')
 
 def signup_confirm(request):
+    """登録内容確認"""
     context = {
         'last_name': request.GET.get('last_name'),
         'first_name': request.GET.get('first_name'),
@@ -49,6 +53,7 @@ def signup_confirm(request):
 
 @login_required
 def signup_done(request):
+    """完了画面：Member情報の更新"""
     if request.method == 'POST':
         member = request.user.profile
         member.last_name = request.POST.get('last_name')
@@ -135,34 +140,34 @@ def delete_work_log(request, pk):
     get_object_or_404(WorkLog, pk=pk, user=request.user).delete()
     return redirect('work_tracker')
 
-# --- 5. AI相談室（全50項目・完全版） ---
+# --- 5. AI相談室（完全版５０項目搭載） ---
 def ai_consult(request):
     ai_answer = ""
     user_q = ""
     
-    # 🆕 50種類のキーワード知識ベース
+    # 🆕 那奈さんのための完全版５０項目データ
     FAQ_DATA = {
         "40代": "40代は人生経験が強みです。即戦力としての落ち着きをアピールしましょう。",
-        "未経験": "「未経験」を「伸びしろ」と捉え、新しい意欲を伝えましょう。",
-        "自信がない": "小さな成功を積み重ねましょう。今日一歩踏み出した自分を褒めてください。",
-        "ブランク": "家事や育児で培った「段取り力」も立派なキャリアです。",
-        "年齢制限": "法律で年齢制限は禁止されています。意欲があればチャンスは必ずあります。",
-        "リスキリング": "デジタルスキルを身につけると、事務やITなど選択肢が大きく広がります。",
+        "未経験": "「未経験」を「伸びしろ」と捉え、新しいことを吸収する意欲を伝えましょう。",
+        "自信がない": "小さな成功体験を積み重ねることが大切です。まずは今日一歩踏み出した自分を褒めましょう。",
+        "ブランク": "家事や育児で培った「段取り力」や「忍耐力」も立派なキャリアです。",
+        "年齢制限": "法律で年齢制限は禁止されています。スキルと意欲があればチャンスは必ずあります。",
+        "リスキリング": "デジタルスキルを身につけると事務職やIT職など選択肢が大きく広がります。",
         "Python": "初心者でも学びやすい言語です。自動化スキルは事務職でも重宝されます。",
         "Excel": "VLOOKUPやピボットテーブルができると、採用率がグッと上がります。",
-        "AI": "AIを使える人材は今、非常に求められています。まずは触れてみることから！",
-        "デザイン": "Canvaなど初心者向けツールから始めると、楽しく学べますよ。",
-        "履歴書": "パソコン作成が一般的です。清潔感のある写真を用意しましょう。",
+        "AI": "AIを使いこなせる人材は今、非常に求められています。まずは触れてみることから！",
+        "デザイン": "CanvaやPenpotなど、初心者向けのツールから始めると楽しく学べます。",
+        "履歴書": "手書きよりパソコン作成が一般的です。清潔感のある写真を用意しましょう。",
         "職務経歴書": "「何をしてきたか」だけでなく「何ができるか」を具体的に書きましょう。",
         "自己PR": "自分の強みが会社にどう貢献できるか、具体例を交えて伝えましょう。",
-        "志望動機": "「なぜこの会社なのか」を自分の言葉で語ることが内定への近道です。",
+        "志望動機": "「なぜこの会社なのか」を自分の言葉で語ることが内定への道です。",
         "面接": "面接は対話です。笑顔と元気な挨拶があれば、第一印象はバッチリです。",
         "オンライン面接": "背景や照明に気をつけ、カメラを見て話すと意欲が伝わります。",
         "逆質問": "「入社までに準備しておくことは？」など、前向きな質問を用意しましょう。",
         "シングルマザー": "理解のある企業は増えています。自治体の助成金なども活用しましょう。",
         "両立": "最初から100%を目指さず、周りの協力や便利なサービスを頼るのも戦略です。",
         "時短勤務": "ライフスタイルに合わせた働き方を相談できる企業を一緒に探しましょう。",
-        "在宅ワーク": "通勤がない分、家庭の時間が持てます。ITスキルがあると有利です。",
+        "在宅ワーク": "通勤がない分、家庭の時間が持てます。ITスキルがあると採用されやすいです。",
         "副業": "まずは月1〜3万円を目指して、得意なことから始めてみるのがおすすめです。",
         "ワークライフバランス": "仕事も家庭も大切にするために、優先順位を決めておきましょう。",
         "給料": "相場を知ることは大切です。スキルを上げて昇給を目指す道もあります。",
@@ -172,14 +177,14 @@ def ai_consult(request):
         "パート": "時間の融通が利きやすいのが魅力。ブランク明けの復帰に最適です。",
         "失業保険": "ハローワークで手続きが必要です。受給しながらの活動も可能です。",
         "社会保険": "106万円や130万円の壁を意識しつつ、保障の手厚い加入を目指すのも手です。",
-        "有給休暇": "条件を満たせばパートでも取得できます。大切な権利です。",
+        "有給休暇": "パートやアルバイトでも条件を満たせば取得できます。大切な権利です。",
         "最低賃金": "最低賃金は年々上がっています。基準を下回っていないか確認しましょう。",
-        "資格": "実務に直結する資格から取るのが効率的です。担当者に相談してください。",
+        "資格": "実務に直結する資格から取るのが効率的です。コンサルタントに相談してください。",
         "マネジメント": "後輩の指導経験などもマネジメント経験として評価されます。",
-        "転職回数": "回数を気にするより、その経験をどう活かすかを前向きに伝えましょう。",
+        "転職回数": "多いことを気にするより、その経験をどう活かすかを前向きに伝えましょう。",
         "キャリアチェンジ": "今のスキルをベースに、隣接する職種へスライドするのがスムーズです。",
-        "緊張": "「緊張するのは頑張りたい証拠」と受け入れ、深呼吸をしましょう。",
-        "不採用": "あなたの価値を否定されたわけではありません。縁がなかっただけです。",
+        "緊張": "「緊張するのは頑張りたい証拠」と受け入れて、深呼吸をしましょう。",
+        "不採用": "あなたの価値を否定されたわけではありません。縁がなかっただけと切り替えましょう。",
         "焦り": "周りと比べず、自分のペースで進むことが一番の近道です。",
         "人間関係": "新しい職場では「聞き上手」から始めると、馴染みやすくなります。",
         "コンサルタント": "迷ったらすぐに相談してください。私たちはあなたの味方です。",
@@ -191,30 +196,25 @@ def ai_consult(request):
         "マップ": "STEP 30を目指して進みましょう。ゴールには素敵な演出が待っています！",
         "相談": "どんな小さなことでもOK。AI相談室やコンサルタントを頼ってください。",
         "未来": "一歩踏み出した今、あなたの未来はすでに変わり始めています。",
-        "気分転換": "時には休むことも大切です。お気に入りの飲み物を飲んでリフレッシュを。"
+        "気分転換": "時には休むことも大切です。お気に入りの飲み物を飲んでリフレッシュしましょう。"
     }
-
-    RANDOM_RESPONSES = [
-        "その悩み、よくわかります。一歩ずつ進んでいきましょう！",
-        "自己分析は冒険の地図作りです。焦らず丁寧に進めて大丈夫ですよ。",
-        "あなたの強みは必ずあります。これまでの経験を信じてくださいね。",
-        "今日は少し休んで、明日からまた新しい気持ちで挑戦しませんか？",
-        "今の努力は、必ず未来のあなたを助けてくれます。応援しています！",
-        "不採用通知は『あなたを否定』したのではなく『縁がなかった』だけ。次に行きましょう！",
-        "あなたのこれまでの歩みは、決して無駄ではありません。胸を張ってくださいね。",
-    ]
 
     if request.method == 'POST':
         user_q = (request.POST.get('user_input') or request.POST.get('user_text', '')).strip()
         if user_q:
+            # 1. データベースのテンプレートから探す
             template_match = AIConsultTemplate.objects.filter(question__icontains=user_q).first()
             if template_match:
                 ai_answer = template_match.answer
             else:
+                # 2. ５０個のキーワードから探す
                 ai_answer = next((val for key, val in FAQ_DATA.items() if key in user_q), None)
+                
+                # 3. 🆕 当てはまらない場合はコンサルタントへ誘導
                 if not ai_answer:
-                    ai_answer = random.choice(RANDOM_RESPONSES)
+                    ai_answer = "そのお悩みはとても大切なことですので、ぜひ専属のコンサルタントに詳しくご相談くださいね。"
 
+            # ログ保存
             AIConsultLog.objects.create(
                 user=request.user if request.user.is_authenticated else None,
                 user_question=user_q, 
@@ -223,22 +223,30 @@ def ai_consult(request):
             
     return render(request, 'steppia_app/ai_consult.html', {'ai_answer': ai_answer, 'user_q': user_q})
 
+# 🆕 これを追加したことで、ログに出ていたエラー（❌）を解消します
 @login_required
 def ai_history(request):
-    """AI相談履歴（マイページへリダイレクト）"""
+    """相談履歴ボタンの転送先（マイページへ）"""
     return redirect('mypage')
 
 # --- 6. マイページ ---
 @login_required
 def mypage(request):
+    """ユーザー情報統合表示"""
     logs = AIConsultLog.objects.filter(user=request.user).order_by('-created_at')
     mypage_schedules = Schedule.objects.filter(user=request.user, detail__contains='コンサル予約').order_by('-date', '-time')
     user_applications = Application.objects.filter(user=request.user).order_by('-applied_at')
     coupons = Coupon.objects.filter(user=request.user, is_used=False).order_by('-won_at')
+    
+    # データベースから担当コンサルタント名を取得
     consultant_name = request.user.profile.assigned_consultant
+    
     return render(request, 'steppia_app/mypage.html', {
-        'logs': logs, 'mypage_schedules': mypage_schedules, 'applications': user_applications, 
-        'coupons': coupons, 'consultant_name': consultant_name
+        'logs': logs, 
+        'mypage_schedules': mypage_schedules, 
+        'applications': user_applications, 
+        'coupons': coupons,
+        'consultant_name': consultant_name
     })
 
 # --- 7. 進捗管理（冒険マップ） ---
