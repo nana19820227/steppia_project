@@ -22,7 +22,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100dvh; /* モバイルのブラウザバーを考慮 */
+            min-height: 100dvh;
             text-align: center;
             color: var(--brown);
         }
@@ -38,7 +38,7 @@
             flex-direction: column;
             align-items: center;
             box-sizing: border-box;
-            animation: fadeIn 0.8s ease-out; /* ふわっと表示 */
+            animation: fadeIn 0.8s ease-out;
         }
 
         @keyframes fadeIn {
@@ -46,16 +46,15 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .celebration-icon {
-            font-size: 40px;
-            margin-bottom: 10px;
-        }
+        /* 装飾用のスタイル(.celebration-icon)を削除しました */
 
         .done-icon-img {
             width: 140px;
             height: auto;
             margin-bottom: 25px;
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.06));
+            /* 装飾がなくなった分、少し上部の余白を調整 */
+            margin-top: 10px; 
         }
 
         h1 {
@@ -98,7 +97,6 @@
             box-shadow: none;
         }
 
-        /* PC（デスクトップ）向けの調整 */
         @media (min-width: 768px) {
             .done-card {
                 max-width: 550px;
@@ -106,19 +104,15 @@
             }
             .done-icon-img {
                 width: 180px;
+                margin-top: 20px; /* PCでの余白調整 */
             }
-            h1 {
-                font-size: 28px;
-            }
-            .message {
-                font-size: 17px;
-            }
+            h1 { font-size: 28px; }
+            .message { font-size: 17px; }
         }
     </style>
 </head>
 <body>
     <div class="done-card">
-        <span class="celebration-icon">📅✨</span>
         <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" class="done-icon-img" alt="予約完了">
         
         <h1>コンサル予約が<br>完了しました！</h1>
