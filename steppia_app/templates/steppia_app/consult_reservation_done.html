@@ -3,37 +3,131 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>予約完了 - ステッピア</title>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #DCECCF; --white: #FFFFFF; --brown: #5D4037; --star-yellow: #FFF2AF; }
-        body { background-color: var(--bg); margin: 0; font-family: 'Zen Maru Gothic', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; }
-        .done-card { background: var(--white); border-radius: 45px; padding: 50px 30px; width: 90%; max-width: 450px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; }
-        
-        /* 🆕 修正：絵文字用のスタイルを削除し、画像用のスタイルを追加 */
+        :root {
+            --bg: #DCECCF; /* ステッピア基本色：薄緑 */
+            --white: #FFFFFF;
+            --brown: #5D4037;
+            --star-yellow: #FFF2AF;
+            --star-shadow: #E6D58E;
+        }
+
+        body {
+            background-color: var(--bg);
+            margin: 0;
+            font-family: 'Zen Maru Gothic', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100dvh; /* モバイルのブラウザバーを考慮 */
+            text-align: center;
+            color: var(--brown);
+        }
+
+        .done-card {
+            background: var(--white);
+            border-radius: 45px;
+            padding: 40px 20px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            animation: fadeIn 0.8s ease-out; /* ふわっと表示 */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .celebration-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
         .done-icon-img {
-            width: 180px; /* ロゴのサイズを調整 */
+            width: 140px;
             height: auto;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.06));
         }
-        
-        h1 { color: var(--brown); font-size: 24px; margin-bottom: 30px; line-height: 1.4; }
-        .home-btn { 
-            display: inline-block; background: var(--star-yellow); color: var(--brown); 
-            text-decoration: none; padding: 18px 40px; border-radius: 30px; 
-            font-weight: 900; font-size: 18px; box-shadow: 0 5px 0 #E6D58E; transition: 0.1s; 
+
+        h1 {
+            font-size: 22px;
+            font-weight: 900;
+            margin: 0 0 20px 0;
+            line-height: 1.5;
         }
-        .home-btn:active { transform: translateY(4px); box-shadow: none; }
+
+        .message {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            line-height: 1.7;
+            opacity: 0.8;
+        }
+
+        .home-btn {
+            display: block;
+            width: 100%;
+            max-width: 280px;
+            background: var(--star-yellow);
+            color: var(--brown);
+            text-decoration: none;
+            padding: 18px 0;
+            border-radius: 50px;
+            font-weight: 900;
+            font-size: 18px;
+            box-shadow: 0 5px 0 var(--star-shadow);
+            transition: all 0.2s;
+        }
+
+        .home-btn:hover {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 var(--star-shadow);
+        }
+
+        .home-btn:active {
+            transform: translateY(5px);
+            box-shadow: none;
+        }
+
+        /* PC（デスクトップ）向けの調整 */
+        @media (min-width: 768px) {
+            .done-card {
+                max-width: 550px;
+                padding: 60px 40px;
+            }
+            .done-icon-img {
+                width: 180px;
+            }
+            h1 {
+                font-size: 28px;
+            }
+            .message {
+                font-size: 17px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="done-card">
+        <span class="celebration-icon">📅✨</span>
         <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" class="done-icon-img" alt="予約完了">
         
         <h1>コンサル予約が<br>完了しました！</h1>
-        <p style="margin-bottom: 40px; opacity: 0.7; font-weight: 900;">
-            当日、お会いできるのを<br>楽しみにしています。
+        
+        <p class="message">
+            当日、お会いできるのを<br>楽しみにしています。<br>
+            詳細はマイページでもご確認いただけます。
         </p>
+        
         <a href="{% url 'menu' %}" class="home-btn">TOPメニューに戻る</a>
     </div>
 </body>
