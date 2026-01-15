@@ -1,27 +1,142 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>登録完了 - ステッピア</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #DCECCF; /* ステッピア基本色：薄緑 */
+            --card-bg: #FFFFFF;
+            --text-brown: #5D4037;
+            --accent-beige: #F9F4E8;
+            --btn-beige: #E6D5B8;
+            --btn-hover: #D7C4A5;
+        }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'Zen Maru Gothic', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100dvh;
+            color: var(--text-brown);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 450px;
+            background-color: var(--card-bg);
+            border-radius: 30px;
+            padding: 40px 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+            box-sizing: border-box;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .main-image {
+            width: 100px;
+            height: auto;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.08));
+        }
+
+        .page-title {
+            font-size: 14px;
+            font-weight: 900;
+            margin: 0 0 10px 0;
+            letter-spacing: 0.1em;
+            color: var(--text-brown);
+            opacity: 0.7;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 900;
+            margin: 0 0 15px 0;
+            line-height: 1.4;
+        }
+
+        .sub-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 35px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        /* お祝いのキラキラ演出（装飾） */
+        .celebration-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .button-container {
+            width: 100%;
+        }
+
+        .btn-beige {
+            display: block;
+            background-color: var(--btn-beige);
+            color: var(--text-brown);
+            text-decoration: none;
+            padding: 16px;
+            border-radius: 50px;
+            font-weight: 900;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 0 #C9B89A;
+        }
+
+        .btn-beige:hover {
+            background-color: var(--btn-hover);
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #C9B89A;
+        }
+
+        .btn-beige:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        /* パソコン（デスクトップ）向けの調整 */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 550px;
+                padding: 60px 40px;
+            }
+            h2 { font-size: 28px; }
+            .sub-title { font-size: 17px; }
+            .main-image { width: 120px; }
+        }
+    </style>
 </head>
 <body>
 
     <div class="container">
+        <span class="celebration-icon">✨</span>
         <img src="{% static 'images/stepia_icon_clean_transparent.png' %}" alt="ロゴ" class="main-image">
         
         <p class="page-title">ステッピア</p>
         
         <h2>登録が完了しました！</h2>
-        <p class="sub-title">これからよろしくお願いいたします。</p>
+        <p class="sub-title">これから、新しい仕事(あした)への冒険を<br>一緒に進めていきましょう。</p>
 
         <div class="button-container">
             <a href="{% url 'top' %}" class="btn-beige">トップへ戻る</a>
         </div>
-
     </div>
 
 </body>
